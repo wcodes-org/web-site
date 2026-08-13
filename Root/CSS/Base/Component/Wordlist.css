@@ -10,10 +10,21 @@
 	border-spacing: 10px 10px;
 }
 
-#wordlist-table span {
+#wordlist-table .word-item {
 	width: 140px;
 	display: inline-block;
 	color: #69b7cf;
+}
+
+#wordlist-table .word-emoji {
+	width: auto;
+	display: inline;
+	margin-right: 2px;
+}
+
+#wordlist-table .word-text {
+	width: auto;
+	display: inline;
 }
 
 #wordlist-table {
@@ -67,7 +78,7 @@
 	font-size: large;
 }
 
-.primary .secondary > div > span {
+.primary .secondary > div > .word-item {
 	margin-left: 40px;
 }
 

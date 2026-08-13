@@ -1,5 +1,6 @@
 var wordListWhite;
 var wordListBlack;
+var wordEmojiMap = {};
 
 function wordlist() {
 	if(typeof wordListWhite == 'undefined')
@@ -68,11 +69,30 @@ function getSecondary(parent) {
 
 function getWords(child) {
 	var x = [];
-	var words = child.getElementsByTagName('span');
+	var words = child.getElementsByClassName('word-item');
 	for(var i = 0; i < words.length; i++) {
-		x[i] = words[i].innerText;
+		var textEl = words[i].getElementsByClassName('word-text')[0];
+		var word = textEl.innerText;
+		x[i] = word;
+		var emojiEl = words[i].getElementsByClassName('word-emoji')[0];
+		if(emojiEl)
+			wordEmojiMap[word] = emojiEl.innerText;
 	}
 	return x;
+}
+
+function createWordItem(word) {
+	var span = document.createElement('span');
+	span.setAttribute('class', 'word-item');
+	var emoji = document.createElement('span');
+	emoji.setAttribute('class', 'word-emoji');
+	emoji.innerText = wordEmojiMap[word] || '💬';
+	var text = document.createElement('span');
+	text.setAttribute('class', 'word-text');
+	text.innerText = word;
+	span.appendChild(emoji);
+	span.appendChild(text);
+	return span;
 }
 
 function setWordList(matchString, white__black) {
@@ -107,9 +127,7 @@ function setWordList(matchString, white__black) {
 			else
 				subList = wordList[p][s];
 			for(var i in subList) {
-				var word = document.createElement('span');
-				word.innerText = subList[i];
-				div.appendChild(word);
+				div.appendChild(createWordItem(subList[i]));
 			}
 			secondary.appendChild(div);
 			primary.appendChild(secondary);
