@@ -87,6 +87,11 @@
 			$arWord = array_map(function($v) {
 				return (explode("\t", $v));
 			}, $lines);
+			$emojiMap = json_decode(file_get_contents('../../File/Wordlist-emoji.json'), true);
+			function renderWordItem($word, $emojiMap) {
+				$emoji = isset($emojiMap[$word]) ? $emojiMap[$word] : '💬';
+				echo '<span class="word-item"><span class="word-emoji">' . $emoji . '</span><span class="word-text">' . $word . '</span></span>';
+			}
 			$bPrimaryCat = false;
 			$bSecondaryCat = false;
 			$bWordCat = false;
@@ -115,23 +120,17 @@
 					<div class='secondary'><div class='secondary-word'><?php echo $arWord[$i][2] ?></div><div>
 				<?php }
 				if($arWord[$i][3] != NULL) {
-						$totalCount++; ?>
-						<span>
-							<?php echo $arWord[$i][3]; ?>
-						</span>
-				<?php }
+						$totalCount++;
+						renderWordItem($arWord[$i][3], $emojiMap);
+				}
 				if($arWord[$i][4] != NULL) {
-						$totalCount++; ?>
-						<span>
-							<?php echo $arWord[$i][4]; ?>
-						</span>
-				<?php }
+						$totalCount++;
+						renderWordItem($arWord[$i][4], $emojiMap);
+				}
 				if($arWord[$i][5] != NULL) {
-						$totalCount++; ?>
-						<span>
-							<?php echo $arWord[$i][5]; ?>
-						</span>
-				<?php }
+						$totalCount++;
+						renderWordItem($arWord[$i][5], $emojiMap);
+				}
 			}
 		?>
 			</div></div></div>
