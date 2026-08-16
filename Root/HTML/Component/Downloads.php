@@ -40,9 +40,8 @@
 			</ul>
 		</li>
 		<li>
-			<span class='download download-android coming-soon'>
-				<span>coming soon</span>
-				<a class='content-link'><span class='image'><?php includeSVG('', 'Google-Play-badge'); ?></a>
+			<span class='download download-android'>
+				<a href='https://play.google.com/store/apps/details?id=codes.wolo.droid' target='_blank' rel='noopener' class='content-link' onclick="trackOutboundLink('wcodes-play', 'https://play.google.com/store/apps/details?id=codes.wolo.droid'); return false;"><span class='image'><?php includeSVG('', 'Google-Play-badge'); ?></span></a>
 			</span>
 		</li>
 		<li>
