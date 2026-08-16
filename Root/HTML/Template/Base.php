@@ -17,7 +17,8 @@
 	<link href="<?php echo $config['base_url']; if($id != 'root') echo '/'.$id ?>" rel='canonical' >
 	<title><?php echo $desc.' - '.$config['project_title']; ?></title>
 <?php if($bPublish) {
-		require '../JS/Fragment/GA_HeadScript.php';
+		if(!empty($config['google_tag_id']))
+			require '../JS/Fragment/GA_HeadScript.php';
 		require '../JS/Fragment/GA_track.js'; ?>
 		<script <?php require '../JS/Fragment/Sentry_version.php' ?>></script>
 		<script><?php require '../JS/Fragment/Sentry_exec.php' ?></script>
@@ -42,7 +43,9 @@
 				<div class='container'>
 					<div id='content-wrapper-inside'>
 						<div class='shadow-scroll-top'></div>
-						<div id='google_translate_element'></div>
+						<div id='translation-controls' class='hide_display'>
+							<div id='google_translate_element'></div>
+						</div>
 						<?php require '../HTML/Fragment/GCSE.php' ?>
 						<div id='canvas-wrapper'>
 							<div id='path-container' class="<?php echo ($id == 'root'? 'hide_scale' : '') ?>"><div id=path><?php require '../HTML/Fragment/Path.php' ?></div></div>

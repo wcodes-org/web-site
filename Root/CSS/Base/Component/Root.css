@@ -105,3 +105,11 @@ summary::-webkit-details-marker {
 	margin-right: 12px;
 	border: solid 5px #ffffff;
 }
+
+html.dark-mode #apps {
+	background: linear-gradient(to right, #222244 20%, #1a1a2e);
+}
+
+html.dark-mode #apps .page-list > .item_block_container {
+	border: none;
+}
