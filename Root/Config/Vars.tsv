@@ -3,7 +3,7 @@ project_short_name	WCodes
 project_description	WCodes - encode with words
 site_name	Wcodes.org
 site_domain	wcodes.org
-version 1.1.1
+version	1.1.1
 base_url	https://wcodes.org
 author	Ujjwal Singh
 twitter_owner	wcodesorg
