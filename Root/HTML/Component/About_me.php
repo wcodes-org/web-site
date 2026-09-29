@@ -16,7 +16,7 @@
 		<div>
 			<div class='R1'>blog</div>
 			<div class='R2'>
-				<a class='content-link' href='https://ujnotes.com' onclick="trackOutboundLink('ujnotes', 'https://ujnotes.com'); return false;">ujnotes.com</a>
+				<a class='content-link' href='https://ujnotes.com' target='_blank' rel='noopener' onclick="trackOutboundLink('ujnotes', 'https://ujnotes.com');">ujnotes.com</a>
 			</div>
 		</div>
 		<div>
@@ -24,7 +24,7 @@
 				linkedIn
 			</div>
 			<div class='R2'>
-				<a id='linkedin-badge' class='content-link' href='https://in.linkedin.com/in/ujlion' onclick="trackOutboundLink('uj-linkedin', 'https://in.linkedin.com/in/ujlion'); return false;">
+				<a id='linkedin-badge' class='content-link' href='https://in.linkedin.com/in/ujlion' target='_blank' rel='noopener' onclick="trackOutboundLink('uj-linkedin', 'https://in.linkedin.com/in/ujlion');">
 					linkedin.com/in/ujLion
 				</a>
 			</div>
@@ -34,7 +34,7 @@
 				résumé
 			</div>
 			<div class='R2'>
-				<a class='content-link' href='https://stackoverflow.com/cv/ujjwal' onclick="trackOutboundLink('uj-so-cv', 'https://stackoverflow.com/cv/ujjwal'); return false;">stackoverflow.com/cv/ujjwal</a>
+				<a class='content-link' href='https://stackoverflow.com/cv/ujjwal' target='_blank' rel='noopener' onclick="trackOutboundLink('uj-so-cv', 'https://stackoverflow.com/cv/ujjwal');">stackoverflow.com/cv/ujjwal</a>
 			</div>
 		</div>
 		<div>
@@ -42,7 +42,7 @@
 				stackOverflow
 			</div>
 			<div class='R2'>
-				<a id='stackOverflow-badge' class='content-link' href='https://stackoverflow.com/users/483588/ujjwal-singh' onclick="trackOutboundLink('uj-so', 'https://stackoverflow.com/users/483588/ujjwal-singh'); return false;">
+				<a id='stackOverflow-badge' class='content-link' href='https://stackoverflow.com/users/483588/ujjwal-singh' target='_blank' rel='noopener' onclick="trackOutboundLink('uj-so', 'https://stackoverflow.com/users/483588/ujjwal-singh');">
 					stackoverflow.com/users/483588
 				</a>
 			</div>
@@ -52,7 +52,7 @@
 				facebook
 			</div>
 			<div class='R2'>
-				<a id='facebook-badge' class='content-link' href='https://www.facebook.com/ujjwalsinghx' target='_TOP' title="Ujjwal Singh" onclick="trackOutboundLink('uj-fb', 'https://www.facebook.com/ujjwalsinghx'); return false;">
+				<a id='facebook-badge' class='content-link' href='https://www.facebook.com/ujjwalsinghx' target='_blank' rel='noopener' title="Ujjwal Singh" onclick="trackOutboundLink('uj-fb', 'https://www.facebook.com/ujjwalsinghx');">
 					fb.com/ujjwalsinghx
 				</a>
 			</div>
@@ -62,7 +62,7 @@
 				instagram
 			</div>
 			<div class='R2'>
-				<a class='content-link' href='https://instagram.com/UjLion' target='_TOP' title="Ujjwal Singh" onclick="trackOutboundLink('uj-ig', 'https://instagram.com/UjLion'); return false;">
+				<a class='content-link' href='https://instagram.com/UjLion' target='_blank' rel='noopener' title="Ujjwal Singh" onclick="trackOutboundLink('uj-ig', 'https://instagram.com/UjLion');">
 					ujLion
 				</a>
 			</div>
@@ -70,7 +70,7 @@
 		<div>
 			<div class='R1'>twitter</div>
 			<div class='R2'>
-				<a class='content-link' href='https://twitter.com/ujlion' target='_TOP' title="Ujjwal Singh" onclick="trackOutboundLink('uj-twitter', 'https://twitter.com/ujlion'); return false;">
+				<a class='content-link' href='https://twitter.com/ujlion' target='_blank' rel='noopener' title="Ujjwal Singh" onclick="trackOutboundLink('uj-twitter', 'https://twitter.com/ujlion');">
 					ujLion
 				</a>
 			</div>

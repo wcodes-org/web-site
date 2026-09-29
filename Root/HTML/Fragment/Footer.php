@@ -19,7 +19,7 @@
 				<a href='/downloads'><span class='image'><?php includeSVG('', 'Download'); ?></span></a>
 			</span>
 			<span id='download-android-bottom' class='download'>
-				<a href='https://play.google.com/store/apps/details?id=codes.wolo.droid' target='_blank' rel='noopener' class='content-link' onclick="trackOutboundLink('wcodes-play', 'https://play.google.com/store/apps/details?id=codes.wolo.droid'); return false;"><span class='image'><?php includeSVG('', 'Google-Play-badge'); ?></span></a>
+				<a href='https://play.google.com/store/apps/details?id=codes.wolo.droid' target='_blank' rel='noopener' class='content-link' onclick="trackOutboundLink('wcodes-play', 'https://play.google.com/store/apps/details?id=codes.wolo.droid');"><span class='image'><?php includeSVG('', 'Google-Play-badge'); ?></span></a>
 			</span>
 			<span id='download-apple-bottom' class='download coming-soon'>
 				<span>to be announced</span>
@@ -29,13 +29,13 @@
 
 		<div id='social-links'>
 			<span class='social grow'>
-				<a href='https://twitter.com/wcodesorg' id='site-twitter' onclick="trackOutboundLink('wcodes-twitter', 'https://twitter.com/wcodesorg'); return false;"><span class='image'><?php includeSVG('', 'Twitter'); ?></span></a>
+				<a href='https://twitter.com/wcodesorg' id='site-twitter' target='_blank' rel='noopener' onclick="trackOutboundLink('wcodes-twitter', 'https://twitter.com/wcodesorg');"><span class='image'><?php includeSVG('', 'Twitter'); ?></span></a>
 			</span>
 			<span class='social grow'>
-				<a href='https://facebook.com/wcodesorg' id='site-facebook' onclick="trackOutboundLink('wcodes-facebook', 'https://facebook.com/wcodesorg'); return false;"><span class='image'><?php includeSVG('', 'Facebook'); ?></span></a>
+				<a href='https://facebook.com/wcodesorg' id='site-facebook' target='_blank' rel='noopener' onclick="trackOutboundLink('wcodes-facebook', 'https://facebook.com/wcodesorg');"><span class='image'><?php includeSVG('', 'Facebook'); ?></span></a>
 			</span>
 			<span class='social grow'>
-				<a href='https://www.youtube.com/channel/UCnKSws8Lro8U9Ewtf1Xi5jg' id='site-youtube' onclick="trackOutboundLink('wcodes-youtube', 'https://www.youtube.com/channel/UCnKSws8Lro8U9Ewtf1Xi5jg'); return false;"><span class='image'><?php includeSVG('', 'YouTube'); ?></span></a>
+				<a href='https://www.youtube.com/channel/UCnKSws8Lro8U9Ewtf1Xi5jg' id='site-youtube' target='_blank' rel='noopener' onclick="trackOutboundLink('wcodes-youtube', 'https://www.youtube.com/channel/UCnKSws8Lro8U9Ewtf1Xi5jg');"><span class='image'><?php includeSVG('', 'YouTube'); ?></span></a>
 			</span>
 		</div>
 		

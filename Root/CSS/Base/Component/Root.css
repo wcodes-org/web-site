@@ -113,3 +113,7 @@ html.dark-mode #apps {
 html.dark-mode #apps .page-list > .item_block_container {
 	border: none;
 }
+
+#more {
+	padding-bottom: 24px;
+}

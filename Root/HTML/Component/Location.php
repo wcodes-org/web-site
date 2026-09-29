@@ -13,7 +13,7 @@
 			Follow the link below to see more details:
 		</p>
 		<div class='center'>
-			<?php group_image("page-list center", 1, ['app/location', 'about', '//wolo.codes/about']) ?>
+			<?php group_image("page-list center", 1, ['app/location', 'wolo.codes', 'https://wolo.codes']) ?>
 		</div>
 		
 	</div>
