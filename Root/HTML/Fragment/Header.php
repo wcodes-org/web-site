@@ -1,4 +1,4 @@
-<div id='header-wrapper' style='overflow: hidden'>
+<div id='header-wrapper'>
 	<div id='header-title'>
 	<div class='XURL' data-target='root' id='header-slogan'>
 		<a id='header-slogan-href' href='/'>
