@@ -21,7 +21,15 @@
 			require '../JS/Fragment/GA_HeadScript.php';
 		require '../JS/Fragment/GA_track.js'; ?>
 		<script <?php require '../JS/Fragment/Sentry_version.php' ?>></script>
-		<script><?php require '../JS/Fragment/Sentry_exec.php' ?></script>
+		<script>
+			if (window.Sentry && typeof window.Sentry.init === 'function') {
+				try {
+					<?php require '../JS/Fragment/Sentry_exec.php' ?>
+				} catch (error) {
+					console.warn('Sentry initialization failed', error);
+				}
+			}
+		</script>
 		<script src='//apis.google.com/js/platform.js' async defer></script>
 		<script src='//platform.twitter.com/widgets.js' async></script>
 <?php	}
