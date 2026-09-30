@@ -17,6 +17,17 @@
 		margin: 0 0 2px;
 	}
 
+	#basis_symbols_table {
+		margin: 6px auto;
+		row-gap: 24px;
+		font-size: 1.05em;
+	}
+
+	#basis_symbols_mid {
+		column-gap: 20px;
+		margin: 0;
+	}
+
 	.basis_pretext {
 		font-size: 1em;
 		gap: 4px 6px;

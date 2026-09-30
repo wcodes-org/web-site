@@ -1,5 +1,6 @@
 #basis_intro {
-	display: table;
+	width: 480px;
+	max-width: 100%;
 	margin: 12px auto 8px;
 }
 
@@ -9,6 +10,51 @@
 	color: #777;
 	font-style: italic;
 	margin: 0 0 4px;
+}
+
+#basis_symbols_table {
+	margin: 8px auto 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 24px;
+	font-size: 1.15em;
+}
+
+#basis_symbols_top {
+	text-align: center;
+	margin: 0;
+	line-height: 1;
+}
+
+#basis_symbols_mid {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	column-gap: 26px;
+	align-items: center;
+	margin: 0;
+}
+
+#basis_symbols_mid > div {
+	line-height: 1;
+}
+
+#basis_symbols_mid > div:first-child {
+	text-align: right;
+}
+
+#basis_symbols_mid > div:nth-child(2) {
+	text-align: center;
+}
+
+#basis_symbols_mid > div:last-child {
+	text-align: left;
+}
+
+#basis_symbols_bottom {
+	text-align: center;
+	margin: 0;
+	line-height: 1;
 }
 
 .basis_pretext {
@@ -25,13 +71,13 @@
 	letter-spacing: 0.03em;
 }
 
-.basis_pretext .basis_item {
+.basis_item {
 	font-weight: bold;
 	color: #888;
 	transition: color 0.2s ease;
 }
 
-.basis_pretext .basis_item:hover {
+.basis_item:hover {
 	color: #69b7cf;
 }
 
@@ -123,6 +169,10 @@ span#bar-code, span#qr-code {
 	color: #69B7CF
 }
 
+#pendrive-note {
+	margin: 12px 0;
+}
+
 summary::-webkit-details-marker {
 	color: #ddd
 }
@@ -189,11 +239,11 @@ html.dark-mode #basis_conclusion {
 	color: #aaa;
 }
 
-html.dark-mode .basis_pretext .basis_item {
+html.dark-mode .basis_item {
 	color: #aaa;
 }
 
-html.dark-mode .basis_pretext .basis_item:hover {
+html.dark-mode .basis_item:hover {
 	color: #69b7cf;
 }
 
