@@ -8,6 +8,26 @@
 		padding-left: 6px;
 	}
 
+	#basis_intro {
+		margin: 8px auto 6px;
+		max-width: calc(100% - 20px);
+	}
+
+	#basis_lead {
+		margin: 0 0 2px;
+	}
+
+	.basis_pretext {
+		font-size: 1em;
+		gap: 4px 6px;
+		margin: 2px auto;
+	}
+
+	#basis_conclusion {
+		margin: 6px 0 10px;
+		font-size: 1em;
+	}
+
 	#codes-table-mid > div {
 		padding: 6px;
 	}

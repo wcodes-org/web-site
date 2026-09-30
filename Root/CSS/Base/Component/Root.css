@@ -1,3 +1,69 @@
+#basis_intro {
+	display: table;
+	margin: 12px auto 8px;
+}
+
+#basis_lead {
+	text-align: left;
+	font-size: 1.1em;
+	color: #777;
+	font-style: italic;
+	margin: 0 0 4px;
+}
+
+.basis_pretext {
+	text-align: center;
+	font-size: 1.15em;
+	color: #777;
+	margin: 2px auto;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 6px 10px;
+	letter-spacing: 0.03em;
+}
+
+.basis_pretext .basis_item {
+	font-weight: bold;
+	color: #888;
+	transition: color 0.2s ease;
+}
+
+.basis_pretext .basis_item:hover {
+	color: #69b7cf;
+}
+
+.basis_pretext .basis_sep {
+	color: #69b7cf;
+	font-family: 'Times New Roman', serif;
+	font-size: 1.1em;
+	user-select: none;
+}
+
+#basis_posttext {
+	text-align: center;
+	margin: 2px auto;
+	font-size: 1.15em;
+}
+
+#basis_posttext .basis_sep {
+	color: #69b7cf;
+	font-family: 'Times New Roman', serif;
+	font-size: 1.1em;
+	font-style: italic;
+	user-select: none;
+}
+
+#basis_conclusion {
+	text-align: left;
+	font-size: 1.1em;
+	color: #777;
+	font-style: italic;
+	margin: 8px 0 14px;
+}
+
 #basis_image svg {
 	margin: 0 auto;
 	padding-left: 10px;
@@ -116,4 +182,22 @@ html.dark-mode #apps .page-list > .item_block_container {
 
 #more {
 	padding-bottom: 24px;
+}
+
+html.dark-mode #basis_lead,
+html.dark-mode #basis_conclusion {
+	color: #aaa;
+}
+
+html.dark-mode .basis_pretext .basis_item {
+	color: #aaa;
+}
+
+html.dark-mode .basis_pretext .basis_item:hover {
+	color: #69b7cf;
+}
+
+html.dark-mode .basis_pretext .basis_sep,
+html.dark-mode #basis_posttext .basis_sep {
+	color: #69b7cf;
 }

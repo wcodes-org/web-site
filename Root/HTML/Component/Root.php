@@ -1,6 +1,41 @@
 <div id='message' class='alt_div_shade'>
 	
 	<div id='basis'>
+		<div id='basis_intro'>
+			<div id='basis_lead'>Just as:</div>
+			<div id='basis_symbols' class='basis_pretext center'>
+				<span class='basis_item' title='Numeral'>1</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Roman numeral'>I</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Devanagari numeral'>१</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Kanji / Hanzi'>一</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Arabic numeral'>١</span>
+			</div>
+			<div id='basis_posttext' class='center'>
+				<span class='basis_sep'>&amp;</span>
+			</div>
+			<div id='basis_words' class='basis_pretext center'>
+				<span class='basis_item' title='English'>one</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='French'>un</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Spanish'>uno</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='German'>eins</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Hindi'>एक</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Arabic' dir='rtl'>واحد</span>
+				<span class='basis_sep'>=</span>
+				<span class='basis_item' title='Japanese'>いち</span>
+			</div>
+			<div id='basis_conclusion'>
+				we may say:
+			</div>
+		</div>
 		<span id='basis_image' class='image' title='WCode basis'><?php includeSVG('', 'Basis'); ?></span>
 	</div>
 	
@@ -23,6 +58,9 @@
 	</div>
 	<div class='indent-f'>
 		Unlike barcodes, instead of geometrical figures like bars and blocks, WCode is made up of literal words.
+	</div>
+	<div class='indent-f'>
+		You may think of WCode as a proverbial &lsquo;pen-drive&rsquo; holding small pieces of data in it.
 	</div>
 	</div>
 	
