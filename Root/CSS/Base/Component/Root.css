@@ -1,5 +1,5 @@
 #basis_intro {
-	width: 480px;
+	width: 680px;
 	max-width: 100%;
 	margin: 12px auto 8px;
 }
@@ -169,8 +169,12 @@ span#bar-code, span#qr-code {
 	color: #69B7CF
 }
 
+#wcode-advantage {
+	margin: 28px 0 10px;
+}
+
 #pendrive-note {
-	margin: 12px 0;
+	margin: 24px 0 10px;
 }
 
 summary::-webkit-details-marker {

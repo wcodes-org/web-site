@@ -40,11 +40,11 @@
 			<div id='codes-table-bottom' class='code_value'>\ <span>cat apple mango tomato</span> /</div>
 		</div>
 	</div>
-	<div class='indent-f'>
+	<div id='wcode-advantage' class='indent-f'>
 		Unlike barcodes, instead of geometrical figures like bars and blocks, WCode is made up of literal words.
 	</div>
 	<div id='pendrive-note' class='indent-f'>
-		You may think of WCode as a proverbial &lsquo;pen-drive&rsquo; holding small pieces of data in it.
+		You may think of WCode as a proverbial &lsquo;pen-drive&rsquo; holding small pieces of data in it
 	</div>
 	</div>
 	
