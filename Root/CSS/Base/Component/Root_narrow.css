@@ -16,6 +16,16 @@
 		padding-left: 38px;
 	}
 
+	#more .sidebar-nav-group {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	#more .sidebar-nav-group + .sidebar-nav-group {
+		margin-top: 24px;
+	}
+
 }
 
 @media (min-width: 540px) {
