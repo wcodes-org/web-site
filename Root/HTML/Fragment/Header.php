@@ -1,12 +1,12 @@
 <div id='header-wrapper'>
 	<div id='header-title'>
-	<div class='XURL' data-target='root' id='header-slogan'>
-		<a id='header-slogan-href' href='/'>
+	<div id='header-slogan'>
+		<a id='header-slogan-href' class='content-link' href='/'>
 			<span id='header-slogan-text'>digital words</span>
 		</a>
 	</div>
-	<div class='XURL' data-target='root' id='header-logo'>
-		<a id='header-logo-image' href='/' class='header-logo image'>
+	<div id='header-logo'>
+		<a id='header-logo-image' class='content-link header-logo image' href='/'>
 			<?php includeSVG('', 'Logo_full'); ?>
 		</a>
 	</div>

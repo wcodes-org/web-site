@@ -24,7 +24,7 @@ media	Media	WCode in media	0	WCode in media
 patents	Patents	WCode patents	0	Patent cases associated with the WCode technology
 pitch	Pitch	WCode pitch	0	Pitch describing
 presentation	Presentation	WCode presentation	1	Slideshow - WCode introduction
-root	WCode	WCode	0	An encoding schema where in data is mapped to words
+root	WCode	WCode	0	An encoding schema where in data is mapped to words	EXTERNAL
 roadmap	Roadmap	WCode project roadmap	0	Future roadmap of features and implementations
 source_code	Source code	WCode source code	0	Source-code of WCode
 technology	Technology	WCode technology	0	The technical idea behind WCode

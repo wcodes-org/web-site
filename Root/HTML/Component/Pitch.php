@@ -9,7 +9,7 @@
 		<li>What if correct delivery is a matter of life and death?</li>
 	</ul>
 	<p>
-		<a class="content-link XURL" href="/" data-target="root" data-title=''>WCode</a> is the answer.
+		<a class="content-link XURL" href="/about" data-target="about" data-title='About'>WCode</a> is the answer.
 	</p>
 		<div class="center">
 		<div>

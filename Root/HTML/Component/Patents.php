@@ -2,7 +2,7 @@
 
 	<h2>History</h2>
 	<p>
-		I had invented and published the method and apparatus of transforming digital data into a sequence of literal words on my website <a class='content-link XURL' data-target='root' href='/'>wcodes.org</a> in late <a class='content-link' href='https://web.archive.org/web/20121019012050/wcodes.org'>2012 (Web archive snapshots available)</a>.
+		I had invented and published the method and apparatus of transforming digital data into a sequence of literal words on my website <a class='content-link XURL' data-target='about' href='/about'>wcodes.org</a> in late <a class='content-link' href='https://web.archive.org/web/20121019012050/wcodes.org'>2012 (Web archive snapshots available)</a>.
 	</p>
 	<p>
 		I created a video titled "WCode - introduction" and made it public on <a class='content-link' href='http://youtu.be/LfGeIWCeeKU?t=321'>YouTube</a> on April 10th - 2013.
