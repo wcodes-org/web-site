@@ -33,3 +33,19 @@ ul li span {
 .wcode {
 	font-size: larger;
 }
+
+/* Center complete and partial tile rows without invisible desktop spacers. */
+@media (max-width: 540px) {
+    #more .sidebar-nav-group.page-list,
+    #nav-menu .sidebar-nav-group.page-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    #more .sidebar-nav-group.page-list > .item_block-placeholder,
+    #nav-menu .sidebar-nav-group.page-list > .item_block-placeholder {
+        display: none !important;
+    }
+}
