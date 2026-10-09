@@ -1,12 +1,14 @@
 var wordListWhite;
 var wordListBlack;
-var wordEmojiMap = {};
+var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
 
 function wordlist() {
 	if(typeof wordListWhite == 'undefined')
 		wordListWhite = [];
 	if(typeof wordListBlack == 'undefined')
 		wordListBlack = [];
+	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
+		wordEmojiMap = {};
 	if(wordListWhite.length == 0) {
 		wordListWhite = loadWordlistWhite();
 		initloadWordlistBlack();
@@ -68,10 +70,14 @@ function getSecondary(parent) {
 }
 
 function getWords(child) {
+	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
+		wordEmojiMap = {};
 	var x = [];
 	var words = child.getElementsByClassName('word-item');
 	for(var i = 0; i < words.length; i++) {
 		var textEl = words[i].getElementsByClassName('word-text')[0];
+		if(!textEl)
+			continue;
 		var word = textEl.innerText;
 		x[i] = word;
 		var emojiEl = words[i].getElementsByClassName('word-emoji')[0];
@@ -82,6 +88,8 @@ function getWords(child) {
 }
 
 function createWordItem(word) {
+	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
+		wordEmojiMap = {};
 	var span = document.createElement('span');
 	span.setAttribute('class', 'word-item');
 	var emoji = document.createElement('span');
