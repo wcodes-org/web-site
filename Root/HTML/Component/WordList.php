@@ -147,7 +147,10 @@
 			-
 			<span id='wordlist-date'> May 18, 2019
 			<strong>
-				<a class='content-link' href='/wordlist.tsv' target='_blank'>[ .tsv ]</a>
+				<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>[ .tsv ]</a>
+				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>[ .json ]</a>
+				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>[ .txt ]</a>
+				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>[ .js ]</a>
 			</strong>
 		</div>
 	</div>
