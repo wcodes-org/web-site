@@ -133,19 +133,6 @@
 	</div>
 	</div>
 
-	<div class='description indent-f'>
-		<div class='no-margin'>
-		<p>WCodes are <strong>readable by humans</strong>. To decode data though, a computer is still required.</p>
-		<p>
-		For WCodes to be efficient: it is recommended that a set of 2<sup>n</sup> popular, unique and phonetically distinct nouns be used for the words of a WCode.<br>
-		See: <a class="content-link XURL" href='/wordlist' data-target='wordlist' data-title='Wordlist'>WordList</a> &amp; <a class="content-link XURL" href='/guidelines' data-target='guidelines' data-title='Guidelines'>Guidelines</a>
-			for details.
-		In the present implementation: 1K (i.e. 1024) words are used; as such,<br>
-		<span class='indent-c'>technically, it is a form of Base-1024 (or simply: Base-K) encoding.</span>
-		</p>
-		</div>
-	</div>
-	
 	<div id='apps'>
 		<h2><span class='bullet'>&#8226;</span><span class='key'>Apps</span></h2>
 		<?php group_image("page-list center", 2, ['app/location', 'wcodes.org', 'https://wcodes.org'], ['app/location', 'wolo.codes', 'https://wolo.codes']) ?>
@@ -159,7 +146,7 @@
 			$MENU_MAX_ITEM_COUNT = -5;
 			group_text($SIDEBAR_NAV_GROUP, $MENU_MAX_ITEM_COUNT, ['location', 'Location'], ['video', 'Video'], ['downloads', 'Downloads'], ['faq', 'FAQ'], ['in_pictures', 'In pictures'], ['pitch', 'Pitch'], ['use_cases', 'Use cases'], ['applications', 'Applications'], ['patents', 'Patents']);
 			group_text($SIDEBAR_NAV_GROUP, $MENU_MAX_ITEM_COUNT, ['adoption', 'Adoption'], ['bug_report', 'Bug report'], ['changelog', 'Changelog'], ['comparison', 'Comparison'], ['data_set', 'Data set'], ['features', 'Features'], ['feedback', 'Feedback'], ['guidelines', 'Guidelines'], ['implementations', 'Implementations'], ['license', 'License'], ['logo', 'Logo'], ['presentation', 'Presentation'], ['roadmap', 'Roadmap'], ['source_code', 'Source code'], ['technology', 'Technology'], ['timeline', 'Timeline'], ['user_guide', 'User guide'], ['wordlist', 'WordList']);
-			group_text($SIDEBAR_NAV_GROUP, $MENU_MAX_ITEM_COUNT, ['about_project', 'About project'], ['about_site', 'About site'], ['about_me', 'About me'], ['clientele', 'Clientele'], ['media', 'Media']);
+			group_text($SIDEBAR_NAV_GROUP, $MENU_MAX_ITEM_COUNT, ['about_concept', 'About concept'], ['about_project', 'About project'], ['about_site', 'About site'], ['about_me', 'About me'], ['clientele', 'Clientele'], ['media', 'Media']);
 ?>
 		</div>
 	</div>

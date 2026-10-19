@@ -1,0 +1,30 @@
+#comparison-table {
+	padding: 0 11px 0 0;
+	border-spacing: 4px 2px;
+}
+
+#comparison-table > caption {
+	text-align: left;
+}
+
+#comparison-table th {
+	text-align: left;
+	padding-right: 4px;
+	font-weight: normal;
+}
+
+#comparison-table td {
+	padding: 0 3px;
+}
+
+#comparison-table .t-type {
+	text-align: center;
+}
+
+#comparison-table .t-size {
+	text-align: center;
+}
+
+#comparison-table .description {
+	font-size: 14px;
+}
