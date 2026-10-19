@@ -1,24 +1,24 @@
 <div id='message'>
-	<h3 class='content-li-title'>with BarCodes (and QR Codes)</h3>
+	<h3 class='content-li-title'>with Barcodes &amp; QR Codes</h3>
 	<ul class='content-list-1'>
 		<li>
-			Can be read only by a machine
+			Barcodes and QR codes can be read only by machines; they cannot be spoken, memorized, or manually relayed by humans.
 		</li>
 		<li>
-			WCodes can be read by machines but it required system is more complex
+			WCodes can be read by machines, but the required optical or voice recognition system is more complex.
 		</li>
 		<li>
-			WCodes require have much larger footprints.
+			WCodes have a larger physical print footprint than dense 2D matrix codes.
 		</li>
 	</ul>
 	<h3 class='content-li-title'>with Spelling Alphabets</h3>
 	<ul class='content-list-1'>
 		<li>
 			Every word of a spelling alphabet represents only a single character of the original message.<br>
-			whereas a single word of a wcode can encode more than one character - and thus is shorter.
+			Whereas a single word of a WCode encodes 10 bits of data (more than one alphanumeric character) &mdash; making messages significantly shorter.
 		</li>
 		<li>
-			WCodes can represent binary data.
+			WCodes can represent arbitrary binary data directly.
 		</li>
 	</ul>
 </div>

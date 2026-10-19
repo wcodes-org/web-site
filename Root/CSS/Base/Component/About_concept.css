@@ -1,30 +1,289 @@
-#comparison-table {
-	padding: 0 11px 0 0;
-	border-spacing: 4px 2px;
+/* About Concept Component Styles */
+
+.concept-lead {
+	margin: 12px 0 24px;
+	padding: 14px 18px;
+	border-left: 4px solid #69b7cf;
+	background: #f8fafc;
+	border-radius: 0 8px 8px 0;
 }
 
-#comparison-table > caption {
-	text-align: left;
+.concept-lead .lead-statement {
+	font-size: 1.12em;
+	line-height: 1.5;
+	margin: 0 0 8px;
+	color: #2c3e50;
+}
+
+.concept-lead .lead-subtext {
+	font-size: 0.96em;
+	line-height: 1.5;
+	color: #555;
+	margin: 0;
+}
+
+/* Concept Showcase Card */
+.concept-card {
+	margin: 16px 0 28px;
+	padding: 20px 24px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.concept-card-row {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.concept-row-meta {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.badge-pill {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 0.82em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.badge-raw {
+	background: #e2e8f0;
+	color: #475569;
+}
+
+.badge-wcode {
+	background: #e0f2fe;
+	color: #0369a1;
+}
+
+.concept-token-count {
+	font-size: 0.88em;
+	color: #64748b;
+}
+
+.concept-data-box {
+	font-family: Consolas, 'Courier New', monospace;
+	font-size: 1.25em;
+	padding: 12px 16px;
+	border-radius: 6px;
+	margin: 4px 0;
+	letter-spacing: 0.06em;
+	word-break: break-all;
+}
+
+.code-digits {
+	background: #f1f5f9;
+	color: #334155;
+	border: 1px dashed #cbd5e1;
+}
+
+.code-words {
+	background: #f0fdf4;
+	color: #166534;
+	border: 1px solid #86efac;
+	font-weight: 600;
+}
+
+.code-words span {
+	color: #0369a1;
+}
+
+.concept-spoken-form {
+	font-size: 0.95em;
+	color: #475569;
+	font-style: italic;
+}
+
+.spoken-label {
+	font-weight: 600;
+	font-style: normal;
+	color: #64748b;
+	margin-right: 4px;
+}
+
+.concept-divider {
+	display: flex;
+	align-items: center;
+	margin: 16px 0;
+	gap: 12px;
+}
+
+.concept-divider-line {
+	flex: 1;
+	height: 1px;
+	background: #e2e8f0;
+}
+
+.concept-divider-badge {
+	font-size: 0.82em;
+	color: #94a3b8;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	padding: 2px 8px;
+	background: #f8fafc;
+	border-radius: 4px;
+}
+
+/* Comparison Table */
+.concept-table-wrap {
+	overflow-x: auto;
+	margin: 14px 0 26px;
+}
+
+#comparison-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95em;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 #comparison-table th {
+	background: #f8fafc;
+	color: #334155;
+	font-weight: 600;
 	text-align: left;
-	padding-right: 4px;
-	font-weight: normal;
+	padding: 10px 14px;
+	border-bottom: 2px solid #e2e8f0;
 }
 
 #comparison-table td {
-	padding: 0 3px;
+	padding: 10px 14px;
+	border-bottom: 1px solid #edf2f7;
+	color: #475569;
+	vertical-align: top;
+	line-height: 1.45;
 }
 
-#comparison-table .t-type {
-	text-align: center;
+#comparison-table tbody tr:hover {
+	background: #f8fafc;
 }
 
-#comparison-table .t-size {
-	text-align: center;
+#comparison-table tr.highlight-row {
+	background: #f0fdf4;
 }
 
-#comparison-table .description {
-	font-size: 14px;
+#comparison-table tr.highlight-row td {
+	color: #14532d;
+}
+
+.code-sym {
+	display: inline-block;
+	padding: 1px 6px;
+	background: #f1f5f9;
+	border-radius: 4px;
+	font-family: Consolas, 'Courier New', monospace;
+	font-weight: bold;
+	color: #0369a1;
+}
+
+/* Dark Mode Overrides */
+html.dark-mode .concept-lead {
+	background: #1e1e38;
+	border-left-color: #69b7cf;
+}
+
+html.dark-mode .concept-lead .lead-statement {
+	color: #e2e8f0;
+}
+
+html.dark-mode .concept-lead .lead-subtext {
+	color: #94a3b8;
+}
+
+html.dark-mode .concept-card {
+	background: #1e1e38;
+	border-color: #2e2e50;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+html.dark-mode .badge-raw {
+	background: #334155;
+	color: #cbd5e1;
+}
+
+html.dark-mode .badge-wcode {
+	background: #0c4a6e;
+	color: #7dd3fc;
+}
+
+html.dark-mode .concept-token-count {
+	color: #94a3b8;
+}
+
+html.dark-mode .code-digits {
+	background: #16162a;
+	color: #cbd5e1;
+	border-color: #334155;
+}
+
+html.dark-mode .code-words {
+	background: #162a22;
+	color: #86efac;
+	border-color: #15803d;
+}
+
+html.dark-mode .code-words span {
+	color: #7dd3fc;
+}
+
+html.dark-mode .concept-spoken-form {
+	color: #cbd5e1;
+}
+
+html.dark-mode .spoken-label {
+	color: #94a3b8;
+}
+
+html.dark-mode .concept-divider-line {
+	background: #2e2e50;
+}
+
+html.dark-mode .concept-divider-badge {
+	background: #16162a;
+	color: #64748b;
+}
+
+html.dark-mode #comparison-table {
+	background: #1e1e38;
+	border-color: #2e2e50;
+}
+
+html.dark-mode #comparison-table th {
+	background: #16162a;
+	color: #cbd5e1;
+	border-bottom-color: #2e2e50;
+}
+
+html.dark-mode #comparison-table td {
+	border-bottom-color: #2e2e50;
+	color: #cbd5e1;
+}
+
+html.dark-mode #comparison-table tbody tr:hover {
+	background: #252545;
+}
+
+html.dark-mode #comparison-table tr.highlight-row {
+	background: #162a22;
+}
+
+html.dark-mode #comparison-table tr.highlight-row td {
+	color: #86efac;
+}
+
+html.dark-mode .code-sym {
+	background: #2e2e50;
+	color: #7dd3fc;
 }
