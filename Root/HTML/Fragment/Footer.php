@@ -15,9 +15,6 @@
 	<div id='footer-wrapper-inside'>
 
 		<div>
-			<span id='download_button_bottom' class='grow'>
-				<a href='/downloads'><span class='image'><?php includeSVG('', 'Download'); ?></span></a>
-			</span>
 			<span id='download-android-bottom' class='download coming-soon'>
 				<span>to be announced</span>
 				<a class='content-link'><span class='image'><?php includeSVG('', 'Google-Play-badge'); ?></span></a>
