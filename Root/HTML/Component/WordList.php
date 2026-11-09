@@ -1,73 +1,5 @@
 <div id='message'>
-	<h3>Word selection criteria:</h3>
-	<ol class='indent-e'>
-		<li>
-			Nouns
-			<div class='content-li-example'>
-				e.g. 'Moon' against 'Run'
-			</div>
-		</li>
-		<li>
-			Preferabely: tangible, non-absract i.e. concrete &ndash; nouns.
-			<div class='content-li-example'>
-				e.g. 'Car' against 'Care'
-			</div>
-		</li>
-		<li>
-			Base, singular form of the word
-			<div class='content-li-example'>
-				e.g. 'Car' against 'Cars'
-			</div>
-		</li>
-		<li>
-			Popular
-			<div class='content-li-example'>
-				e.g. 'Car' against 'Tomahawk'
-			</div>
-		</li>
-		<li>
-			Simple pronounciation and spelling
-			<div class='content-li-example'>
-				e.g. 'Cat' against 'Penicillin'
-			</div>
-		</li>
-		<li>
-			Avoid words with spelling variantes<br>
-			<div class='content-li-example'>
-				e.g. 'Color' and 'Colour'
-			</div>
-		</li>
-		<li>
-			No compounded words
-			<div class='content-li-example'>
-				e.g. 'Volley-ball'
-			</div>
-		</li>
-		<li>
-			No immoral and objectionable words
-			<div class='content-li-example'>
-				e.g. 'Bomb' 'Dog' 'Pig'
-			</div>
-		</li>
-		<li>
-			Postive words over negative ones
-			<div class='content-li-example'>
-				e.g. 'Rise' instead of 'Fall'
-			</div>
-		</li>
-		<li>
-			No synonyms
-			<div class='content-li-example'>
-				e.g. 'Man' and 'Person'
-			</div>
-		</li>
-		<li>
-			Unique, distinct and no homophones
-			<div class='content-li-example'>
-				e.g. 'Apple' against 'Rose' and 'Rows'
-			</div>
-		</li>
-	</ol>
+	<?php require(__DIR__ . '/../Fragment/Wordlist_rules.php'); ?>
 	<br>
 	<h3>Wordlist</h3>
 	<div class='indent-c'>
@@ -143,14 +75,15 @@
 <?php } ?>
 	<div class='top-bottom-gap'>
 		<div id='wordlist-links'>
-			<span id='wordlist-version'> v 3</span>
+			<span id='wordlist-version'> v 4</span>
 			-
-			<span id='wordlist-date'> May 18, 2019
+			<span id='wordlist-date'> Nov 9, 2026
 			<strong>
 				<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>[ .tsv ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>[ .json ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>[ .txt ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>[ .js ]</a>
+				<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>[ versions ]</a>
 			</strong>
 		</div>
 	</div>
