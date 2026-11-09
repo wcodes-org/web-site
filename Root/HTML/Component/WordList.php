@@ -75,14 +75,15 @@
 <?php } ?>
 	<div class='top-bottom-gap'>
 		<div id='wordlist-links'>
-			<span id='wordlist-version'> v 3</span>
+			<span id='wordlist-version'> v 4</span>
 			-
-			<span id='wordlist-date'> May 18, 2019
+			<span id='wordlist-date'> Nov 9, 2026
 			<strong>
 				<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>[ .tsv ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>[ .json ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>[ .txt ]</a>
 				<a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>[ .js ]</a>
+				<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>[ versions ]</a>
 			</strong>
 		</div>
 	</div>
