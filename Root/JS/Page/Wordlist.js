@@ -3,6 +3,8 @@ var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
 var wordGreylistSet = wordGreylistSet || {};
 var wordBlacklistSet = wordBlacklistSet || {};
+var wordlistSearchMode = false;
+var wordlistSavedTabId = 'wordlist_white_tab';
 
 function loadWordlistMeta() {
 	var el = document.getElementById('wordlist-meta');
@@ -21,6 +23,10 @@ function wordItemClass(word, inDiscarded) {
 	if (wordBlacklistSet[word]) return 'word-item word-blacklist';
 	if (wordGreylistSet[word]) return 'word-item word-greylist';
 	return 'word-item word-whitelist';
+}
+
+function wordlistTabButtons() {
+	return Array.from(document.querySelectorAll('#wordlist_tabs > button'));
 }
 
 function wordlist() {
@@ -45,41 +51,253 @@ function bindWordlistTabs() {
 	if (!tabList || tabList.getAttribute('data-bound') === '1') return;
 	tabList.setAttribute('data-bound', '1');
 
-	const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
+	function tabs() {
+		return wordlistTabButtons().filter(function(tab) { return !tab.hidden; });
+	}
+
 	function selectTab(selectedTab) {
-		for (const tab of tabs) {
+		if (wordlistSearchMode) return;
+		wordlistTabButtons().forEach(function(tab) {
+			if (tab.id === 'wordlist_discarded_tab') return;
 			const selected = tab === selectedTab;
 			tab.setAttribute('aria-selected', String(selected));
 			tab.tabIndex = selected ? 0 : -1;
 			const panel = document.getElementById(tab.getAttribute('aria-controls'));
 			if (panel) panel.hidden = !selected;
-		}
+		});
+		wordlistSavedTabId = selectedTab.id;
 	}
 
-	tabs.forEach((tab, index) => {
-		tab.addEventListener('click', () => selectTab(tab));
-		tab.addEventListener('keydown', event => {
-			let nextIndex;
-			switch (event.key) {
-				case 'ArrowLeft': nextIndex = (index + tabs.length - 1) % tabs.length; break;
-				case 'ArrowRight': nextIndex = (index + 1) % tabs.length; break;
-				case 'Home': nextIndex = 0; break;
-				case 'End': nextIndex = tabs.length - 1; break;
-				default: return;
-			}
-			event.preventDefault();
-			selectTab(tabs[nextIndex]);
-			tabs[nextIndex].focus();
-		});
+	function activate(tab) {
+		if (wordlistSearchMode) jumpToSearchSection(tab);
+		else selectTab(tab);
+	}
+
+	tabList.addEventListener('click', function(event) {
+		const tab = event.target.closest('button');
+		if (!tab || !tabList.contains(tab) || tab.hidden) return;
+		activate(tab);
 	});
+
+	tabList.addEventListener('keydown', function(event) {
+		const visible = tabs();
+		const current = event.target.closest('button');
+		const index = visible.indexOf(current);
+		if (index < 0) return;
+		if (wordlistSearchMode && (event.key === 'Enter' || event.key === ' ')) {
+			event.preventDefault();
+			jumpToSearchSection(current);
+			return;
+		}
+		let nextIndex;
+		switch (event.key) {
+			case 'ArrowLeft': nextIndex = (index + visible.length - 1) % visible.length; break;
+			case 'ArrowRight': nextIndex = (index + 1) % visible.length; break;
+			case 'Home': nextIndex = 0; break;
+			case 'End': nextIndex = visible.length - 1; break;
+			default: return;
+		}
+		event.preventDefault();
+		if (wordlistSearchMode) visible[nextIndex].focus();
+		else {
+			selectTab(visible[nextIndex]);
+			visible[nextIndex].focus();
+		}
+	});
+}
+
+function jumpToSearchSection(tab) {
+	if (tab.getAttribute('aria-disabled') === 'true') return;
+	const id = tab.getAttribute('data-search-section');
+	const section = id && document.getElementById(id);
+	if (!section || section.hidden) return;
+	section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function enterSearchMode() {
+	wordlistSearchMode = true;
+	const tabList = document.getElementById('wordlist_tabs');
+	tabList.setAttribute('role', 'navigation');
+	tabList.setAttribute('aria-label', 'Search result sections');
+	document.getElementById('wordlist_search_results').hidden = false;
+	document.querySelector('.wordlist_tab_panels').hidden = true;
+	wordlistTabButtons().forEach(function(tab) {
+		if (tab.id === 'wordlist_discarded_tab') return;
+		tab.setAttribute('role', 'link');
+		tab.removeAttribute('aria-selected');
+		tab.removeAttribute('aria-controls');
+		tab.tabIndex = 0;
+	});
+}
+
+function exitSearchMode() {
+	const tabList = document.getElementById('wordlist_tabs');
+	const results = document.getElementById('wordlist_search_results');
+	const panels = document.querySelector('.wordlist_tab_panels');
+	wordlistSearchMode = false;
+	if (results) results.hidden = true;
+	if (panels) panels.hidden = false;
+	document.getElementById('wordlist_search_empty').hidden = true;
+	['white', 'grey', 'black', 'discarded'].forEach(function(name) {
+		const section = document.getElementById('wordlist_search_' + name);
+		if (section) section.hidden = true;
+	});
+	const discardedTab = document.getElementById('wordlist_discarded_tab');
+	const discardedSep = document.getElementById('wordlist_discarded_sep');
+	if (discardedTab) discardedTab.hidden = true;
+	if (discardedSep) discardedSep.hidden = true;
+	tabList.setAttribute('role', 'tablist');
+	tabList.setAttribute('aria-label', 'Wordlist');
+	wordlistTabButtons().forEach(function(tab) {
+		const label = tab.getAttribute('data-tab-label') || tab.id;
+		tab.textContent = label;
+		tab.removeAttribute('aria-disabled');
+		if (tab.id === 'wordlist_discarded_tab') {
+			tab.removeAttribute('role');
+			return;
+		}
+		tab.setAttribute('role', 'tab');
+		tab.setAttribute('aria-controls', tab.id.replace('_tab', '_panel'));
+	});
+	const saved = document.getElementById(wordlistSavedTabId) || document.getElementById('wordlist_white_tab');
+	wordlistTabButtons().forEach(function(tab) {
+		if (tab.id === 'wordlist_discarded_tab') return;
+		const selected = tab === saved;
+		tab.setAttribute('aria-selected', String(selected));
+		tab.tabIndex = selected ? 0 : -1;
+		const panel = document.getElementById(tab.getAttribute('aria-controls'));
+		if (panel) panel.hidden = !selected;
+	});
+}
+
+function setSearchTabLink(tab, count, show) {
+	const label = tab.getAttribute('data-tab-label') || tab.id;
+	tab.textContent = label + ' (' + count + ')';
+	if (!show) {
+		tab.hidden = true;
+		return;
+	}
+	tab.hidden = false;
+	if (count > 0) {
+		tab.removeAttribute('aria-disabled');
+		tab.tabIndex = 0;
+	} else {
+		tab.setAttribute('aria-disabled', 'true');
+		tab.tabIndex = 0;
+	}
+}
+
+function applyWordlistSearch(input) {
+	if (!wordlistSearchMode) enterSearchMode();
+
+	const whiteCount = renderWhiteSearch(input);
+	const greyCount = renderDocSearch('wordlist_grey_panel', 'wordlist_search_grey', input);
+	const blackCount = renderDocSearch('wordlist_black_panel', 'wordlist_search_black', input);
+	const discardedCount = renderDiscardedSearch(input);
+
+	setSearchTabLink(document.getElementById('wordlist_white_tab'), whiteCount, true);
+	setSearchTabLink(document.getElementById('wordlist_grey_tab'), greyCount, true);
+	setSearchTabLink(document.getElementById('wordlist_black_tab'), blackCount, true);
+
+	const discardedTab = document.getElementById('wordlist_discarded_tab');
+	const discardedSep = document.getElementById('wordlist_discarded_sep');
+	const showDiscarded = discardedCount > 0;
+	setSearchTabLink(discardedTab, discardedCount, showDiscarded);
+	if (discardedSep) discardedSep.hidden = !showDiscarded;
+	if (discardedTab) {
+		if (showDiscarded) discardedTab.setAttribute('role', 'link');
+		else discardedTab.removeAttribute('role');
+	}
+
+	const total = whiteCount + greyCount + blackCount + discardedCount;
+	document.getElementById('wordlist_search_empty').hidden = total > 0;
+
+	document.getElementById('wordlist_search_white').querySelector('h2').textContent = 'Whitelist (' + whiteCount + ')';
+	document.getElementById('wordlist_search_grey').querySelector('h2').textContent = 'Greylist (' + greyCount + ')';
+	document.getElementById('wordlist_search_black').querySelector('h2').textContent = 'Blacklist (' + blackCount + ')';
+	document.getElementById('wordlist_search_discarded').querySelector('h2').textContent = 'Discarded (' + discardedCount + ')';
+}
+
+function renderWhiteSearch(input) {
+	const section = document.getElementById('wordlist_search_white');
+	const body = section.querySelector('.wordlist-search-body');
+	const count = fillWordList(body, wordListWhite, input, false, 'wordlist-search-white');
+	section.hidden = count === 0;
+	return count;
+}
+
+function renderDiscardedSearch(input) {
+	const section = document.getElementById('wordlist_search_discarded');
+	const body = document.getElementById('wordlist-table-black');
+	if (!wordListBlack || !wordListBlack['Discarded']) {
+		section.hidden = true;
+		if (body) body.innerHTML = '';
+		return 0;
+	}
+	const count = fillWordList(body, wordListBlack, input, true, 'wordlist-table-black');
+	section.hidden = count === 0;
+	return count;
+}
+
+function docEntryMatches(li, input) {
+	const words = [];
+	li.querySelectorAll('.word-text').forEach(function(el) { words.push(el.textContent); });
+	if (typeof matchWord === 'function' && matchWord(words, input).length) return true;
+	if (input.length >= 2) {
+		const text = (li.textContent || '').toLowerCase();
+		if (text.indexOf(input.toLowerCase()) !== -1) return true;
+	}
+	return false;
+}
+
+function renderDocSearch(panelId, sectionId, input) {
+	const panel = document.getElementById(panelId);
+	const section = document.getElementById(sectionId);
+	const body = section.querySelector('.wordlist-search-body');
+	body.innerHTML = '';
+	let count = 0;
+	let heading = '';
+	let currentItems = [];
+
+	function flush() {
+		if (!currentItems.length) return;
+		if (heading) {
+			const h = document.createElement('h3');
+			h.textContent = heading;
+			body.appendChild(h);
+		}
+		const ul = document.createElement('ul');
+		ul.className = 'indent-e';
+		currentItems.forEach(function(li) { ul.appendChild(li.cloneNode(true)); });
+		body.appendChild(ul);
+		count += currentItems.length;
+		currentItems = [];
+	}
+
+	Array.prototype.forEach.call(panel.children, function(node) {
+		if (node.tagName === 'H3') {
+			flush();
+			heading = node.textContent;
+		} else if (node.tagName === 'UL') {
+			Array.prototype.forEach.call(node.children, function(li) {
+				if (li.tagName === 'LI' && docEntryMatches(li, input))
+					currentItems.push(li);
+			});
+		}
+	});
+	flush();
+	section.hidden = count === 0;
+	return count;
 }
 
 function clearWordListSearch() {
 	word_search_box.value = '';
-	setWordList(null, true);
-	document.getElementById('wordlist-table-black').innerText = '';
-	document.getElementById('wordlist-table-separator').classList.add('hide');
+	document.getElementById('wordlist-message').innerText = '';
 	document.getElementById('search_input_clear').classList.add('hide');
+	if (wordlistSearchMode) exitSearchMode();
+	setWordList(null, true);
+	var black = document.getElementById('wordlist-table-black');
+	if (black) black.innerText = '';
 }
 
 function loadWordlistWhite() {
@@ -97,12 +315,15 @@ function loadWordlistBlack(blackList) {
 	for(var i = 1; i < lines.length; i++) {
 		if(lines[i].length) {
 			var currentline = lines[i].split("\t");
-				if(currentline[3].length > 0)
+				if(currentline[3] && currentline[3].length > 0)
 					obj.push(currentline[3]);
 		}
 	}
 	wordListBlack['Discarded'] = [];
 	wordListBlack['Discarded']['*'] = obj;
+	if (wordlistSearchMode && word_search_box && word_search_box.value) {
+		applyWordlistSearch(word_search_box.value.toLowerCase());
+	}
 }
 
 function initloadWordlistBlack() {
@@ -151,7 +372,9 @@ function createWordItem(word, inDiscarded) {
 	span.setAttribute('class', wordItemClass(word, !!inDiscarded));
 	var emoji = document.createElement('span');
 	emoji.setAttribute('class', 'word-emoji');
-	emoji.innerText = wordEmojiMap[word] || '💬';
+	emoji.innerText = wordEmojiMap[word] || '';
+	if(!wordEmojiMap[word])
+		emoji.style.display = 'none';
 	var text = document.createElement('span');
 	text.setAttribute('class', 'word-text');
 	text.innerText = word;
@@ -160,30 +383,28 @@ function createWordItem(word, inDiscarded) {
 	return span;
 }
 
-function setWordList(matchString, white__black) {
-	var id;
-	var wordList;
-	if(white__black) {
-		id = 'wordlist-table-white';
-		wordList = wordListWhite;
-	}
-	else {
-		id = 'wordlist-table-black';
-		wordList = wordListBlack;
-	}
+function fillWordList(target, wordList, matchString, inDiscarded, id) {
 	var x = document.createElement('div');
+	if (id) x.setAttribute('id', id);
+	var count = 0;
 	for(var p in wordList) {
 		var primary = document.createElement('div');
 		primary.setAttribute('class', p === 'Greylist' ? 'primary greylist' : 'primary');
 		var primary_word = document.createElement('div');
+		primary_word.setAttribute('class', 'primary-word');
 		primary_word.innerText = p;
+		if (inDiscarded && p === 'Discarded')
+			primary_word.classList.add('hide');
 		primary.appendChild(primary_word);
 		var bAny = false;
 		for(var s in wordList[p]) {
 			var secondary = document.createElement('div');
 			secondary.setAttribute('class', 'secondary');
 			var secondary_word = document.createElement('div');
+			secondary_word.setAttribute('class', 'secondary-word');
 			secondary_word.innerText = s;
+			if (inDiscarded && s === '*')
+				secondary_word.classList.add('hide');
 			secondary.appendChild(secondary_word);
 			var div = document.createElement('div');
 			var subList = [];
@@ -192,7 +413,8 @@ function setWordList(matchString, white__black) {
 			else
 				subList = wordList[p][s];
 			for(var i in subList) {
-				div.appendChild(createWordItem(subList[i], !white__black));
+				div.appendChild(createWordItem(subList[i], inDiscarded));
+				count++;
 			}
 			secondary.appendChild(div);
 			primary.appendChild(secondary);
@@ -209,6 +431,19 @@ function setWordList(matchString, white__black) {
 			primary.classList.add('hide_display');
 		x.appendChild(primary);
 	}
-	x.setAttribute('id', id);
-	document.getElementById(id).replaceWith(x);
+	if (target.id && target.id === id) {
+		target.replaceWith(x);
+	} else {
+		target.innerHTML = '';
+		target.appendChild(x);
+	}
+	return count;
+}
+
+function setWordList(matchString, white__black) {
+	var id = white__black ? 'wordlist-table-white' : 'wordlist-table-black';
+	var wordList = white__black ? wordListWhite : wordListBlack;
+	var el = document.getElementById(id);
+	if (!el) return 0;
+	return fillWordList(el, wordList, matchString, !white__black, id);
 }

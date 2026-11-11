@@ -21,4 +21,9 @@
 		padding: 4px 6px;
 	}
 
+	.wordlist-search-section {
+		scroll-margin-top: 4.5rem;
+	}
+
 }
+
