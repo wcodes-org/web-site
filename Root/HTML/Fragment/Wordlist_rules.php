@@ -1,10 +1,10 @@
 <?php
 /*
- * Renders canonical wordlist docs (RULES.md, CANDIDATES.md from wcodes-org/wordlist).
+ * Renders canonical wordlist docs (RULES.md, GREYLIST.md, BLACKLIST.md from wcodes-org/wordlist).
  * Source order:
- *   1. WCODE_WORDLIST_RULES / WCODE_WORDLIST_CANDIDATES env vars (full path)
+ *   1. WCODE_WORDLIST_RULES / WCODE_WORDLIST_GREYLIST / WCODE_WORDLIST_BLACKLIST env vars (full path)
  *   2. Sibling checkout of the wordlist repo (D:\WCode\Wordlist\Project\ locally)
- *   3. Committed copy Root/File/Wordlist-rules.md or Wordlist-candidates.md
+ *   3. Committed copy Root/File/Wordlist-rules.md, Wordlist-greylist.md or Wordlist-blacklist.md
  *      (refresh with File/Sync-rules.ps1)
  * Only the small Markdown subset these docs use is supported:
  * ### headings, "1." ordered items, "-" bullets, follow-on lines (examples),
@@ -13,9 +13,17 @@
 function wordlistDocPath($name) {
 	$committed = array(
 		'RULES.md' => 'Wordlist-rules.md',
-		'CANDIDATES.md' => 'Wordlist-candidates.md'
+		'GREYLIST.md' => 'Wordlist-greylist.md',
+		'BLACKLIST.md' => 'Wordlist-blacklist.md',
+		'CANDIDATES.md' => 'Wordlist-greylist.md'
 	);
-	$envKey = ($name === 'CANDIDATES.md') ? 'WCODE_WORDLIST_CANDIDATES' : 'WCODE_WORDLIST_RULES';
+	$envKeys = array(
+		'RULES.md' => 'WCODE_WORDLIST_RULES',
+		'GREYLIST.md' => 'WCODE_WORDLIST_GREYLIST',
+		'BLACKLIST.md' => 'WCODE_WORDLIST_BLACKLIST',
+		'CANDIDATES.md' => 'WCODE_WORDLIST_GREYLIST'
+	);
+	$envKey = isset($envKeys[$name]) ? $envKeys[$name] : 'WCODE_WORDLIST_RULES';
 	$committedName = isset($committed[$name]) ? $committed[$name] : $name;
 	$candidates = array(
 		getenv($envKey),
@@ -44,22 +52,45 @@ function wordlistRulesInline($text) {
 	}, $text);
 }
 
-function wordlistCandidateInline($text, $emojiMap) {
+function wordlistWordClass($word, $greylist = array(), $blacklist = array()) {
+	if(isset($blacklist[$word]))
+		return 'word-item word-blacklist';
+	if(isset($greylist[$word]))
+		return 'word-item word-greylist';
+	return 'word-item word-whitelist';
+}
+
+function wordlistCandidateInline($text, $emojiMap, $greylist = array(), $blacklist = array()) {
 	$text = wordlistRulesInline($text);
-	if(!$emojiMap)
-		return $text;
-	return preg_replace_callback('/<code>([a-z]+)<\/code>/', function($m) use ($emojiMap) {
+	return preg_replace_callback('/<code>([a-z]+)<\/code>/', function($m) use ($emojiMap, $greylist, $blacklist) {
 		$w = $m[1];
-		if(!isset($emojiMap[$w]))
-			return $m[0];
-		$e = htmlspecialchars($emojiMap[$w], ENT_QUOTES, 'UTF-8');
-		return '<span class="word-item candidate-word"><span class="word-emoji">' . $e . '</span> <span class="word-text">' . $w . '</span></span>';
+		$class = wordlistWordClass($w, $greylist, $blacklist);
+		$chip = '<span class="' . $class . '">';
+		if($emojiMap && isset($emojiMap[$w]))
+			$chip .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$w], ENT_QUOTES, 'UTF-8') . '</span> ';
+		$chip .= '<span class="word-text">' . $w . '</span></span>';
+		return $chip;
 	}, $text);
 }
 
-function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null) {
-	$inline = function($text) use ($emojiMap) {
-		return $emojiMap ? wordlistCandidateInline($text, $emojiMap) : wordlistRulesInline($text);
+
+function wordlistListedWords($path) {
+	$words = array();
+	if(!$path || !is_file($path))
+		return $words;
+	foreach(preg_split('/\r\n|\r|\n/', file_get_contents($path)) as $line) {
+		if(preg_match('/^-\s+((?:`[a-z]+`(?:,\s*)?)+)/', $line, $m)) {
+			if(preg_match_all('/`([a-z]+)`/', $m[1], $wm))
+				foreach($wm[1] as $w)
+					$words[$w] = true;
+		}
+	}
+	return array_keys($words);
+}
+
+function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array()) {
+	$inline = function($text) use ($emojiMap, $greylist, $blacklist) {
+		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist) : wordlistRulesInline($text);
 	};
 	$lines = preg_split('/\r\n|\r|\n/', file_get_contents($path));
 	$out = array();

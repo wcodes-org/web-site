@@ -1,6 +1,27 @@
 var wordListWhite;
 var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
+var wordGreylistSet = wordGreylistSet || {};
+var wordBlacklistSet = wordBlacklistSet || {};
+
+function loadWordlistMeta() {
+	var el = document.getElementById('wordlist-meta');
+	if (!el || !el.textContent) return;
+	try {
+		var meta = JSON.parse(el.textContent);
+		wordGreylistSet = {};
+		wordBlacklistSet = {};
+		(meta.greylist || []).forEach(function(w) { wordGreylistSet[w] = true; });
+		(meta.blacklist || []).forEach(function(w) { wordBlacklistSet[w] = true; });
+	} catch (e) {}
+}
+
+function wordItemClass(word, inDiscarded) {
+	if (inDiscarded) return 'word-item word-blacklist';
+	if (wordBlacklistSet[word]) return 'word-item word-blacklist';
+	if (wordGreylistSet[word]) return 'word-item word-greylist';
+	return 'word-item word-whitelist';
+}
 
 function wordlist() {
 	if(typeof wordListWhite == 'undefined')
@@ -9,6 +30,7 @@ function wordlist() {
 		wordListBlack = [];
 	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
 		wordEmojiMap = {};
+	loadWordlistMeta();
 	if(wordListWhite.length == 0) {
 		wordListWhite = loadWordlistWhite();
 		initloadWordlistBlack();
@@ -122,11 +144,11 @@ function getWords(child) {
 	return x;
 }
 
-function createWordItem(word) {
+function createWordItem(word, inDiscarded) {
 	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
 		wordEmojiMap = {};
 	var span = document.createElement('span');
-	span.setAttribute('class', 'word-item');
+	span.setAttribute('class', wordItemClass(word, !!inDiscarded));
 	var emoji = document.createElement('span');
 	emoji.setAttribute('class', 'word-emoji');
 	emoji.innerText = wordEmojiMap[word] || '💬';
@@ -152,7 +174,7 @@ function setWordList(matchString, white__black) {
 	var x = document.createElement('div');
 	for(var p in wordList) {
 		var primary = document.createElement('div');
-		primary.setAttribute('class', 'primary');
+		primary.setAttribute('class', p === 'Greylist' ? 'primary greylist' : 'primary');
 		var primary_word = document.createElement('div');
 		primary_word.innerText = p;
 		primary.appendChild(primary_word);
@@ -170,7 +192,7 @@ function setWordList(matchString, white__black) {
 			else
 				subList = wordList[p][s];
 			for(var i in subList) {
-				div.appendChild(createWordItem(subList[i]));
+				div.appendChild(createWordItem(subList[i], !white__black));
 			}
 			secondary.appendChild(div);
 			primary.appendChild(secondary);

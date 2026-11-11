@@ -13,7 +13,6 @@
 #wordlist-table .word-item {
 	width: 140px;
 	display: inline-block;
-	color: #69b7cf;
 }
 
 #wordlist-table .word-emoji {
@@ -97,16 +96,55 @@
 	margin-bottom: 12px;
 }
 
+/* Word chips: colour is a property of the word, consistent across tabs */
+.word-item.word-whitelist {
+	color: #69b7cf;
+}
+.word-item.word-greylist {
+	color: #c49a6c;
+}
+.word-item.word-blacklist {
+	color: #d14b4b;
+}
+html.dark-mode .word-item.word-whitelist {
+	color: #69b7cf;
+}
+html.dark-mode .word-item.word-greylist {
+	color: #d4b483;
+}
+html.dark-mode .word-item.word-blacklist {
+	color: #f96969;
+}
+
+#wordlist-table-black .word-item,
 #wordlist-table-black span {
+	color: #d14b4b !important;
+}
+html.dark-mode #wordlist-table-black .word-item,
+html.dark-mode #wordlist-table-black span {
 	color: #f96969 !important;
+}
+
+/* Full-page-centered tab bar (not just the content column) */
+#message > #wordlist_tabs_wrap {
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: 0;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	position: relative;
 }
 
 #wordlist_tabs {
 	position: relative;
 	display: flex;
 	align-items: center;
-	gap: 4px;
-	padding-bottom: 5px;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 4px 8px;
+	padding: 0 12px 5px;
 	margin: 0 0 16px;
 }
 
@@ -117,7 +155,7 @@
 	left: 50%;
 	transform: translateX(-50%);
 	width: 100%;
-	max-width: 240px;
+	max-width: 320px;
 	height: 1px;
 	background: linear-gradient(to right, transparent, #69b7cf, transparent);
 }
@@ -128,23 +166,16 @@
 }
 
 #wordlist_tabs > button {
-	flex: 1 1 0;
+	flex: 0 0 auto;
 	min-width: 0;
-	padding: 4px 8px;
+	padding: 4px 10px;
 	border: 0;
 	background: transparent;
 	color: #767676;
 	font: inherit;
 	font-weight: bold;
 	cursor: pointer;
-}
-
-#wordlist_list_tab {
-	text-align: right;
-}
-
-#wordlist_review_tab {
-	text-align: left;
+	text-align: center;
 }
 
 #wordlist_tabs > button[aria-selected='true'] {
@@ -187,17 +218,18 @@ html.dark-mode #word_search_box::placeholder {
 	margin-top: 0.6rem;
 }
 
-#wordlist_review_panel .candidate-word {
+#wordlist_grey_panel .word-item,
+#wordlist_black_panel .word-item {
 	width: auto;
 	display: inline;
 	margin-right: 0.1em;
-	color: #69b7cf;
 }
 
-#wordlist_review_panel h3 {
+#wordlist_grey_panel h3,
+#wordlist_black_panel h3 {
 	margin-top: 1.4rem;
 }
 
-#wordlist-table-white .primary.under-review {
+#wordlist-table-white .primary.greylist {
 	margin-top: 1.6rem;
 }

@@ -1,16 +1,24 @@
 @media (max-width: 540px) {
-	
+
 	.primary {
 		margin-left: 0;
 		margin-top: 6px;
 	}
-	
+
 	.secondary {
 		margin-left: 10px;
 	}
-	
+
 	.primary .secondary > div > .word-item {
 		margin-left: 10px;
+	}
+
+	#wordlist_tabs {
+		gap: 2px 6px;
+	}
+
+	#wordlist_tabs > button {
+		padding: 4px 6px;
 	}
 
 }

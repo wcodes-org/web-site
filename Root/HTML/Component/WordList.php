@@ -1,12 +1,16 @@
 <div id='message'>
-	<div id='wordlist_tabs' role='tablist' aria-label='Wordlist'>
-		<button id='wordlist_list_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_list_panel'>Word list</button>
-		<span aria-hidden='true'>|</span>
-		<button id='wordlist_review_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_review_panel' tabindex='-1'>Under review</button>
+	<div id='wordlist_tabs_wrap'>
+		<div id='wordlist_tabs' role='tablist' aria-label='Wordlist'>
+			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_white_panel'>Whitelist</button>
+			<span aria-hidden='true'>|</span>
+			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1'>Greylist</button>
+			<span aria-hidden='true'>|</span>
+			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1'>Blacklist</button>
+		</div>
 	</div>
 
 	<div class='wordlist_tab_panels'>
-		<div id='wordlist_list_panel' role='tabpanel' aria-labelledby='wordlist_list_tab' tabindex='0'>
+		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
 			</div>
@@ -25,9 +29,17 @@
 						return (explode("\t", $v));
 					}, $lines);
 					$emojiMap = json_decode(file_get_contents('../../File/Wordlist-emoji.json'), true);
-					function renderWordItem($word, $emojiMap) {
-						$emoji = isset($emojiMap[$word]) ? $emojiMap[$word] : '??';
-						echo '<span class="word-item"><span class="word-emoji">' . $emoji . '</span><span class="word-text">' . $word . '</span></span>';
+					$greylistFile = wordlistDocPath('GREYLIST.md');
+					$blacklistFile = wordlistDocPath('BLACKLIST.md');
+					$greylistSet = array_fill_keys(wordlistListedWords($greylistFile), true);
+					$blacklistSet = array_fill_keys(wordlistListedWords($blacklistFile), true);
+					function renderWordItem($word, $emojiMap, $greylistSet, $blacklistSet) {
+						$class = wordlistWordClass($word, $greylistSet, $blacklistSet);
+						$html = '<span class="' . $class . '">';
+						if(isset($emojiMap[$word]))
+							$html .= '<span class="word-emoji">' . $emojiMap[$word] . '</span>';
+						$html .= '<span class="word-text">' . $word . '</span></span>';
+						echo $html;
 					}
 					$bPrimaryCat = false;
 					$bSecondaryCat = false;
@@ -45,7 +57,7 @@
 								<?php $bSecondaryCat = false;
 							}
 							$primaryName = $arWord[$i][1];
-							$primaryClass = (strcasecmp(trim($primaryName), 'Under review') === 0) ? "primary under-review" : 'primary';
+							$primaryClass = (strcasecmp(trim($primaryName), 'Greylist') === 0) ? "primary greylist" : 'primary';
 							?>
 								<div class='<?php echo $primaryClass ?>'><div class='primary-word'><?php echo $primaryName ?></div>
 						<?php }
@@ -60,15 +72,15 @@
 						<?php }
 						if($arWord[$i][3] != NULL) {
 								$totalCount++;
-								renderWordItem($arWord[$i][3], $emojiMap);
+								renderWordItem($arWord[$i][3], $emojiMap, $greylistSet, $blacklistSet);
 						}
 						if($arWord[$i][4] != NULL) {
 								$totalCount++;
-								renderWordItem($arWord[$i][4], $emojiMap);
+								renderWordItem($arWord[$i][4], $emojiMap, $greylistSet, $blacklistSet);
 						}
 						if($arWord[$i][5] != NULL) {
 								$totalCount++;
-								renderWordItem($arWord[$i][5], $emojiMap);
+								renderWordItem($arWord[$i][5], $emojiMap, $greylistSet, $blacklistSet);
 						}
 					}
 				?>
@@ -96,16 +108,25 @@
 			</div>
 		</div>
 
-		<div id='wordlist_review_panel' role='tabpanel' aria-labelledby='wordlist_review_tab' tabindex='0' hidden>
+		<div id='wordlist_grey_panel' role='tabpanel' aria-labelledby='wordlist_grey_tab' tabindex='0' hidden>
 			<?php
-				$candidatesFile = wordlistDocPath('CANDIDATES.md');
-				if($candidatesFile)
-					echo renderWordlistMarkdown($candidatesFile, false, $emojiMap);
+				if($greylistFile)
+					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet);
 				else
-					echo "<p class='indent-c'>Under review: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/CANDIDATES.md' target='_blank'>CANDIDATES.md</a></p>";
+					echo "<p class='indent-c'>Greylist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/GREYLIST.md' target='_blank'>GREYLIST.md</a></p>";
+			?>
+		</div>
+
+		<div id='wordlist_black_panel' role='tabpanel' aria-labelledby='wordlist_black_tab' tabindex='0' hidden>
+			<?php
+				if($blacklistFile)
+					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylistSet, $blacklistSet);
+				else
+					echo "<p class='indent-c'>Blacklist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/BLACKLIST.md' target='_blank'>BLACKLIST.md</a></p>";
 			?>
 		</div>
 	</div>
+	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet))); ?></script>
 
 	<div id='wordlist_docs'>
 		<?php
