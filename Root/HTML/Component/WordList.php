@@ -14,8 +14,6 @@
 			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1' data-tab-label='Greylist' data-search-section='wordlist_search_grey'>Greylist</button>
 			<span aria-hidden='true'>|</span>
 			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1' data-tab-label='Blacklist' data-search-section='wordlist_search_black'>Blacklist</button>
-			<span id='wordlist_discarded_sep' aria-hidden='true' hidden>|</span>
-			<button id='wordlist_discarded_tab' type='button' hidden data-tab-label='Discarded' data-search-section='wordlist_search_discarded'>Discarded</button>
 		</div>
 	</div>
 
@@ -125,6 +123,10 @@
 					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylistSet, $blacklistSet);
 				else
 					echo "<p class='indent-c'>Blacklist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/BLACKLIST.md' target='_blank'>BLACKLIST.md</a></p>";
+				$rejectlistFile = wordlistRejectlistPath();
+				$rejectlistRows = wordlistReadRejectlist($rejectlistFile);
+				if($rejectlistRows)
+					echo renderWordlistRejectlistWords($rejectlistRows, $emojiMap);
 			?>
 		</div>
 	</div>
@@ -141,11 +143,6 @@
 		<section id='wordlist_search_black' class='wordlist-search-section' hidden>
 			<h2>Blacklist</h2>
 			<div class='wordlist-search-body'></div>
-		</section>
-		<section id='wordlist_search_discarded' class='wordlist-search-section' hidden>
-			<h2>Discarded</h2>
-			<p class='indent-c wordlist-search-note'>Words considered for the list and not used. This historical discarded list is separate from the Blacklist (retired words and never-allowed NATO words).</p>
-			<div class='wordlist-search-body indent-c' id='wordlist-table-black'></div>
 		</section>
 	</div>
 	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet))); ?></script>

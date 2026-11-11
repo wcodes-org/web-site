@@ -3,6 +3,7 @@ var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
 var wordGreylistSet = wordGreylistSet || {};
 var wordBlacklistSet = wordBlacklistSet || {};
+var wordListRejectReasons = wordListRejectReasons || {};
 var wordlistSearchMode = false;
 var wordlistSavedTabId = 'wordlist_white_tab';
 
@@ -58,7 +59,6 @@ function bindWordlistTabs() {
 	function selectTab(selectedTab) {
 		if (wordlistSearchMode) return;
 		wordlistTabButtons().forEach(function(tab) {
-			if (tab.id === 'wordlist_discarded_tab') return;
 			const selected = tab === selectedTab;
 			tab.setAttribute('aria-selected', String(selected));
 			tab.tabIndex = selected ? 0 : -1;
@@ -122,7 +122,6 @@ function enterSearchMode() {
 	document.getElementById('wordlist_search_results').hidden = false;
 	document.querySelector('.wordlist_tab_panels').hidden = true;
 	wordlistTabButtons().forEach(function(tab) {
-		if (tab.id === 'wordlist_discarded_tab') return;
 		tab.setAttribute('role', 'link');
 		tab.removeAttribute('aria-selected');
 		tab.removeAttribute('aria-controls');
@@ -138,30 +137,21 @@ function exitSearchMode() {
 	if (results) results.hidden = true;
 	if (panels) panels.hidden = false;
 	document.getElementById('wordlist_search_empty').hidden = true;
-	['white', 'grey', 'black', 'discarded'].forEach(function(name) {
+	['white', 'grey', 'black'].forEach(function(name) {
 		const section = document.getElementById('wordlist_search_' + name);
 		if (section) section.hidden = true;
 	});
-	const discardedTab = document.getElementById('wordlist_discarded_tab');
-	const discardedSep = document.getElementById('wordlist_discarded_sep');
-	if (discardedTab) discardedTab.hidden = true;
-	if (discardedSep) discardedSep.hidden = true;
 	tabList.setAttribute('role', 'tablist');
 	tabList.setAttribute('aria-label', 'Wordlist');
 	wordlistTabButtons().forEach(function(tab) {
 		const label = tab.getAttribute('data-tab-label') || tab.id;
 		tab.textContent = label;
 		tab.removeAttribute('aria-disabled');
-		if (tab.id === 'wordlist_discarded_tab') {
-			tab.removeAttribute('role');
-			return;
-		}
 		tab.setAttribute('role', 'tab');
 		tab.setAttribute('aria-controls', tab.id.replace('_tab', '_panel'));
 	});
 	const saved = document.getElementById(wordlistSavedTabId) || document.getElementById('wordlist_white_tab');
 	wordlistTabButtons().forEach(function(tab) {
-		if (tab.id === 'wordlist_discarded_tab') return;
 		const selected = tab === saved;
 		tab.setAttribute('aria-selected', String(selected));
 		tab.tabIndex = selected ? 0 : -1;
@@ -170,13 +160,9 @@ function exitSearchMode() {
 	});
 }
 
-function setSearchTabLink(tab, count, show) {
+function setSearchTabLink(tab, count) {
 	const label = tab.getAttribute('data-tab-label') || tab.id;
-	tab.textContent = label + ' (' + count + ')';
-	if (!show) {
-		tab.hidden = true;
-		return;
-	}
+	tab.textContent = label;
 	tab.hidden = false;
 	if (count > 0) {
 		tab.removeAttribute('aria-disabled');
@@ -192,30 +178,25 @@ function applyWordlistSearch(input) {
 
 	const whiteCount = renderWhiteSearch(input);
 	const greyCount = renderDocSearch('wordlist_grey_panel', 'wordlist_search_grey', input);
-	const blackCount = renderDocSearch('wordlist_black_panel', 'wordlist_search_black', input);
-	const discardedCount = renderDiscardedSearch(input);
+	const blackDocCount = renderDocSearch('wordlist_black_panel', 'wordlist_search_black', input);
+	const rejectCount = renderRejectlistSearch(input);
+	const blackCount = blackDocCount + rejectCount;
 
-	setSearchTabLink(document.getElementById('wordlist_white_tab'), whiteCount, true);
-	setSearchTabLink(document.getElementById('wordlist_grey_tab'), greyCount, true);
-	setSearchTabLink(document.getElementById('wordlist_black_tab'), blackCount, true);
+	setSearchTabLink(document.getElementById('wordlist_white_tab'), whiteCount);
+	setSearchTabLink(document.getElementById('wordlist_grey_tab'), greyCount);
+	setSearchTabLink(document.getElementById('wordlist_black_tab'), blackCount);
 
-	const discardedTab = document.getElementById('wordlist_discarded_tab');
-	const discardedSep = document.getElementById('wordlist_discarded_sep');
-	const showDiscarded = discardedCount > 0;
-	setSearchTabLink(discardedTab, discardedCount, showDiscarded);
-	if (discardedSep) discardedSep.hidden = !showDiscarded;
-	if (discardedTab) {
-		if (showDiscarded) discardedTab.setAttribute('role', 'link');
-		else discardedTab.removeAttribute('role');
-	}
+	const greySection = document.getElementById('wordlist_search_grey');
+	if (greySection) greySection.hidden = greyCount === 0;
+	const blackSection = document.getElementById('wordlist_search_black');
+	if (blackSection) blackSection.hidden = blackCount === 0;
 
-	const total = whiteCount + greyCount + blackCount + discardedCount;
+	const total = whiteCount + greyCount + blackCount;
 	document.getElementById('wordlist_search_empty').hidden = total > 0;
 
-	document.getElementById('wordlist_search_white').querySelector('h2').textContent = 'Whitelist (' + whiteCount + ')';
-	document.getElementById('wordlist_search_grey').querySelector('h2').textContent = 'Greylist (' + greyCount + ')';
-	document.getElementById('wordlist_search_black').querySelector('h2').textContent = 'Blacklist (' + blackCount + ')';
-	document.getElementById('wordlist_search_discarded').querySelector('h2').textContent = 'Discarded (' + discardedCount + ')';
+	document.getElementById('wordlist_search_white').querySelector('h2').textContent = 'Whitelist';
+	document.getElementById('wordlist_search_grey').querySelector('h2').textContent = 'Greylist';
+	document.getElementById('wordlist_search_black').querySelector('h2').textContent = 'Blacklist';
 }
 
 function renderWhiteSearch(input) {
@@ -226,17 +207,42 @@ function renderWhiteSearch(input) {
 	return count;
 }
 
-function renderDiscardedSearch(input) {
-	const section = document.getElementById('wordlist_search_discarded');
-	const body = document.getElementById('wordlist-table-black');
-	if (!wordListBlack || !wordListBlack['Discarded']) {
-		section.hidden = true;
-		if (body) body.innerHTML = '';
-		return 0;
+function rejectlistEntryMatches(word, reason, input) {
+	if (typeof matchWord === 'function' && matchWord([word], input).length) return true;
+	if (input.length >= 2 && reason && reason.toLowerCase().indexOf(input.toLowerCase()) !== -1)
+		return true;
+	return false;
+}
+
+function renderRejectlistSearch(input) {
+	const body = document.querySelector('#wordlist_search_black .wordlist-search-body');
+	if (!body) return 0;
+	const group = wordListBlack && (wordListBlack['Rejectlist'] || wordListBlack['Discarded']);
+	const words = group && group['*'] ? group['*'] : [];
+	const matches = [];
+	for (let i = 0; i < words.length; i++) {
+		const word = words[i];
+		const reason = (wordListRejectReasons && wordListRejectReasons[word]) || '';
+		if (rejectlistEntryMatches(word, reason, input))
+			matches.push({ word: word, reason: reason });
 	}
-	const count = fillWordList(body, wordListBlack, input, true, 'wordlist-table-black');
-	section.hidden = count === 0;
-	return count;
+	if (!matches.length) return 0;
+	const heading = document.createElement('h3');
+	heading.textContent = 'Rejectlist';
+	body.appendChild(heading);
+	const wrap = document.createElement('div');
+	wrap.className = 'wordlist-rejectlist-words indent-c';
+	matches.forEach(function(item) {
+		wrap.appendChild(createWordItem(item.word, true, item.reason));
+		if (item.reason) {
+			const reasonEl = document.createElement('span');
+			reasonEl.className = 'word-reject-reason';
+			reasonEl.textContent = ' — ' + item.reason;
+			wrap.appendChild(reasonEl);
+		}
+	});
+	body.appendChild(wrap);
+	return matches.length;
 }
 
 function docEntryMatches(li, input) {
@@ -286,7 +292,6 @@ function renderDocSearch(panelId, sectionId, input) {
 		}
 	});
 	flush();
-	section.hidden = count === 0;
 	return count;
 }
 
@@ -296,8 +301,6 @@ function clearWordListSearch() {
 	document.getElementById('search_input_clear').classList.add('hide');
 	if (wordlistSearchMode) exitSearchMode();
 	setWordList(null, true);
-	var black = document.getElementById('wordlist-table-black');
-	if (black) black.innerText = '';
 }
 
 function loadWordlistWhite() {
@@ -309,24 +312,54 @@ function loadWordlistWhite() {
 	return x;
 }
 
+function adoptRejectlist(words, reasons) {
+	wordListBlack = wordListBlack || [];
+	wordListBlack['Rejectlist'] = [];
+	wordListBlack['Rejectlist']['*'] = words || [];
+	wordListRejectReasons = reasons || {};
+	if (wordlistSearchMode && word_search_box && word_search_box.value)
+		applyWordlistSearch(word_search_box.value.toLowerCase());
+}
+
+function loadRejectlistFromDom() {
+	var root = document.getElementById('wordlist_rejectlist_words');
+	if (!root) return false;
+	var items = root.getElementsByClassName('word-item');
+	if (!items.length) return false;
+	var words = [];
+	var reasons = {};
+	for (var i = 0; i < items.length; i++) {
+		var textEl = items[i].getElementsByClassName('word-text')[0];
+		if (!textEl) continue;
+		var word = textEl.textContent;
+		words.push(word);
+		var reason = items[i].getAttribute('data-reason');
+		if (reason) reasons[word] = reason;
+	}
+	adoptRejectlist(words, reasons);
+	return true;
+}
+
 function loadWordlistBlack(blackList) {
 	var lines = blackList.split("\n");
 	var obj = [];
+	var reasons = {};
 	for(var i = 1; i < lines.length; i++) {
 		if(lines[i].length) {
 			var currentline = lines[i].split("\t");
-				if(currentline[3] && currentline[3].length > 0)
-					obj.push(currentline[3]);
+			if(currentline[3] && currentline[3].length > 0) {
+				var word = currentline[3].trim();
+				obj.push(word);
+				if (currentline[4] && currentline[4].trim())
+					reasons[word] = currentline[4].trim();
+			}
 		}
 	}
-	wordListBlack['Discarded'] = [];
-	wordListBlack['Discarded']['*'] = obj;
-	if (wordlistSearchMode && word_search_box && word_search_box.value) {
-		applyWordlistSearch(word_search_box.value.toLowerCase());
-	}
+	adoptRejectlist(obj, reasons);
 }
 
 function initloadWordlistBlack() {
+	if (loadRejectlistFromDom()) return;
 	var xobj = new XMLHttpRequest();
 	xobj.overrideMimeType("text/pain");
 	xobj.open('GET', "/wordlist-black.tsv", true);
@@ -365,11 +398,15 @@ function getWords(child) {
 	return x;
 }
 
-function createWordItem(word, inDiscarded) {
+function createWordItem(word, inDiscarded, reason) {
 	if(typeof wordEmojiMap == 'undefined' || !wordEmojiMap)
 		wordEmojiMap = {};
 	var span = document.createElement('span');
 	span.setAttribute('class', wordItemClass(word, !!inDiscarded));
+	if (reason) {
+		span.setAttribute('data-reason', reason);
+		span.setAttribute('title', reason);
+	}
 	var emoji = document.createElement('span');
 	emoji.setAttribute('class', 'word-emoji');
 	emoji.innerText = wordEmojiMap[word] || '';

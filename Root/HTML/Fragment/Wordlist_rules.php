@@ -15,13 +15,15 @@ function wordlistDocPath($name) {
 		'RULES.md' => 'Wordlist-rules.md',
 		'GREYLIST.md' => 'Wordlist-greylist.md',
 		'BLACKLIST.md' => 'Wordlist-blacklist.md',
-		'CANDIDATES.md' => 'Wordlist-greylist.md'
+		'CANDIDATES.md' => 'Wordlist-greylist.md',
+		'Wordlist-black.tsv' => 'Wordlist-black.tsv'
 	);
 	$envKeys = array(
 		'RULES.md' => 'WCODE_WORDLIST_RULES',
 		'GREYLIST.md' => 'WCODE_WORDLIST_GREYLIST',
 		'BLACKLIST.md' => 'WCODE_WORDLIST_BLACKLIST',
-		'CANDIDATES.md' => 'WCODE_WORDLIST_GREYLIST'
+		'CANDIDATES.md' => 'WCODE_WORDLIST_GREYLIST',
+		'Wordlist-black.tsv' => 'WCODE_WORDLIST_BLACK_TSV'
 	);
 	$envKey = isset($envKeys[$name]) ? $envKeys[$name] : 'WCODE_WORDLIST_RULES';
 	$committedName = isset($committed[$name]) ? $committed[$name] : $name;
@@ -39,6 +41,51 @@ function wordlistDocPath($name) {
 function wordlistRulesPath() {
 	return wordlistDocPath('RULES.md');
 }
+
+function wordlistRejectlistPath() {
+	return wordlistDocPath('Wordlist-black.tsv');
+}
+
+function wordlistReadRejectlist($path) {
+	$rows = array();
+	if(!$path || !is_file($path))
+		return $rows;
+	$lines = file($path, FILE_IGNORE_NEW_LINES);
+	if($lines === false)
+		return $rows;
+	for($i = 1; $i < count($lines); $i++) {
+		if($lines[$i] === '')
+			continue;
+		$cols = explode("\t", $lines[$i]);
+		$word = isset($cols[3]) ? trim($cols[3]) : '';
+		if($word === '')
+			continue;
+		$remark = isset($cols[4]) ? trim($cols[4]) : '';
+		$rows[] = array('word' => $word, 'remark' => $remark);
+	}
+	return $rows;
+}
+
+function renderWordlistRejectlistWords($rows, $emojiMap = array()) {
+	$html = "<div id='wordlist_rejectlist_words' class='wordlist-rejectlist-words indent-c'>";
+	foreach($rows as $row) {
+		$word = $row['word'];
+		$remark = $row['remark'];
+		$html .= '<span class="word-item word-blacklist"';
+		if($remark !== '')
+			$html .= ' data-reason="' . htmlspecialchars($remark, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($remark, ENT_QUOTES, 'UTF-8') . '"';
+		$html .= '>';
+		if(isset($emojiMap[$word]))
+			$html .= '<span class="word-emoji">' . $emojiMap[$word] . '</span>';
+		$html .= '<span class="word-text">' . htmlspecialchars($word, ENT_QUOTES, 'UTF-8') . '</span></span>';
+		if($remark !== '')
+			$html .= '<span class="word-reject-reason"> — ' . htmlspecialchars($remark, ENT_QUOTES, 'UTF-8') . '</span>';
+	}
+	$html .= '</div>';
+	return $html;
+}
+
+
 
 function wordlistRulesInline($text) {
 	$text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');

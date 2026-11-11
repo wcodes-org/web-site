@@ -302,3 +302,21 @@ html.dark-mode #word_search_box::placeholder {
 #wordlist_search_empty {
 	margin-top: 1rem;
 }
+
+#wordlist_rejectlist_words,
+#wordlist_search_black .wordlist-rejectlist-words {
+	margin-top: 0.6rem;
+	margin-bottom: 1.2rem;
+}
+
+#wordlist_black_panel #wordlist_rejectlist_words .word-item,
+#wordlist_search_black .wordlist-rejectlist-words .word-item {
+	width: 140px;
+	display: inline-block;
+	margin: 0 0 2px 0;
+}
+
+.word-reject-reason {
+	margin-right: 0.8em;
+	color: inherit;
+}
