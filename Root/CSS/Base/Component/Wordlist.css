@@ -97,14 +97,107 @@
 	margin-bottom: 12px;
 }
 
-#wordlist-table-white > div:nth-child(2) * {
-	color: #aaa !important;
-}
-
-#wordlist-table-white > div:first-child * {
-	color: #93b04b !important;
-}
-
 #wordlist-table-black span {
 	color: #f96969 !important;
+}
+
+#wordlist_tabs {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding-bottom: 5px;
+	margin: 0 0 16px;
+}
+
+#wordlist_tabs::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 100%;
+	max-width: 240px;
+	height: 1px;
+	background: linear-gradient(to right, transparent, #69b7cf, transparent);
+}
+
+#wordlist_tabs > span {
+	flex: 0 0 auto;
+	color: #767676;
+}
+
+#wordlist_tabs > button {
+	flex: 1 1 0;
+	min-width: 0;
+	padding: 4px 8px;
+	border: 0;
+	background: transparent;
+	color: #767676;
+	font: inherit;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+#wordlist_list_tab {
+	text-align: right;
+}
+
+#wordlist_review_tab {
+	text-align: left;
+}
+
+#wordlist_tabs > button[aria-selected='true'] {
+	color: #28768e;
+}
+
+html.dark-mode #wordlist_tabs > button,
+html.dark-mode #wordlist_tabs > span {
+	color: #a0a0a0;
+}
+
+html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
+	color: #69b7cf;
+}
+
+html.dark-mode #word_search_box {
+	background-color: #1a1a2e;
+	color: #69b7cf;
+	border-color: #444;
+}
+
+html.dark-mode #word_search_box::placeholder {
+	color: #666;
+}
+
+#wordlist_docs {
+	margin-top: 2rem;
+}
+
+#wordlist_docs details {
+	margin: 0.55rem 0;
+}
+
+#wordlist_docs summary {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+#wordlist_docs details > .indent-c {
+	margin-top: 0.6rem;
+}
+
+#wordlist_review_panel .candidate-word {
+	width: auto;
+	display: inline;
+	margin-right: 0.1em;
+	color: #69b7cf;
+}
+
+#wordlist_review_panel h3 {
+	margin-top: 1.4rem;
+}
+
+#wordlist-table-white .primary.under-review {
+	margin-top: 1.6rem;
 }

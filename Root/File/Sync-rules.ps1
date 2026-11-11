@@ -1,9 +1,14 @@
 # Refreshes the committed copies of the canonical wordlist files (wcodes-org/wordlist):
-#   RULES.md -> Wordlist-rules.md, Wordlist.tsv -> Wordlist.tsv (categorized list shown on /wordlist)
-# Run after RULES.md or Wordlist.tsv changes in the wordlist repo. Uses the sibling checkout
-# (D:\WCode\Wordlist\Project) when present, otherwise GitHub main.
+#   RULES.md -> Wordlist-rules.md, CANDIDATES.md -> Wordlist-candidates.md,
+#   Wordlist.tsv -> Wordlist.tsv (categorized list shown on /wordlist)
+# Run after RULES.md, CANDIDATES.md or Wordlist.tsv changes in the wordlist repo.
+# Uses the sibling checkout (D:\WCode\Wordlist\Project) when present, otherwise GitHub main.
 $repo = Join-Path $PSScriptRoot '..\..\..\..\..\..\Wordlist\Project'
-$files = @{ 'RULES.md' = 'Wordlist-rules.md'; 'Wordlist.tsv' = 'Wordlist.tsv' }
+$files = @{
+	'RULES.md' = 'Wordlist-rules.md'
+	'CANDIDATES.md' = 'Wordlist-candidates.md'
+	'Wordlist.tsv' = 'Wordlist.tsv'
+}
 foreach ($name in $files.Keys) {
 	$target = Join-Path $PSScriptRoot $files[$name]
 	$source = Join-Path $repo $name
