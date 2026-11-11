@@ -1,11 +1,21 @@
 <div id='message'>
+	<div id='wordlist_search_wrap'>
+		<div class='center' id='wordlist_search'>
+			<span id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
+			<input id='word_search_box' type='text' placeholder="&nbsp;&nbsp;search ( 'space' clears )" autocomplete='off' spellcheck='false'>
+			<span class='hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
+		</div>
+		<div id='wordlist-message'></div>
+	</div>
 	<div id='wordlist_tabs_wrap'>
 		<div id='wordlist_tabs' role='tablist' aria-label='Wordlist'>
-			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_white_panel'>Whitelist</button>
+			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_white_panel' data-tab-label='Whitelist' data-search-section='wordlist_search_white'>Whitelist</button>
 			<span aria-hidden='true'>|</span>
-			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1'>Greylist</button>
+			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1' data-tab-label='Greylist' data-search-section='wordlist_search_grey'>Greylist</button>
 			<span aria-hidden='true'>|</span>
-			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1'>Blacklist</button>
+			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1' data-tab-label='Blacklist' data-search-section='wordlist_search_black'>Blacklist</button>
+			<span id='wordlist_discarded_sep' aria-hidden='true' hidden>|</span>
+			<button id='wordlist_discarded_tab' type='button' hidden data-tab-label='Discarded' data-search-section='wordlist_search_discarded'>Discarded</button>
 		</div>
 	</div>
 
@@ -14,13 +24,7 @@
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
 			</div>
-			<div class='center' id='wordlist_search'>
-				<span id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
-				<input id='word_search_box' type='text' placeholder="&nbsp;&nbsp;search ( 'space' clears )">
-				<span class='hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
-			</div>
 			<div id='wordlist-table' class='indent-c'>
-				<div id='wordlist-message'></div>
 				<div id='wordlist-table-white'>
 				<?php
 					require_once(__DIR__ . '/../Fragment/Wordlist_rules.php');
@@ -86,8 +90,6 @@
 				?>
 					</div></div></div>
 				</div>
-				<div id='wordlist-table-separator' class='hide'></div>
-				<div id='wordlist-table-black'></div>
 			</div>
 		<?php if($totalCount != 1024) { ?>
 			<div id='words-remaining'>* <?php echo 1024-$totalCount ?> remaining</div>
@@ -125,6 +127,26 @@
 					echo "<p class='indent-c'>Blacklist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/BLACKLIST.md' target='_blank'>BLACKLIST.md</a></p>";
 			?>
 		</div>
+	</div>
+	<div id='wordlist_search_results' hidden>
+		<p id='wordlist_search_empty' class='indent-c' hidden>No matches.</p>
+		<section id='wordlist_search_white' class='wordlist-search-section' hidden>
+			<h2>Whitelist</h2>
+			<div class='wordlist-search-body indent-c'></div>
+		</section>
+		<section id='wordlist_search_grey' class='wordlist-search-section' hidden>
+			<h2>Greylist</h2>
+			<div class='wordlist-search-body'></div>
+		</section>
+		<section id='wordlist_search_black' class='wordlist-search-section' hidden>
+			<h2>Blacklist</h2>
+			<div class='wordlist-search-body'></div>
+		</section>
+		<section id='wordlist_search_discarded' class='wordlist-search-section' hidden>
+			<h2>Discarded</h2>
+			<p class='indent-c wordlist-search-note'>Words considered for the list and not used. This historical discarded list is separate from the Blacklist (retired words and never-allowed NATO words).</p>
+			<div class='wordlist-search-body indent-c' id='wordlist-table-black'></div>
+		</section>
 	</div>
 	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet))); ?></script>
 

@@ -31,7 +31,23 @@
 }
 
 #wordlist_search {
-	margin: 20px;
+	margin: 8px 20px 4px;
+	width: 100%;
+	max-width: 420px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+#wordlist-message {
+	min-height: 1.2em;
+	text-align: center;
+	margin: 0 20px 4px;
+	color: #d14b4b;
+}
+html.dark-mode #wordlist-message {
+	color: #f96969;
 }
 
 #search-button_icon_wordlist {
@@ -232,4 +248,57 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist-table-white .primary.greylist {
 	margin-top: 1.6rem;
+}
+
+/* Search sits above the tab bar, centered to the full page like the tabs */
+#message > #wordlist_search_wrap {
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: 0;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
+
+#wordlist_tabs > button[aria-disabled='true'] {
+	opacity: 0.45;
+	cursor: default;
+}
+
+#wordlist_tabs[role='navigation'] > button {
+	text-decoration: none;
+}
+
+.wordlist-search-section {
+	scroll-margin-top: 5.5rem;
+	margin-top: 1.2rem;
+}
+
+.wordlist-search-section > h2 {
+	margin: 0.4rem 0 0.6rem;
+	font-size: 1.25rem;
+}
+
+.wordlist-search-note {
+	margin-bottom: 0.8rem;
+	font-size: smaller;
+}
+
+#wordlist_search_grey .word-item,
+#wordlist_search_black .word-item {
+	width: auto;
+	display: inline;
+	margin-right: 0.1em;
+}
+
+#wordlist_search_grey h3,
+#wordlist_search_black h3 {
+	margin-top: 1.4rem;
+}
+
+#wordlist_search_empty {
+	margin-top: 1rem;
 }

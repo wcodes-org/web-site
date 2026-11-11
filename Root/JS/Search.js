@@ -20,27 +20,26 @@ function execSearch(event) {
 		}
 		return;
 	}
-	else if(input.length > 10) {
-		document.getElementById('wordlist-table-white').innerText = '';
-		document.getElementById('wordlist-table-black').innerText = '';
+	else if(input.length > MAX_WORD_LENGTH) {
 		document.getElementById('wordlist-message').innerText = "Word's length exceeds the maximum limit of " + MAX_WORD_LENGTH + " characters";
+		document.getElementById('search_input_clear').classList.remove('hide');
 	}
 	else {
 		document.getElementById('wordlist-message').innerText = '';
 		document.getElementById('search_input_clear').classList.remove('hide');
 		bSearch_selected = false;
-		setWordList(input, true);
-		document.getElementById('wordlist-table-separator').classList.remove('hide');
-		setWordList(input, false);
+		applyWordlistSearch(input);
 	}
 };
 
 function matchWord(list, input) {
-	var reg = new RegExp(input.split('').join('\\w*').replace(/\W/, ''), 'i');
+	var q = String(input || '').toLowerCase();
+	if (!q) return [];
 	return list.filter(function(word) {
-		if (word.match(reg)) {
-			if(word.startsWith(input))
-				return word;
-		}
+		if (!word) return false;
+		var w = String(word).toLowerCase();
+		if (w.startsWith(q)) return true;
+		if (q.length >= 2 && w.indexOf(q) !== -1) return true;
+		return false;
 	});
 }
