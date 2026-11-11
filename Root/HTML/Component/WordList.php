@@ -123,10 +123,10 @@
 					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylistSet, $blacklistSet);
 				else
 					echo "<p class='indent-c'>Blacklist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/BLACKLIST.md' target='_blank'>BLACKLIST.md</a></p>";
-				$rejectlistFile = wordlistRejectlistPath();
-				$rejectlistRows = wordlistReadRejectlist($rejectlistFile);
-				if($rejectlistRows)
-					echo renderWordlistRejectlistWords($rejectlistRows, $emojiMap);
+				$blackTsvFile = wordlistBlackTsvPath();
+				$blackTsvRows = wordlistReadBlackTsv($blackTsvFile);
+				if($blackTsvRows)
+					echo renderWordlistBlackTsvWords($blackTsvRows, $emojiMap);
 			?>
 		</div>
 	</div>

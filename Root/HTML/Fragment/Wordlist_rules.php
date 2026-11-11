@@ -7,7 +7,7 @@
  *   3. Committed copy Root/File/Wordlist-rules.md, Wordlist-greylist.md or Wordlist-blacklist.md
  *      (refresh with File/Sync-rules.ps1)
  * Only the small Markdown subset these docs use is supported:
- * ### headings, "1." ordered items, "-" bullets, follow-on lines (examples),
+ * ### / #### headings, "1." ordered items, "-" bullets, follow-on lines (examples),
  * paragraphs, `code`, **bold** and [links](url).
  */
 function wordlistDocPath($name) {
@@ -42,11 +42,11 @@ function wordlistRulesPath() {
 	return wordlistDocPath('RULES.md');
 }
 
-function wordlistRejectlistPath() {
+function wordlistBlackTsvPath() {
 	return wordlistDocPath('Wordlist-black.tsv');
 }
 
-function wordlistReadRejectlist($path) {
+function wordlistReadBlackTsv($path) {
 	$rows = array();
 	if(!$path || !is_file($path))
 		return $rows;
@@ -66,8 +66,8 @@ function wordlistReadRejectlist($path) {
 	return $rows;
 }
 
-function renderWordlistRejectlistWords($rows, $emojiMap = array()) {
-	$html = "<div id='wordlist_rejectlist_words' class='wordlist-rejectlist-words indent-c'>";
+function renderWordlistBlackTsvWords($rows, $emojiMap = array()) {
+	$html = "<div id='wordlist_blacklist_words' class='wordlist-blacklist-words indent-c'>";
 	foreach($rows as $row) {
 		$word = $row['word'];
 		$remark = $row['remark'];
@@ -79,7 +79,7 @@ function renderWordlistRejectlistWords($rows, $emojiMap = array()) {
 			$html .= '<span class="word-emoji">' . $emojiMap[$word] . '</span>';
 		$html .= '<span class="word-text">' . htmlspecialchars($word, ENT_QUOTES, 'UTF-8') . '</span></span>';
 		if($remark !== '')
-			$html .= '<span class="word-reject-reason"> — ' . htmlspecialchars($remark, ENT_QUOTES, 'UTF-8') . '</span>';
+			$html .= '<span class="word-blacklist-reason"> — ' . htmlspecialchars($remark, ENT_QUOTES, 'UTF-8') . '</span>';
 	}
 	$html .= '</div>';
 	return $html;
@@ -175,6 +175,14 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	};
 	foreach($lines as $line) {
 		$line = rtrim($line);
+		if(preg_match('/^####\s+(.*)$/', $line, $m)) {
+			$flushPara(); $closeList();
+			if(!$started) {
+				$started = true;
+			}
+			$out[] = '<h4>' . $inline($m[1]) . '</h4>';
+			continue;
+		}
 		if(preg_match('/^###\s+(.*)$/', $line, $m)) {
 			$flushPara(); $closeList();
 			if($asDetails) {

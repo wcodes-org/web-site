@@ -303,20 +303,28 @@ html.dark-mode #word_search_box::placeholder {
 	margin-top: 1rem;
 }
 
-#wordlist_rejectlist_words,
-#wordlist_search_black .wordlist-rejectlist-words {
+#wordlist_blacklist_words,
+#wordlist_search_black .wordlist-blacklist-words {
 	margin-top: 0.6rem;
 	margin-bottom: 1.2rem;
 }
 
-#wordlist_black_panel #wordlist_rejectlist_words .word-item,
-#wordlist_search_black .wordlist-rejectlist-words .word-item {
+#wordlist_black_panel #wordlist_blacklist_words .word-item,
+#wordlist_search_black .wordlist-blacklist-words .word-item {
 	width: 140px;
 	display: inline-block;
 	margin: 0 0 2px 0;
 }
 
-.word-reject-reason {
+.word-blacklist-reason {
 	margin-right: 0.8em;
 	color: inherit;
+}
+
+#wordlist_grey_panel h4,
+#wordlist_black_panel h4,
+#wordlist_search_grey h4,
+#wordlist_search_black h4 {
+	margin: 1rem 0 0.5rem;
+	font-size: 1.05rem;
 }

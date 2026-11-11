@@ -3,7 +3,7 @@ var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
 var wordGreylistSet = wordGreylistSet || {};
 var wordBlacklistSet = wordBlacklistSet || {};
-var wordListRejectReasons = wordListRejectReasons || {};
+var wordListBlackReasons = wordListBlackReasons || {};
 var wordlistSearchMode = false;
 var wordlistSavedTabId = 'wordlist_white_tab';
 
@@ -179,8 +179,8 @@ function applyWordlistSearch(input) {
 	const whiteCount = renderWhiteSearch(input);
 	const greyCount = renderDocSearch('wordlist_grey_panel', 'wordlist_search_grey', input);
 	const blackDocCount = renderDocSearch('wordlist_black_panel', 'wordlist_search_black', input);
-	const rejectCount = renderRejectlistSearch(input);
-	const blackCount = blackDocCount + rejectCount;
+	const tsvCount = renderBlackTsvSearch(input);
+	const blackCount = blackDocCount + tsvCount;
 
 	setSearchTabLink(document.getElementById('wordlist_white_tab'), whiteCount);
 	setSearchTabLink(document.getElementById('wordlist_grey_tab'), greyCount);
@@ -207,36 +207,42 @@ function renderWhiteSearch(input) {
 	return count;
 }
 
-function rejectlistEntryMatches(word, reason, input) {
+function blackTsvEntryMatches(word, reason, input) {
 	if (typeof matchWord === 'function' && matchWord([word], input).length) return true;
 	if (input.length >= 2 && reason && reason.toLowerCase().indexOf(input.toLowerCase()) !== -1)
 		return true;
 	return false;
 }
 
-function renderRejectlistSearch(input) {
+function renderBlackTsvSearch(input) {
 	const body = document.querySelector('#wordlist_search_black .wordlist-search-body');
 	if (!body) return 0;
-	const group = wordListBlack && (wordListBlack['Rejectlist'] || wordListBlack['Discarded']);
+	const group = wordListBlack && wordListBlack['BlackTsv'];
 	const words = group && group['*'] ? group['*'] : [];
 	const matches = [];
 	for (let i = 0; i < words.length; i++) {
 		const word = words[i];
-		const reason = (wordListRejectReasons && wordListRejectReasons[word]) || '';
-		if (rejectlistEntryMatches(word, reason, input))
+		const reason = (wordListBlackReasons && wordListBlackReasons[word]) || '';
+		if (blackTsvEntryMatches(word, reason, input))
 			matches.push({ word: word, reason: reason });
 	}
 	if (!matches.length) return 0;
-	const heading = document.createElement('h3');
-	heading.textContent = 'Rejectlist';
-	body.appendChild(heading);
+	var hasBlacklistHeading = false;
+	body.querySelectorAll('h3').forEach(function(h) {
+		if (h.textContent === 'Blacklist') hasBlacklistHeading = true;
+	});
+	if (!hasBlacklistHeading) {
+		const heading = document.createElement('h3');
+		heading.textContent = 'Blacklist';
+		body.appendChild(heading);
+	}
 	const wrap = document.createElement('div');
-	wrap.className = 'wordlist-rejectlist-words indent-c';
+	wrap.className = 'wordlist-blacklist-words indent-c';
 	matches.forEach(function(item) {
 		wrap.appendChild(createWordItem(item.word, true, item.reason));
 		if (item.reason) {
 			const reasonEl = document.createElement('span');
-			reasonEl.className = 'word-reject-reason';
+			reasonEl.className = 'word-blacklist-reason';
 			reasonEl.textContent = ' — ' + item.reason;
 			wrap.appendChild(reasonEl);
 		}
@@ -312,17 +318,17 @@ function loadWordlistWhite() {
 	return x;
 }
 
-function adoptRejectlist(words, reasons) {
+function adoptBlackTsv(words, reasons) {
 	wordListBlack = wordListBlack || [];
-	wordListBlack['Rejectlist'] = [];
-	wordListBlack['Rejectlist']['*'] = words || [];
-	wordListRejectReasons = reasons || {};
+	wordListBlack['BlackTsv'] = [];
+	wordListBlack['BlackTsv']['*'] = words || [];
+	wordListBlackReasons = reasons || {};
 	if (wordlistSearchMode && word_search_box && word_search_box.value)
 		applyWordlistSearch(word_search_box.value.toLowerCase());
 }
 
-function loadRejectlistFromDom() {
-	var root = document.getElementById('wordlist_rejectlist_words');
+function loadBlackTsvFromDom() {
+	var root = document.getElementById('wordlist_blacklist_words');
 	if (!root) return false;
 	var items = root.getElementsByClassName('word-item');
 	if (!items.length) return false;
@@ -336,7 +342,7 @@ function loadRejectlistFromDom() {
 		var reason = items[i].getAttribute('data-reason');
 		if (reason) reasons[word] = reason;
 	}
-	adoptRejectlist(words, reasons);
+	adoptBlackTsv(words, reasons);
 	return true;
 }
 
@@ -355,11 +361,11 @@ function loadWordlistBlack(blackList) {
 			}
 		}
 	}
-	adoptRejectlist(obj, reasons);
+	adoptBlackTsv(obj, reasons);
 }
 
 function initloadWordlistBlack() {
-	if (loadRejectlistFromDom()) return;
+	if (loadBlackTsvFromDom()) return;
 	var xobj = new XMLHttpRequest();
 	xobj.overrideMimeType("text/pain");
 	xobj.open('GET', "/wordlist-black.tsv", true);
