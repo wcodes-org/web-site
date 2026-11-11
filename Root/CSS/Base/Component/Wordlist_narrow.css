@@ -25,8 +25,8 @@
 		scroll-margin-top: 4.5rem;
 	}
 
-	#wordlist_black_panel #wordlist_rejectlist_words .word-item,
-	#wordlist_search_black .wordlist-rejectlist-words .word-item {
+	#wordlist_black_panel #wordlist_blacklist_words .word-item,
+	#wordlist_search_black .wordlist-blacklist-words .word-item {
 		width: 120px;
 	}
 
