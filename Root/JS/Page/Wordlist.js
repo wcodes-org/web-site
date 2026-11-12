@@ -274,35 +274,52 @@ function bindWordlistFolds() {
 	var root = document.getElementById('message');
 	if (!root || root.getAttribute('data-folds-bound') === '1') return;
 	root.setAttribute('data-folds-bound', '1');
-	var grid = root.querySelector('.wordlist-live-grid');
-	var heading = grid && grid.querySelector('.primary-word');
-	if (heading) {
-		var collapseAll = document.createElement('button');
-		collapseAll.type = 'button';
-		collapseAll.className = 'wordlist-collapse-all';
-		collapseAll.setAttribute('aria-label', 'Collapse all');
-		collapseAll.title = 'Collapse all';
-		heading.appendChild(collapseAll);
+	const grid = root.querySelector('.wordlist-live-grid');
+	const collapseAll = root.querySelector('.wordlist-collapse-all');
+
+	function setFoldExpanded(toggle, expanded) {
+		const body = document.getElementById(toggle.getAttribute('aria-controls'));
+		if (!body) return;
+		toggle.setAttribute('aria-expanded', String(expanded));
+		body.hidden = !expanded;
+	}
+
+	function syncCollapseAll() {
+		const collapsed = !grid.querySelector('.primary-word > .wordlist-fold-toggle[aria-expanded="true"]');
+		collapseAll.setAttribute('aria-pressed', String(collapsed));
+		collapseAll.title = collapsed ? 'Expand all categories' : 'Collapse all categories';
+	}
+
+	if (grid && collapseAll && grid.querySelector('.wordlist-fold-toggle')) {
+		const lists = document.getElementById('wordlist_lists');
+		const tabs = document.getElementById('wordlist_tabs_wrap');
+		function updateStickyOffset() {
+			lists.style.setProperty('--wordlist-tabs-height', tabs.getBoundingClientRect().height + 'px');
+		}
+		updateStickyOffset();
+		const observer = new ResizeObserver(function() {
+			if (tabs.isConnected) updateStickyOffset();
+			else observer.disconnect();
+		});
+		observer.observe(tabs);
+		collapseAll.hidden = false;
+		syncCollapseAll();
 		collapseAll.addEventListener('click', function() {
+			const expand = collapseAll.getAttribute('aria-pressed') === 'true';
+			const scrollToList = !expand && lists.getBoundingClientRect().top < 0;
 			grid.querySelectorAll('.wordlist-fold-toggle').forEach(function(toggle) {
-				var body = document.getElementById(toggle.getAttribute('aria-controls'));
-				if (!body) return;
-				toggle.setAttribute('aria-expanded', 'false');
-				body.hidden = true;
+				setFoldExpanded(toggle, expand);
 			});
+			syncCollapseAll();
+			if (scrollToList) lists.scrollIntoView({ block: 'start' });
 		});
 	}
 	root.addEventListener('click', function(event) {
 		var btn = event.target.closest('.wordlist-fold-toggle');
 		if (!btn || !root.contains(btn)) return;
 		event.preventDefault();
-		var id = btn.getAttribute('aria-controls');
-		var body = id && document.getElementById(id);
-		if (!body) return;
-		var open = btn.getAttribute('aria-expanded') !== 'false';
-		btn.setAttribute('aria-expanded', open ? 'false' : 'true');
-		if (open) body.setAttribute('hidden', '');
-		else body.removeAttribute('hidden');
+		setFoldExpanded(btn, btn.getAttribute('aria-expanded') === 'false');
+		if (collapseAll && grid && grid.contains(btn)) syncCollapseAll();
 	});
 }
 

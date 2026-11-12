@@ -71,6 +71,12 @@
 					</p>
 				</div>
 				<div class='wordlist-table indent-c'>
+					<button type='button' class='wordlist-collapse-all' aria-pressed='false' aria-label='Collapse all categories' title='Collapse all categories' hidden>
+						<svg viewBox='0 0 20 20' aria-hidden='true' focusable='false'>
+							<path d='M5 10h10'/>
+							<path class='wordlist-expand-icon' d='M10 5v10'/>
+						</svg>
+					</button>
 					<div class='wordlist-live-grid'>
 						<?php echo renderWordlistGrid($groups, $emojiMap, $greylist, $blacklistSet, $ranks); ?>
 					</div>

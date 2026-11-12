@@ -335,6 +335,14 @@ html.dark-mode #wordlist-table-black span {
 	overflow: clip;
 }
 
+#wordlist_lists {
+	--wordlist-controls-background: #fff;
+}
+
+html.dark-mode #wordlist_lists {
+	--wordlist-controls-background: #1a1a2e;
+}
+
 #wordlist_tabs_wrap {
 	position: sticky;
 	inset-block-start: 0;
@@ -345,11 +353,7 @@ html.dark-mode #wordlist-table-black span {
 	align-items: center;
 	margin-block-end: 16px;
 	padding-block-start: max(4px, env(safe-area-inset-top));
-	background-color: #fff;
-}
-
-html.dark-mode #wordlist_tabs_wrap {
-	background-color: #1a1a2e;
+	background-color: var(--wordlist-controls-background);
 }
 
 @property --wordlist-tab-peak {
@@ -766,50 +770,71 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	}
 }
 
-/* Collapse all control beside the wordlist heading */
-.wordlist-live-grid .primary-word:has(.wordlist-collapse-all) {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 1rem;
+/* Overlay the category control at the end of the first heading row. */
+.wordlist-table:has(.wordlist-collapse-all:not([hidden])) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 }
 
+.wordlist-table > .wordlist-live-grid,
 .wordlist-collapse-all {
-	border: 0;
-	border-radius: 3px;
-	background: transparent;
-	color: inherit;
-	font: inherit;
+	grid-area: 1 / 1;
+}
+
+.wordlist-table:has(.wordlist-collapse-all:not([hidden])) .wordlist-live-grid > .primary:first-child > .primary-word {
+	padding-inline-end: 40px;
+}
+
+.wordlist-collapse-all:not([hidden]) {
+	position: sticky;
+	inset-block-start: calc(var(--wordlist-tabs-height, 0px) + 4px);
+	z-index: 6;
+	align-self: start;
+	justify-self: end;
+	margin-block-start: 4px;
 	display: inline-grid;
 	place-items: center;
-	min-width: 28px;
-	min-height: 28px;
+	min-inline-size: 34px;
+	min-block-size: 32px;
 	padding: 0;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	background: var(--wordlist-controls-background);
+	color: #767676;
 	cursor: pointer;
 }
 
-.wordlist-collapse-all:hover {
-	background: color-mix(in srgb, currentColor 10%, transparent);
+.wordlist-collapse-all svg {
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.6;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
-.wordlist-collapse-all::before,
-.wordlist-collapse-all::after {
-	content: '';
-	grid-area: 1 / 1;
-	width: 11px;
-	height: 7px;
-	border: 1.5px solid currentColor;
-	border-radius: 2px;
+.wordlist-collapse-all[aria-pressed='false'] .wordlist-expand-icon,
+.wordlist-table:has(.wordlist-is-flat) .wordlist-collapse-all {
+	display: none;
 }
 
-.wordlist-collapse-all::before {
-	transform: translate(2px, -2px);
-	clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 100%, 75% 40%, 0 40%);
+.wordlist-collapse-all:hover,
+.wordlist-collapse-all[aria-pressed='true'] {
+	background: color-mix(in srgb, currentColor 10%, var(--wordlist-controls-background));
 }
 
-.wordlist-collapse-all::after {
-	transform: translate(-2px, 2px);
-	background: linear-gradient(currentColor, currentColor) center / 5px 1px no-repeat;
+.wordlist-collapse-all[aria-pressed='true'] {
+	border-color: currentColor;
+	color: #28768e;
+}
+
+html.dark-mode .wordlist-collapse-all {
+	color: #a0a0a0;
+}
+
+html.dark-mode .wordlist-collapse-all[aria-pressed='true'] {
+	color: #69b7cf;
 }
 
 .wordlist-collapse-all:focus-visible {
