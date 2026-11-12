@@ -329,12 +329,26 @@ html.dark-mode #wordlist-table-black span {
 	color: #e09a9a !important;
 }
 
-#message > #wordlist_tabs_wrap {
+/* Keep clipping the canvas without making it a scroll container for the sticky row. */
+:is(#canvas-wrapper, #canvas-main, #message):has(#wordlist_lists) {
+	overflow: clip;
+}
+
+#wordlist_tabs_wrap {
+	position: sticky;
+	inset-block-start: 0;
+	z-index: 7;
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
 	align-items: center;
 	margin-block-end: 16px;
+	padding-block-start: max(4px, env(safe-area-inset-top));
+	background-color: #fff;
+}
+
+html.dark-mode #wordlist_tabs_wrap {
+	background-color: #1a1a2e;
 }
 
 @property --wordlist-tab-peak {
@@ -524,7 +538,6 @@ html.dark-mode #word_search_box::placeholder {
 }
 
 .wordlist-search-section {
-	scroll-margin-top: 5.5rem;
 	margin-top: 1.2rem;
 }
 

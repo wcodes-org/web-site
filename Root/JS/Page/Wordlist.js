@@ -291,13 +291,17 @@ function bindWordlistFolds() {
 function selectWordlistTab(selectedTab) {
 	const whiteTab = document.getElementById('wordlist_white_tab');
 	const visibleTab = selectedTab || whiteTab;
+	const lists = document.getElementById('wordlist_lists');
+	const selectedId = selectedTab ? selectedTab.id : '';
+	const scrollToList = selectedId !== wordlistSavedTabId && lists.getBoundingClientRect().top < 0;
 	wordlistTabButtons().forEach(function(tab) {
 		tab.setAttribute('aria-pressed', String(tab === selectedTab));
 		const panel = document.getElementById(tab.getAttribute('aria-controls'));
 		panel.hidden = tab !== visibleTab;
 	});
 	document.getElementById('wordlist_white_panel').classList.toggle('wordlist-whitelist-only', selectedTab === whiteTab);
-	wordlistSavedTabId = selectedTab ? selectedTab.id : '';
+	wordlistSavedTabId = selectedId;
+	if (scrollToList) lists.scrollIntoView({ block: 'start' });
 	updateWordlistTabPeak();
 }
 
@@ -346,6 +350,8 @@ function jumpToSearchSection(tab) {
 	const id = tab.getAttribute('data-search-section');
 	const section = id && document.getElementById(id);
 	if (!section || section.hidden) return;
+	const header = document.getElementById('wordlist_tabs_wrap');
+	section.style.scrollMarginBlockStart = (header.offsetHeight + 12) + 'px';
 	section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
