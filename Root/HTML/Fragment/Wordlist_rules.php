@@ -205,6 +205,11 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			}
 			if(preg_match('/^#\s+/', $line))
 				continue;
+			// On the /wordlist page, RULES.md is embedded as collapsed sections.
+			// Skip the file title (already handled) and the intro paragraph —
+			// it is useful in the repo file, but redundant next to the page heading.
+			if($asDetails)
+				continue;
 			$para[] = $inline(trim($line));
 			continue;
 		}

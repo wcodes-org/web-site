@@ -217,8 +217,19 @@ html.dark-mode #word_search_box::placeholder {
 	color: #666;
 }
 
+/* Beat #message > * (and the wide-layout variant), which set width and margin-left on every direct child. */
+#message > hr.wordlist-docs-rule {
+	border: 0;
+	display: block;
+	height: 1px;
+	width: 72%;
+	max-width: 480px;
+	margin: 2.2rem auto 0;
+	background: linear-gradient(to right, transparent, #69b7cf, transparent);
+}
+
 #wordlist_docs {
-	margin-top: 2rem;
+	margin-top: 1.4rem;
 }
 
 #wordlist_docs details {
