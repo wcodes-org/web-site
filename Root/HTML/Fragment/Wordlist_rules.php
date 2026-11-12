@@ -187,7 +187,26 @@ function wordlistRetiredListItem($content, $version = '') {
 	return $li;
 }
 
-function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array()) {
+function wordlistFoldToggle($label, $id) {
+	return '<button type="button" class="wordlist-fold-toggle" aria-expanded="true" aria-controls="'
+		. htmlspecialchars($id, ENT_QUOTES, 'UTF-8')
+		. '"><span class="wordlist-fold-caret" aria-hidden="true"></span>'
+		. '<span class="wordlist-fold-label">' . $label . '</span></button>';
+}
+
+function wordlistFoldOpen($tag, $label, $id, $class = '', $extra = '', $dataHeading = '') {
+	$attr = '';
+	if($class !== '')
+		$attr .= ' class="' . $class . '"';
+	if($dataHeading !== '')
+		$attr .= ' data-heading="' . htmlspecialchars($dataHeading, ENT_QUOTES, 'UTF-8') . '"';
+	return '<div class="wordlist-fold"><' . $tag . $attr . '>'
+		. wordlistFoldToggle($label, $id)
+		. $extra
+		. '</' . $tag . '><div class="wordlist-fold-body" id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '">';
+}
+
+function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array(), $liveWords = null) {
 	$inline = function($text) use ($emojiMap, $greylist, $blacklist) {
 		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist) : wordlistRulesInline($text);
 	};
@@ -202,6 +221,32 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	$skipNotes = false;
 	$retiredVersion = '';
 	$currentH3 = '';
+	$foldOpen = false;
+	$foldStart = 0;
+	$foldHasItems = false;
+	$foldDropIfEmpty = false;
+	$foldN = 0;
+	$closeFold = function($forceKeep = false) use (&$foldOpen, &$foldStart, &$foldHasItems, &$foldDropIfEmpty, &$out) {
+		if(!$foldOpen)
+			return;
+		if($foldDropIfEmpty && !$foldHasItems && !$forceKeep) {
+			array_splice($out, $foldStart);
+		} else {
+			$out[] = '</div></div>';
+		}
+		$foldOpen = false;
+		$foldHasItems = false;
+		$foldDropIfEmpty = false;
+	};
+	$openFold = function($tag, $label, $class = '', $extra = '', $dataHeading = '', $dropIfEmpty = false) use (&$foldOpen, &$foldStart, &$foldHasItems, &$foldDropIfEmpty, &$foldN, &$out, $closeFold) {
+		$closeFold();
+		$foldN++;
+		$foldStart = count($out);
+		$foldHasItems = false;
+		$foldDropIfEmpty = $dropIfEmpty;
+		$foldOpen = true;
+		$out[] = wordlistFoldOpen($tag, $label, 'wordlist-fold-d-' . $foldN, $class, $extra, $dataHeading);
+	};
 	$para = array();
 	$flushPara = function() use (&$para, &$out, $inline) {
 		if($para) {
@@ -239,7 +284,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 				continue;
 		}
 		if(preg_match('/^#{1,3}\s+Notes for maintainers\b/i', $line)) {
-			$flushPara(); $closeList(); $closeDetails();
+			$flushPara(); $closeList(); $closeDetails(); $closeFold();
 			$skipNotes = true;
 			continue;
 		}
@@ -250,8 +295,15 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			}
 			$isVersion = preg_match('/^v\d+\b/i', $m[1]);
 			$retiredVersion = $isVersion ? preg_replace('/^.*?\b(v\d+).*$/i', '$1', $m[1]) : '';
-			$class = $isVersion ? ' class="wordlist-version"' : '';
-			$out[] = '<h4' . $class . '>' . $inline($m[1]) . '</h4>';
+			$h4label = $inline($m[1]);
+			if(!$asDetails && preg_match('/^NATO alphabet$/i', $m[1])) {
+				$openFold('h4', $h4label);
+			} else {
+				if(!$asDetails && $foldOpen && !$isVersion && $currentH3 && preg_match('/^Blacklist$/i', $currentH3))
+					$closeFold();
+				$class = $isVersion ? ' class="wordlist-version"' : '';
+				$out[] = '<h4' . $class . '>' . $h4label . '</h4>';
+			}
 			continue;
 		}
 		if(preg_match('/^###\s+(.*)$/', $line, $m)) {
@@ -269,10 +321,14 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 				$retiredVersion = '';
 				$label = $inline($m[1]);
 				if(preg_match('/^Rejected$/i', $m[1])) {
-					$out[] = '<h3 class="wordlist-rejected-heading" data-heading="Rejected">' . $label
-						. ' <button type="button" class="wordlist-versions-toggle" aria-pressed="false">versions</button></h3>';
-				} else {
+					$openFold('h3', $label, 'wordlist-rejected-heading',
+						' <button type="button" class="wordlist-versions-toggle" aria-pressed="false">versions</button>',
+						'Rejected');
+				} elseif(preg_match('/^Blacklist$/i', $m[1])) {
+					$closeFold();
 					$out[] = '<h3>' . $label . '</h3>';
+				} else {
+					$openFold('h3', $label, '', '', '', true);
 				}
 			}
 			continue;
@@ -309,7 +365,19 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			continue;
 		}
 		if(preg_match('/^[-*]\s+(.*)$/', $line, $m)) {
+			if($liveWords !== null && !$asDetails && preg_match_all('/`([a-z]+)`/', $m[1], $wm)) {
+				$anyLive = false;
+				foreach($wm[1] as $w) {
+					if(isset($liveWords[$w])) {
+						$anyLive = true;
+						break;
+					}
+				}
+				if(!$anyLive)
+					continue;
+			}
 			$flushPara();
+			$foldHasItems = true;
 			if($list !== 'ul') {
 				$closeList();
 				$listClass = 'indent-e';
@@ -333,7 +401,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			$closeList();
 		$para[] = $inline(trim($line));
 	}
-	$flushPara(); $closeList(); $closeDetails();
+	$flushPara(); $closeList(); $closeDetails(); $closeFold();
 	return implode("\n", $out);
 }
 

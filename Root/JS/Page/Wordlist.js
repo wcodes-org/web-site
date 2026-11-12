@@ -47,6 +47,7 @@ function wordlist() {
 	bindWordlistTabs();
 	bindRetiredReveal();
 	bindVersionsToggle();
+	bindWordlistFolds();
 	bindWordlistTabPeak();
 	updateWordlistTabPeak();
 }
@@ -118,7 +119,7 @@ function updateWordlistTabPeak() {
 		var active = tabs.querySelector("button[aria-selected='true']");
 		if (active) {
 			var tabsRect = tabs.getBoundingClientRect();
-			var lineWidth = Math.min(tabsRect.width, 320);
+			var lineWidth = parseFloat(getComputedStyle(tabs, '::before').width) || Math.min(tabsRect.width, 384);
 			var lineLeft = tabsRect.left + (tabsRect.width - lineWidth) / 2;
 			var ar = active.getBoundingClientRect();
 			var center = ar.left + ar.width / 2;
@@ -148,6 +149,41 @@ function bindWordlistTabPeak() {
 		var tabs = document.getElementById('wordlist_tabs');
 		if (tabs) new ResizeObserver(schedule).observe(tabs);
 	}
+}
+
+function wordlistFoldButton(label, id) {
+	var btn = document.createElement('button');
+	btn.type = 'button';
+	btn.className = 'wordlist-fold-toggle';
+	btn.setAttribute('aria-expanded', 'true');
+	btn.setAttribute('aria-controls', id);
+	var caret = document.createElement('span');
+	caret.className = 'wordlist-fold-caret';
+	caret.setAttribute('aria-hidden', 'true');
+	var text = document.createElement('span');
+	text.className = 'wordlist-fold-label';
+	text.textContent = label;
+	btn.appendChild(caret);
+	btn.appendChild(text);
+	return btn;
+}
+
+function bindWordlistFolds() {
+	var root = document.getElementById('message');
+	if (!root || root.getAttribute('data-folds-bound') === '1') return;
+	root.setAttribute('data-folds-bound', '1');
+	root.addEventListener('click', function(event) {
+		var btn = event.target.closest('.wordlist-fold-toggle');
+		if (!btn || !root.contains(btn)) return;
+		event.preventDefault();
+		var id = btn.getAttribute('aria-controls');
+		var body = id && document.getElementById(id);
+		if (!body) return;
+		var open = btn.getAttribute('aria-expanded') !== 'false';
+		btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+		if (open) body.setAttribute('hidden', '');
+		else body.removeAttribute('hidden');
+	});
 }
 
 function bindWordlistTabs() {
@@ -381,55 +417,99 @@ function renderDocSearch(panelId, sectionId, input) {
 	const versionsOn = !!(document.getElementById('wordlist_black_panel') &&
 		document.getElementById('wordlist_black_panel').classList.contains('show-versions'));
 
+	var searchFoldN = 0;
+	function emitFoldHeading(tag, label, headingClass, extra) {
+		searchFoldN++;
+		const foldId = sectionId + '-fold-' + searchFoldN;
+		const wrap = document.createElement('div');
+		wrap.className = 'wordlist-fold';
+		const headingEl = document.createElement(tag);
+		if (headingClass) headingEl.className = headingClass;
+		if (label === 'Rejected') headingEl.setAttribute('data-heading', 'Rejected');
+		headingEl.appendChild(wordlistFoldButton(label, foldId));
+		if (extra) headingEl.appendChild(extra);
+		const foldBody = document.createElement('div');
+		foldBody.className = 'wordlist-fold-body';
+		foldBody.id = foldId;
+		wrap.appendChild(headingEl);
+		wrap.appendChild(foldBody);
+		body.appendChild(wrap);
+		return foldBody;
+	}
+
+	var currentFoldBody = body;
+
 	function emitHeading() {
 		if (headingDone || !heading) return;
-		const h = document.createElement('h3');
+		var extra = null;
 		if (heading === 'Rejected') {
-			h.className = 'wordlist-rejected-heading';
-			h.setAttribute('data-heading', 'Rejected');
-			h.appendChild(document.createTextNode('Rejected '));
-			const btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'wordlist-versions-toggle';
-			btn.setAttribute('aria-pressed', versionsOn ? 'true' : 'false');
-			btn.textContent = 'versions';
-			h.appendChild(btn);
-		} else {
+			extra = document.createElement('button');
+			extra.type = 'button';
+			extra.className = 'wordlist-versions-toggle';
+			extra.setAttribute('aria-pressed', versionsOn ? 'true' : 'false');
+			extra.textContent = 'versions';
+			currentFoldBody = emitFoldHeading('h3', 'Rejected', 'wordlist-rejected-heading', extra);
+		} else if (heading === 'Blacklist') {
+			const h = document.createElement('h3');
 			h.textContent = heading;
+			body.appendChild(h);
+			currentFoldBody = body;
+		} else {
+			currentFoldBody = emitFoldHeading('h3', heading, '', null);
 		}
-		body.appendChild(h);
 		headingDone = true;
 	}
 
 	function flush() {
 		if (!currentItems.length) return;
 		emitHeading();
-		if (subheading) body.appendChild(subheading.cloneNode(true));
+		var target = currentFoldBody || body;
+		if (subheading) {
+			var subText = (subheading.getAttribute('data-heading') || subheading.textContent || '').trim();
+			if (/^NATO alphabet$/i.test(subText)) {
+				target = emitFoldHeading('h4', subText, subheading.className, null);
+			} else {
+				target.appendChild(subheading.cloneNode(true));
+			}
+		}
 		const ul = document.createElement('ul');
 		const retired = currentItems.some(function(li) { return li.classList.contains('wordlist-retired'); });
 		ul.className = retired ? 'indent-e wordlist-retired-list' : 'indent-e wordlist-word-grid';
 		currentItems.forEach(function(li) { ul.appendChild(li.cloneNode(true)); });
-		body.appendChild(ul);
+		target.appendChild(ul);
 		count += currentItems.length;
 		currentItems = [];
 	}
 
-	Array.prototype.forEach.call(panel.children, function(node) {
-		if (node.tagName === 'H3') {
-			flush();
-			heading = node.getAttribute('data-heading') || node.textContent.trim();
-			headingDone = false;
-			subheading = null;
-		} else if (node.tagName === 'H4') {
-			flush();
-			subheading = node;
-		} else if (node.tagName === 'UL') {
-			Array.prototype.forEach.call(node.children, function(li) {
-				if (li.tagName === 'LI' && docEntryMatches(li, input))
-					currentItems.push(li);
-			});
-		}
-	});
+	function walkDocNodes(nodes) {
+		Array.prototype.forEach.call(nodes, function(node) {
+			if (node.nodeType !== 1) return;
+			if (node.classList && node.classList.contains('wordlist-fold')) {
+				walkDocNodes(node.children);
+				return;
+			}
+			if (node.tagName === 'H3') {
+				flush();
+				var labelEl = node.querySelector('.wordlist-fold-label');
+				heading = node.getAttribute('data-heading') || (labelEl ? labelEl.textContent : node.textContent).trim();
+				if (heading.indexOf('versions') !== -1)
+					heading = heading.replace(/\s*versions\s*$/, '').trim();
+				headingDone = false;
+				subheading = null;
+			} else if (node.tagName === 'H4') {
+				flush();
+				subheading = node;
+			} else if (node.tagName === 'UL') {
+				Array.prototype.forEach.call(node.children, function(li) {
+					if (li.tagName === 'LI' && docEntryMatches(li, input))
+						currentItems.push(li);
+				});
+			} else if (node.classList && node.classList.contains('wordlist-fold-body')) {
+				walkDocNodes(node.children);
+			}
+		});
+	}
+	walkDocNodes(panel.children);
 	flush();
 	return count;
 }
@@ -568,21 +648,29 @@ function fillWordList(target, wordList, matchString, inDiscarded, id) {
 		primary.setAttribute('class', p === 'Greylist' ? 'primary greylist' : 'primary');
 		var primary_word = document.createElement('div');
 		primary_word.setAttribute('class', 'primary-word');
-		primary_word.innerText = p;
+		var primaryFoldId = (id || 'wordlist-search') + '-p-' + Object.keys(wordList).indexOf(p);
+		primary_word.appendChild(wordlistFoldButton(p, primaryFoldId));
 		if (inDiscarded && p === 'Discarded')
 			primary_word.classList.add('hide');
 		primary.appendChild(primary_word);
+		var primaryBody = document.createElement('div');
+		primaryBody.className = 'wordlist-fold-body';
+		primaryBody.id = primaryFoldId;
 		var bAny = false;
+		var sIndex = 0;
 		for(var s in wordList[p]) {
 			var secondary = document.createElement('div');
 			secondary.setAttribute('class', 'secondary');
 			var secondary_word = document.createElement('div');
 			secondary_word.setAttribute('class', 'secondary-word');
-			secondary_word.innerText = s;
+			var secondaryFoldId = primaryFoldId + '-s-' + (sIndex++);
+			secondary_word.appendChild(wordlistFoldButton(s, secondaryFoldId));
 			if (inDiscarded && s === '*')
 				secondary_word.classList.add('hide');
 			secondary.appendChild(secondary_word);
 			var div = document.createElement('div');
+			div.className = 'wordlist-fold-body';
+			div.id = secondaryFoldId;
 			var subList = [];
 			if(matchString != null)
 				subList = matchWord(wordList[p][s], matchString);
@@ -593,7 +681,7 @@ function fillWordList(target, wordList, matchString, inDiscarded, id) {
 				count++;
 			}
 			secondary.appendChild(div);
-			primary.appendChild(secondary);
+			primaryBody.appendChild(secondary);
 			if(subList.length == 0)
 				secondary.classList.add('hide_display');
 			else {
@@ -601,6 +689,7 @@ function fillWordList(target, wordList, matchString, inDiscarded, id) {
 				bAny = true;
 			}
 		}
+		primary.appendChild(primaryBody);
 		if(bAny)
 			primary.classList.remove('hide_display');
 		else
