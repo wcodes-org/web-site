@@ -32,8 +32,8 @@ html.dark-mode #wordlist-downloads a + a::before {
 }
 
 /* Tabular word lists: emoji + 140px word block, 40px gutters, wrapping. */
-#wordlist-table .secondary > div:last-child,
-#wordlist_search_white .secondary > div:last-child,
+#wordlist-table .secondary > .wordlist-fold-body:not([hidden]),
+#wordlist_search_white .secondary > .wordlist-fold-body:not([hidden]),
 ul.wordlist-word-grid,
 #wordlist_black_panel #wordlist_blacklist_words,
 #wordlist_search_black .wordlist-blacklist-words {
@@ -47,8 +47,8 @@ ul.wordlist-word-grid,
 	overflow: visible;
 }
 
-#wordlist-table .secondary > div:last-child > .word-item,
-#wordlist_search_white .secondary > div:last-child > .word-item,
+#wordlist-table .secondary > .wordlist-fold-body > .word-item,
+#wordlist_search_white .secondary > .wordlist-fold-body > .word-item,
 ul.wordlist-word-grid > li .word-item,
 #wordlist_black_panel #wordlist_blacklist_words > .word-item,
 #wordlist_search_black .wordlist-blacklist-words > .word-item {
@@ -641,7 +641,8 @@ html.dark-mode .word-retired-meta {
 	font: inherit;
 	font-weight: inherit;
 	color: inherit;
-	cursor: pointer;
+	cursor: none;
+	caret-color: transparent;
 	display: inline-flex;
 	align-items: baseline;
 	gap: 0.4em;
