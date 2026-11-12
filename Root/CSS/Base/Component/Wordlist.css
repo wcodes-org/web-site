@@ -15,6 +15,12 @@
 	text-align: right;
 }
 
+#wordlist-github {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+}
+
 #wordlist-downloads a + a::before {
 	content: ' | ';
 	color: #9aa0a6;
