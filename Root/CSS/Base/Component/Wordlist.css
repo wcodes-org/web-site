@@ -36,8 +36,12 @@ html.dark-mode #wordlist-downloads a + a::before {
 #message {
 	--word-block-width: 140px;
 	--word-emoji-col: 1.55em;
+	--word-emoji-scale: 1.15;
 	--word-item-gap: 0.3em;
 	--word-item-width: calc(var(--word-emoji-col) + var(--word-item-gap) + var(--word-block-width));
+	--word-grid-gap: 40px;
+	--word-grid-indent: 40px;
+	--word-subcategory-indent: 40px;
 }
 
 /* Tabular word lists: emoji + 140px word block, 40px gutters, wrapping. */
@@ -48,10 +52,10 @@ ul.wordlist-word-grid,
 #wordlist_search_black .wordlist-blacklist-words {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, var(--word-item-width));
-	column-gap: 40px;
+	column-gap: var(--word-grid-gap);
 	row-gap: 10px;
 	justify-content: start;
-	padding-left: 40px;
+	padding-left: var(--word-grid-indent);
 	box-sizing: border-box;
 	overflow: visible;
 }
@@ -166,7 +170,7 @@ html.dark-mode #wordlist-message {
 }
 
 .secondary {
-	margin-left: 40px;
+	margin-left: var(--word-subcategory-indent);
 }
 
 .secondary > div:first-child {
@@ -217,7 +221,7 @@ html.dark-mode #wordlist-message {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 1.15em;
+	font-size: calc(var(--word-emoji-scale) * 1em);
 	line-height: 1;
 	transform: scale(1) translateY(0);
 	transform-origin: center bottom;
@@ -680,10 +684,27 @@ html.dark-mode .word-retired-meta {
 #message :is(.primary, .secondary, .wordlist-fold):has(> .wordlist-fold-body[hidden])::after {
 	content: '';
 	display: block;
+	width: 70%;
 	height: 5px;
 	margin-top: 0.25em;
 	background: currentColor;
 	opacity: 0.12;
+}
+
+:is(#wordlist-table, #wordlist_search_white) .primary {
+	--word-fold-indent: calc(var(--word-grid-indent) + var(--word-subcategory-indent));
+}
+
+:is(#wordlist-table, #wordlist_search_white) .secondary {
+	--word-fold-indent: var(--word-grid-indent);
+}
+
+:is(#wordlist-table, #wordlist_search_white) :is(.primary, .secondary):has(> .wordlist-fold-body[hidden])::after {
+	--word-grid-step: calc(var(--word-item-width) + var(--word-grid-gap));
+	/* Count the same full columns as auto-fill, then exclude the leading emoji and trailing gutter. */
+	--word-grid-span: round(down, 100% - var(--word-fold-indent) + var(--word-grid-gap), var(--word-grid-step));
+	margin-left: calc(var(--word-fold-indent) + var(--word-emoji-col) * var(--word-emoji-scale) + var(--word-item-gap));
+	max-width: max(var(--word-block-width), var(--word-grid-span) - var(--word-grid-gap) - var(--word-emoji-col) - var(--word-item-gap));
 }
 
 .primary-word .wordlist-fold-toggle,
