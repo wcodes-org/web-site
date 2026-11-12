@@ -766,6 +766,34 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 }
 
 /* Collapse carets beside category / Rejected / NATO headings */
+.wordlist-live-grid .primary-word:has(.wordlist-collapse-all) {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.wordlist-collapse-all {
+	border: 0;
+	border-radius: 3px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 0.7em;
+	padding: 4px 8px;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.wordlist-collapse-all:hover {
+	background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.wordlist-collapse-all:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
 .wordlist-fold-toggle {
 	border: 0;
 	background: transparent;

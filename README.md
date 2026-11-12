@@ -7,4 +7,6 @@ On `/wordlist`, **Group** switches between categories and one list per tab. **Aâ
 
 The filter row and display controls stay at the top of the screen while you scroll through a list or search results.
 
+In the grouped Wordlist, **Collapse all** sits at the top right beside **Animal** and closes every category and subcategory. Individual headings reopen each group. The button is hidden in the ungrouped view.
+
 Hover over or focus a ranked word to see its rank inline. Greylist tooltips show the reasons the word is on the Greylist.

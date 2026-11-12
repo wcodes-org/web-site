@@ -274,6 +274,23 @@ function bindWordlistFolds() {
 	var root = document.getElementById('message');
 	if (!root || root.getAttribute('data-folds-bound') === '1') return;
 	root.setAttribute('data-folds-bound', '1');
+	var grid = root.querySelector('.wordlist-live-grid');
+	var heading = grid && grid.querySelector('.primary-word');
+	if (heading) {
+		var collapseAll = document.createElement('button');
+		collapseAll.type = 'button';
+		collapseAll.className = 'wordlist-collapse-all';
+		collapseAll.textContent = 'Collapse all';
+		heading.appendChild(collapseAll);
+		collapseAll.addEventListener('click', function() {
+			grid.querySelectorAll('.wordlist-fold-toggle').forEach(function(toggle) {
+				var body = document.getElementById(toggle.getAttribute('aria-controls'));
+				if (!body) return;
+				toggle.setAttribute('aria-expanded', 'false');
+				body.hidden = true;
+			});
+		});
+	}
 	root.addEventListener('click', function(event) {
 		var btn = event.target.closest('.wordlist-fold-toggle');
 		if (!btn || !root.contains(btn)) return;
@@ -610,7 +627,7 @@ function loadWordlistWhite() {
 	var x = [];
 	var parents = document.getElementById('wordlist_white_panel').getElementsByClassName('primary');
 	for(var i = 0; i < parents.length; i++) {
-		x[parents[i].firstChild.innerText] = getSecondary(parents[i]);
+		x[parents[i].querySelector('.primary-word .wordlist-fold-label').textContent] = getSecondary(parents[i]);
 	};
 	return x;
 }
