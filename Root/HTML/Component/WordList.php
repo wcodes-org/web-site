@@ -2,8 +2,9 @@
 	<div id='wordlist_search_wrap'>
 		<div class='center' id='wordlist_search'>
 			<span id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
-			<input id='word_search_box' type='text' placeholder="&nbsp;&nbsp;search ( 'space' clears )" autocomplete='off' spellcheck='false'>
+			<input id='word_search_box' type='text' placeholder='search' autocomplete='off' spellcheck='false' aria-describedby='wordlist_search_hint'>
 			<span class='hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
+			<span id='wordlist_search_hint'>'space' clears</span>
 		</div>
 		<div id='wordlist-message'></div>
 	</div>

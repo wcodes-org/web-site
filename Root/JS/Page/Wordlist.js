@@ -45,6 +45,44 @@ function wordlist() {
 		search_input_clear.addEventListener('click', clearWordListSearch);
 	}
 	bindWordlistTabs();
+	bindRetiredReveal();
+}
+
+function bindRetiredReveal() {
+	var root = document.getElementById('message');
+	if (!root || root.getAttribute('data-retired-bound') === '1') return;
+	root.setAttribute('data-retired-bound', '1');
+
+	function isCoarse() {
+		return window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+	}
+
+	function closeAll(except) {
+		root.querySelectorAll('.wordlist-retired.is-open').forEach(function(el) {
+			if (el !== except) el.classList.remove('is-open');
+		});
+	}
+
+	root.addEventListener('click', function(event) {
+		var item = event.target.closest('.wordlist-retired');
+		if (!item || !root.contains(item)) {
+			closeAll();
+			return;
+		}
+		if (!isCoarse()) return;
+		var open = item.classList.contains('is-open');
+		closeAll();
+		if (!open) item.classList.add('is-open');
+	});
+
+	root.addEventListener('keydown', function(event) {
+		var item = event.target.closest('.wordlist-retired');
+		if (!item) return;
+		if (event.key === 'Escape') {
+			item.classList.remove('is-open');
+			item.blur();
+		}
+	});
 }
 
 function bindWordlistTabs() {
