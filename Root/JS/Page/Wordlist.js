@@ -55,9 +55,11 @@ function wordlist() {
 }
 
 function updateWordlistSearchPlaceholder(event) {
-	event.currentTarget.placeholder = event.type === 'focus'
+	const placeholder = event.type === 'focus'
 		? document.getElementById('wordlist_search_hint').textContent
 		: 'search';
+	event.currentTarget.placeholder = placeholder;
+	document.getElementById('search-button_icon_wordlist').dataset.placeholder = placeholder;
 }
 
 function setWordlistVersions(on) {

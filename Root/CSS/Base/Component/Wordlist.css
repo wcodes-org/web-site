@@ -74,17 +74,18 @@ ul.wordlist-word-grid > li .word-item,
 }
 
 #wordlist_search {
-	display: flex;
+	position: relative;
+	display: grid;
 	align-items: center;
-	justify-content: center;
-	gap: 4px;
+	font-size: larger;
 	margin: 8px auto 0;
-	width: auto;
-	max-width: 100%;
+	width: 11em;
+	max-width: calc(100% - 4rem);
 }
 
 #wordlist_search .wordlist-search-side {
-	flex: 0 0 1.6em;
+	position: absolute;
+	inset-inline-start: calc(100% + 4px);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -101,8 +102,28 @@ html.dark-mode #wordlist-message {
 }
 
 #search-button_icon_wordlist {
-	display: flex;
+	position: absolute;
+	inset-inline-start: 0;
+	display: grid;
+	align-items: center;
 	cursor: text;
+}
+
+#search-button_icon_wordlist svg {
+	position: absolute;
+	inset-inline-end: calc(100% + 4px);
+}
+
+#wordlist_search:has(#word_search_box:placeholder-shown) #search-button_icon_wordlist {
+	inset-inline-start: 50%;
+	transform: translateX(-50%);
+}
+
+/* Size the label to the centered placeholder so the icon sits beside it. */
+#wordlist_search:has(#word_search_box:placeholder-shown) #search-button_icon_wordlist::after {
+	content: attr(data-placeholder);
+	visibility: hidden;
+	white-space: nowrap;
 }
 
 #word_search_box {
@@ -114,16 +135,16 @@ html.dark-mode #wordlist-message {
 	border-left: none;
 	border-right: none;
 	border-color: #d9d9d9;
-	font-size: larger;
+	font: inherit;
 	text-transform: lowercase;
 	text-align: left;
-	padding-inline-start: 0;
-	width: 11em;
-	flex: 0 1 11em;
+	padding-inline: 0;
+	min-width: 0;
 }
 
 #word_search_box::placeholder {
 	color: #c9c9c9;
+	text-align: center;
 }
 
 #search_input_clear {
