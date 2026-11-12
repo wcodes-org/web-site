@@ -10,20 +10,10 @@
 	border-spacing: 10px 10px;
 }
 
-#wordlist-table .word-item {
-	width: 140px;
-	display: inline-block;
-}
-
-#wordlist-table .word-emoji {
-	width: auto;
-	display: inline;
-	margin-right: 2px;
-}
-
-#wordlist-table .word-text {
-	width: auto;
-	display: inline;
+#wordlist-table .secondary > div:last-child {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
 }
 
 #wordlist-table {
@@ -31,13 +21,38 @@
 }
 
 #wordlist_search {
-	margin: 8px 20px 4px;
+	position: relative;
+	margin: 8px 20px 0;
+	padding-bottom: 1.25rem;
 	width: 100%;
 	max-width: 420px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
+}
+
+#wordlist_search_hint {
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	font-size: 0.78rem;
+	line-height: 1.2;
+	color: #9aa0a6;
+	white-space: nowrap;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+#wordlist_search:hover #wordlist_search_hint,
+#wordlist_search:focus-within #wordlist_search_hint {
+	opacity: 1;
+}
+
+html.dark-mode #wordlist_search_hint {
+	color: #8b9198;
 }
 
 #wordlist-message {
@@ -112,33 +127,69 @@ html.dark-mode #wordlist-message {
 	margin-bottom: 12px;
 }
 
-/* Word chips: colour is a property of the word, consistent across tabs */
+/* Word chips: colour is a property of the word, consistent across tabs.
+   Soft tinted chips, low-contrast but still distinguishable. */
+.word-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.22em;
+	padding: 0.08em 0.45em 0.1em;
+	margin: 0.08em 0.12em 0.08em 0;
+	border-radius: 7px;
+	font-weight: 500;
+	line-height: 1.45;
+	vertical-align: middle;
+	position: relative;
+	z-index: 0;
+	transform: scale(1);
+	transform-origin: center center;
+	transition: transform 0.16s ease;
+	cursor: default;
+}
+.word-item .word-emoji,
+.word-item .word-text {
+	display: inline;
+	width: auto;
+	line-height: 1.3;
+}
 .word-item.word-whitelist {
-	color: #69b7cf;
+	color: #4e8fa3;
+	background: #e7f3f6;
 }
 .word-item.word-greylist {
-	color: #c49a6c;
+	color: #9a7b52;
+	background: #f4eee5;
 }
 .word-item.word-blacklist {
-	color: #d14b4b;
+	color: #b15c5c;
+	background: #f6eaea;
 }
 html.dark-mode .word-item.word-whitelist {
-	color: #69b7cf;
+	color: #8ec8d8;
+	background: rgba(105, 183, 207, 0.16);
 }
 html.dark-mode .word-item.word-greylist {
-	color: #d4b483;
+	color: #d2be9a;
+	background: rgba(212, 180, 131, 0.15);
 }
 html.dark-mode .word-item.word-blacklist {
-	color: #f96969;
+	color: #e09a9a;
+	background: rgba(249, 105, 105, 0.16);
+}
+.word-item:hover,
+.word-item:focus,
+.word-item:focus-visible {
+	z-index: 4;
+	transform: scale(1.2);
 }
 
 #wordlist-table-black .word-item,
 #wordlist-table-black span {
-	color: #d14b4b !important;
+	color: #b15c5c !important;
 }
 html.dark-mode #wordlist-table-black .word-item,
 html.dark-mode #wordlist-table-black span {
-	color: #f96969 !important;
+	color: #e09a9a !important;
 }
 
 /* Full-page-centered tab bar (not just the content column) */
@@ -248,8 +299,6 @@ html.dark-mode #word_search_box::placeholder {
 #wordlist_grey_panel .word-item,
 #wordlist_black_panel .word-item {
 	width: auto;
-	display: inline;
-	margin-right: 0.1em;
 }
 
 #wordlist_grey_panel h3,
@@ -301,8 +350,6 @@ html.dark-mode #word_search_box::placeholder {
 #wordlist_search_grey .word-item,
 #wordlist_search_black .word-item {
 	width: auto;
-	display: inline;
-	margin-right: 0.1em;
 }
 
 #wordlist_search_grey h3,
@@ -320,11 +367,76 @@ html.dark-mode #word_search_box::placeholder {
 	margin-bottom: 1.2rem;
 }
 
+#wordlist_black_panel #wordlist_blacklist_words,
+#wordlist_search_black .wordlist-blacklist-words {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
 #wordlist_black_panel #wordlist_blacklist_words .word-item,
 #wordlist_search_black .wordlist-blacklist-words .word-item {
-	width: 140px;
-	display: inline-block;
-	margin: 0 0 2px 0;
+	width: auto;
+}
+
+/* Retired words: chip only; replacement appears on hover / focus / open */
+.wordlist-retired {
+	position: relative;
+	outline: none;
+}
+
+#wordlist_black_panel ul:has(> .wordlist-retired),
+#wordlist_search_black ul:has(> .wordlist-retired) {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 0.3em 0.45em;
+	list-style: none;
+	padding-left: 0;
+	margin-left: 0;
+}
+
+.word-retired-meta {
+	position: absolute;
+	left: 0;
+	bottom: calc(100% + 6px);
+	z-index: 6;
+	opacity: 0;
+	pointer-events: none;
+	white-space: nowrap;
+	padding: 0.28em 0.6em;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #5c6166;
+	font-size: 0.9em;
+	line-height: 1.4;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+	transition: opacity 0.16s ease;
+}
+
+html.dark-mode .word-retired-meta {
+	background: #252540;
+	color: #c8c8d0;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.wordlist-retired:hover .word-retired-meta,
+.wordlist-retired:focus-within .word-retired-meta,
+.wordlist-retired.is-open .word-retired-meta {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#wordlist_search_hint,
+	.word-item,
+	.word-retired-meta {
+		transition: none;
+	}
+	.word-item:hover,
+	.word-item:focus,
+	.word-item:focus-visible {
+		transform: none;
+	}
 }
 
 .word-blacklist-reason {

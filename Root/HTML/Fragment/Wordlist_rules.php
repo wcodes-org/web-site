@@ -114,7 +114,7 @@ function wordlistCandidateInline($text, $emojiMap, $greylist = array(), $blackli
 		$class = wordlistWordClass($w, $greylist, $blacklist);
 		$chip = '<span class="' . $class . '">';
 		if($emojiMap && isset($emojiMap[$w]))
-			$chip .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$w], ENT_QUOTES, 'UTF-8') . '</span> ';
+			$chip .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$w], ENT_QUOTES, 'UTF-8') . '</span>';
 		$chip .= '<span class="word-text">' . $w . '</span></span>';
 		return $chip;
 	}, $text);
@@ -133,6 +133,45 @@ function wordlistListedWords($path) {
 		}
 	}
 	return array_keys($words);
+}
+
+
+function wordlistRetiredListItem($content) {
+	static $n = 0;
+	if(stripos($content, 'Replaced by') === false)
+		return '<li>' . $content;
+	if(!preg_match('/^(<span class="word-item word-blacklist"[^>]*>)/', $content, $m))
+		return '<li>' . $content;
+	$depth = 1;
+	$pos = strlen($m[1]);
+	$len = strlen($content);
+	while($pos < $len && $depth > 0) {
+		$nextOpen = strpos($content, '<span', $pos);
+		$nextClose = strpos($content, '</span>', $pos);
+		if($nextClose === false)
+			return '<li>' . $content;
+		if($nextOpen !== false && $nextOpen < $nextClose) {
+			$gt = strpos($content, '>', $nextOpen);
+			if($gt === false)
+				return '<li>' . $content;
+			$depth++;
+			$pos = $gt + 1;
+		} else {
+			$depth--;
+			$pos = $nextClose + 7;
+		}
+	}
+	$chip = substr($content, 0, $pos);
+	$rest = substr($content, $pos);
+	if(!preg_match('/Replaced by\s+(.*)$/is', $rest, $rm))
+		return '<li>' . $content;
+	$replacement = rtrim($rm[1]);
+	$replacement = preg_replace('/\.$/', '', $replacement);
+	$n++;
+	$id = 'word-retired-desc-' . $n;
+	return '<li class="wordlist-retired" tabindex="0" aria-describedby="' . $id . '">'
+		. $chip
+		. '<span class="word-retired-meta" id="' . $id . '">replaced by ' . $replacement . '</span>';
 }
 
 function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array()) {
@@ -237,7 +276,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 				$list = 'ul';
 			}
 			$closeItem();
-			$out[] = '<li>' . $inline($m[1]);
+			$out[] = wordlistRetiredListItem($inline($m[1]));
 			$item = true;
 			continue;
 		}
