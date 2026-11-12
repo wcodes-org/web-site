@@ -1,9 +1,9 @@
 <div id='message'>
 	<div id='wordlist_search_wrap'>
-		<div class='center' id='wordlist_search'>
-			<span id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
+		<div id='wordlist_search'>
+			<span class='wordlist-search-side' id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
 			<input id='word_search_box' type='text' placeholder='search' autocomplete='off' spellcheck='false' aria-describedby='wordlist_search_hint'>
-			<span class='hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
+			<span class='wordlist-search-side hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
 			<span id='wordlist_search_hint'>'space' clears</span>
 		</div>
 		<div id='wordlist-message'></div>
@@ -34,7 +34,14 @@
 					$emojiMap = json_decode(file_get_contents('../../File/Wordlist-emoji.json'), true);
 					$greylistFile = wordlistDocPath('GREYLIST.md');
 					$blacklistFile = wordlistDocPath('BLACKLIST.md');
+					$liveWordSet = array();
+					for($wi = 1; $wi < sizeOf($arWord); $wi++) {
+						foreach(array(3, 4, 5) as $wc)
+							if(isset($arWord[$wi][$wc]) && $arWord[$wi][$wc] !== '')
+								$liveWordSet[$arWord[$wi][$wc]] = true;
+					}
 					$greylistSet = array_fill_keys(wordlistListedWords($greylistFile), true);
+					$greylistSet = array_intersect_key($greylistSet, $liveWordSet);
 					$blacklistSet = array_fill_keys(wordlistListedWords($blacklistFile), true);
 					function renderWordItem($word, $emojiMap, $greylistSet, $blacklistSet) {
 						$class = wordlistWordClass($word, $greylistSet, $blacklistSet);
@@ -47,22 +54,25 @@
 					$bPrimaryCat = false;
 					$bSecondaryCat = false;
 					$totalCount = 0;
+					$foldN = 0;
 					for($i = 1; $i < sizeOf($arWord); $i++) {
 						echo $arWord[$i][0];
 						if($arWord[$i][1] != NULL) {
+							if($bSecondaryCat) { ?>
+								</div></div>
+							<?php $bSecondaryCat = false;
+							}
 							if($bPrimaryCat) { ?>
 								</div></div>
 							<?php }
 							else
 								$bPrimaryCat = true;
-							if($bSecondaryCat) { ?>
-								</div>
-								<?php $bSecondaryCat = false;
-							}
 							$primaryName = $arWord[$i][1];
 							$primaryClass = (strcasecmp(trim($primaryName), 'Greylist') === 0) ? "primary greylist" : 'primary';
+							$foldN++;
+							$primaryFoldId = 'wordlist-fold-p-' . $foldN;
 							?>
-								<div class='<?php echo $primaryClass ?>'><div class='primary-word'><?php echo $primaryName ?></div>
+								<div class='<?php echo $primaryClass ?>'><div class='primary-word'><?php echo wordlistFoldToggle($primaryName, $primaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $primaryFoldId ?>'>
 						<?php }
 						if($arWord[$i][2] != NULL) {
 							if($bSecondaryCat) { ?>
@@ -70,8 +80,10 @@
 							<?php
 							} else
 								$bSecondaryCat = true;
+							$foldN++;
+							$secondaryFoldId = 'wordlist-fold-s-' . $foldN;
 							?>
-							<div class='secondary'><div class='secondary-word'><?php echo $arWord[$i][2] ?></div><div>
+							<div class='secondary'><div class='secondary-word'><?php echo wordlistFoldToggle($arWord[$i][2], $secondaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $secondaryFoldId ?>'>
 						<?php }
 						if($arWord[$i][3] != NULL) {
 								$totalCount++;
@@ -87,7 +99,7 @@
 						}
 					}
 				?>
-					</div></div></div>
+					</div></div></div></div>
 				</div>
 			</div>
 		<?php if($totalCount != 1024) { ?>
@@ -95,16 +107,12 @@
 		<?php } ?>
 			<div class='top-bottom-gap'>
 				<div id='wordlist-links'>
-					<span id='wordlist-version'> v 5</span>
+					<span id='wordlist-version'>v 5</span>
 					-
-					<span id='wordlist-date'> Nov 11, 2026
-					<strong>
-						<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>[ .tsv ]</a>
-						<a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>[ .json ]</a>
-						<a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>[ .txt ]</a>
-						<a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>[ .js ]</a>
-						<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>[ versions ]</a>
-					</strong>
+					<span id='wordlist-date'>Nov 11, 2026</span>
+					<span id='wordlist-downloads'>
+						<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>.tsv</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>.json</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>.txt</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>.js</a>
+					</span>
 				</div>
 			</div>
 		</div>
@@ -112,7 +120,7 @@
 		<div id='wordlist_grey_panel' role='tabpanel' aria-labelledby='wordlist_grey_tab' tabindex='0' hidden>
 			<?php
 				if($greylistFile)
-					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet);
+					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet, $liveWordSet);
 				else
 					echo "<p class='indent-c'>Greylist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/GREYLIST.md' target='_blank'>GREYLIST.md</a></p>";
 			?>

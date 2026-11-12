@@ -3,36 +3,48 @@
 }
 
 #wordlist-links {
-	text-align: right;
+	text-align: left;
+}
+
+#wordlist-downloads a + a::before {
+	content: ' | ';
+	color: #9aa0a6;
+	font-weight: normal;
+}
+
+html.dark-mode #wordlist-downloads a + a::before {
+	color: #8b9198;
 }
 
 #wordlist-table {
 	border-spacing: 10px 10px;
 	/* Match the live page: indent-c padding sits outside the 80% content
-	   width so the word table can fit the same number of 140px columns. */
+	   width so the word table can fit the same number of columns. */
 	box-sizing: content-box;
 	width: 100%;
 }
 
-#wordlist-table .word-item {
-	width: 140px;
+#message {
+	--word-block-width: 140px;
+	--word-emoji-col: 1.55em;
+	--word-item-gap: 0.3em;
+	--word-item-width: calc(var(--word-emoji-col) + var(--word-item-gap) + var(--word-block-width));
 }
 
-/* Tabular word lists, matching the live wcodes.org/wordlist layout:
-   fixed 140px cells and 40px gutters that wrap to as many columns as fit
-   (typically 3–5 on desktop) and fill the content width. */
+/* Tabular word lists: emoji + 140px word block, 40px gutters, wrapping. */
 #wordlist-table .secondary > div:last-child,
 #wordlist_search_white .secondary > div:last-child,
 ul.wordlist-word-grid,
 #wordlist_black_panel #wordlist_blacklist_words,
 #wordlist_search_black .wordlist-blacklist-words {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, 140px);
+	grid-template-columns: repeat(auto-fill, var(--word-item-width));
 	column-gap: 40px;
 	row-gap: 10px;
 	justify-content: start;
 	padding-left: 40px;
 	box-sizing: border-box;
+	overflow: visible;
 }
 
 #wordlist-table .secondary > div:last-child > .word-item,
@@ -41,7 +53,7 @@ ul.wordlist-word-grid > li .word-item,
 #wordlist_black_panel #wordlist_blacklist_words > .word-item,
 #wordlist_search_black .wordlist-blacklist-words > .word-item {
 	margin: 0;
-	width: 140px;
+	width: var(--word-item-width);
 }
 
 #wordlist-table {
@@ -50,14 +62,21 @@ ul.wordlist-word-grid > li .word-item,
 
 #wordlist_search {
 	position: relative;
-	margin: 8px 20px 0;
-	padding-bottom: 1.25rem;
-	width: 100%;
-	max-width: 420px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
+	margin: 8px auto 0;
+	padding-bottom: 1.25rem;
+	width: auto;
+	max-width: 100%;
+}
+
+#wordlist_search .wordlist-search-side {
+	flex: 0 0 1.6em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 #wordlist_search_hint {
@@ -94,7 +113,7 @@ html.dark-mode #wordlist-message {
 }
 
 #search-button_icon_wordlist {
-	padding-right: 4px;
+	padding: 0;
 }
 
 #word_search_box {
@@ -108,6 +127,9 @@ html.dark-mode #wordlist-message {
 	border-color: #d9d9d9;
 	font-size: larger;
 	text-transform: lowercase;
+	text-align: center;
+	width: 11em;
+	flex: 0 1 11em;
 }
 
 #word_search_box::placeholder {
@@ -117,6 +139,12 @@ html.dark-mode #wordlist-message {
 
 #search_input_clear {
 	cursor: pointer;
+}
+
+#search_input_clear.hide {
+	visibility: hidden;
+	pointer-events: none;
+	display: flex;
 }
 
 .primary {
@@ -155,56 +183,74 @@ html.dark-mode #wordlist-message {
 	margin-bottom: 12px;
 }
 
-/* Word chips: colour is a property of the word, consistent across tabs.
-   Soft tinted chips, low-contrast but still distinguishable. */
+/* Word units: emoji sits outside a fixed-width rounded rectangle. */
 .word-item {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.22em;
+	gap: var(--word-item-gap, 0.3em);
 	box-sizing: border-box;
-	width: 140px;
-	padding: 0.14em 0.7em 0.16em;
-	margin: 0 2px 4px 0;
+	width: var(--word-item-width);
+	padding: 0;
+	margin: 0 0 4px 0;
+	background: transparent;
 	border-radius: 0;
-	/* Wider at the top, slanted in at the bottom: \____/ */
-	clip-path: polygon(0 0, 100% 0, calc(100% - 0.5em) 100%, 0.5em 100%);
+	clip-path: none;
 	font-weight: 500;
 	line-height: 1.45;
 	vertical-align: middle;
 	position: relative;
 	z-index: 0;
-	transform: scale(1);
-	transform-origin: center center;
-	transition: transform 0.16s ease;
 	cursor: default;
 }
-.word-item .word-emoji,
-.word-item .word-text {
-	display: inline;
-	width: auto;
-	line-height: 1.3;
+.word-item .word-emoji {
+	flex: 0 0 var(--word-emoji-col);
+	width: var(--word-emoji-col);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.15em;
+	line-height: 1;
+	transform: scale(1) translateY(0);
+	transform-origin: center bottom;
+	transition: transform 0.18s ease;
 }
-.word-item.word-whitelist {
+.word-item .word-text {
+	flex: 0 0 var(--word-block-width);
+	width: var(--word-block-width);
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-family: inherit;
+	line-height: 1.3;
+	padding: 0.16em 0.4em 0.18em;
+	border-radius: 3px;
+	transform: scale(1);
+	transform-origin: center center;
+	transition: transform 0.18s ease;
+}
+.word-item.word-whitelist .word-text {
 	color: #4e8fa3;
 	background: #e7f3f6;
 }
-.word-item.word-greylist {
+.word-item.word-greylist .word-text {
 	color: #9a7b52;
 	background: #f4eee5;
 }
-.word-item.word-blacklist {
+.word-item.word-blacklist .word-text {
 	color: #b15c5c;
 	background: #f6eaea;
 }
-html.dark-mode .word-item.word-whitelist {
+html.dark-mode .word-item.word-whitelist .word-text {
 	color: #8ec8d8;
 	background: rgba(105, 183, 207, 0.16);
 }
-html.dark-mode .word-item.word-greylist {
+html.dark-mode .word-item.word-greylist .word-text {
 	color: #d2be9a;
 	background: rgba(212, 180, 131, 0.15);
 }
-html.dark-mode .word-item.word-blacklist {
+html.dark-mode .word-item.word-blacklist .word-text {
 	color: #e09a9a;
 	background: rgba(249, 105, 105, 0.16);
 }
@@ -212,7 +258,16 @@ html.dark-mode .word-item.word-blacklist {
 .word-item:focus,
 .word-item:focus-visible {
 	z-index: 4;
-	transform: scale(1.2);
+}
+.word-item:hover .word-emoji,
+.word-item:focus .word-emoji,
+.word-item:focus-visible .word-emoji {
+	transform: scale(1.6) translateY(-3px);
+}
+.word-item:hover .word-text,
+.word-item:focus .word-text,
+.word-item:focus-visible .word-text {
+	transform: scale(1.08);
 }
 
 #wordlist-table-black .word-item,
@@ -260,8 +315,8 @@ html.dark-mode #wordlist-table-black span {
 	bottom: 0;
 	left: 50%;
 	transform: translateX(-50%);
-	width: 100%;
-	max-width: 320px;
+	width: 120%;
+	max-width: 384px;
 	height: 1px;
 	background: linear-gradient(to right, transparent 0%, #69b7cf var(--wordlist-tab-peak), transparent 100%);
 	transition: --wordlist-tab-peak 0.28s ease;
@@ -338,7 +393,7 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist_grey_panel .word-item,
 #wordlist_black_panel .word-item {
-	width: 140px;
+	width: var(--word-item-width);
 }
 
 #wordlist_grey_panel h3,
@@ -389,7 +444,7 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist_search_grey .word-item,
 #wordlist_search_black .word-item {
-	width: 140px;
+	width: var(--word-item-width);
 }
 
 #wordlist_search_grey h3,
@@ -410,7 +465,7 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist_black_panel #wordlist_blacklist_words .word-item,
 #wordlist_search_black .wordlist-blacklist-words .word-item {
-	width: 140px;
+	width: var(--word-item-width);
 }
 
 /* NATO / TSV-style word grids: 3-across, 140px cells, like the whitelist */
@@ -420,7 +475,7 @@ ul.wordlist-word-grid {
 }
 ul.wordlist-word-grid > li {
 	display: block;
-	width: 140px;
+	width: var(--word-item-width);
 	margin: 0;
 }
 
@@ -442,8 +497,8 @@ ul.wordlist-retired-list {
 }
 
 .wordlist-retired .word-item {
-	flex: 0 0 140px;
-	width: 140px;
+	flex: 0 0 var(--word-item-width);
+	width: var(--word-item-width);
 }
 
 .word-retired-reason {
@@ -542,16 +597,66 @@ html.dark-mode .word-retired-meta {
 
 @media (prefers-reduced-motion: reduce) {
 	#wordlist_search_hint,
-	.word-item,
+	.word-item .word-emoji,
+	.word-item .word-text,
 	.word-retired-meta,
-	#wordlist_tabs::before {
+	#wordlist_tabs::before,
+	.wordlist-fold-caret {
 		transition: none;
 	}
-	.word-item:hover,
-	.word-item:focus,
-	.word-item:focus-visible {
+	.word-item:hover .word-emoji,
+	.word-item:focus .word-emoji,
+	.word-item:focus-visible .word-emoji,
+	.word-item:hover .word-text,
+	.word-item:focus .word-text,
+	.word-item:focus-visible .word-text {
 		transform: none;
 	}
+}
+
+/* Collapse carets beside category / Rejected / NATO headings */
+.wordlist-fold-toggle {
+	border: 0;
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	font-weight: inherit;
+	color: inherit;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4em;
+	text-align: left;
+}
+
+.wordlist-fold-caret {
+	display: inline-block;
+	width: 0.42em;
+	height: 0.42em;
+	border-right: 1.5px solid currentColor;
+	border-bottom: 1.5px solid currentColor;
+	transform: rotate(45deg);
+	transform-origin: 50% 50%;
+	transition: transform 0.18s ease;
+	flex: 0 0 auto;
+	position: relative;
+	top: -0.12em;
+}
+
+.wordlist-fold-toggle[aria-expanded='false'] .wordlist-fold-caret {
+	transform: rotate(-45deg);
+	top: -0.05em;
+}
+
+.wordlist-fold-body[hidden] {
+	display: none;
+}
+
+.primary-word .wordlist-fold-toggle,
+.secondary-word .wordlist-fold-toggle {
+	font: inherit;
+	font-weight: inherit;
 }
 
 .word-blacklist-reason {
