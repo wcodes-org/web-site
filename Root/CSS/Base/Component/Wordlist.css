@@ -35,7 +35,7 @@ html.dark-mode #wordlist-downloads a + a::before {
 	color: #8b9198;
 }
 
-#wordlist-table {
+.wordlist-table {
 	border-spacing: 10px 10px;
 	/* Match the live page: indent-c padding sits outside the 80% content
 	   width so the word table can fit the same number of columns. */
@@ -55,7 +55,7 @@ html.dark-mode #wordlist-downloads a + a::before {
 }
 
 /* Tabular word lists: emoji + 140px word block, 40px gutters, wrapping. */
-#wordlist-table .secondary > .wordlist-fold-body:not([hidden]),
+.wordlist-table .secondary > .wordlist-fold-body:not([hidden]),
 #wordlist_search_white .secondary > .wordlist-fold-body:not([hidden]),
 ul.wordlist-word-grid,
 #wordlist_black_panel #wordlist_blacklist_words,
@@ -70,7 +70,7 @@ ul.wordlist-word-grid,
 	overflow: visible;
 }
 
-#wordlist-table .secondary > .wordlist-fold-body > .word-item,
+.wordlist-table .secondary > .wordlist-fold-body > .word-item,
 #wordlist_search_white .secondary > .wordlist-fold-body > .word-item,
 ul.wordlist-word-grid > li .word-item,
 #wordlist_black_panel #wordlist_blacklist_words > .word-item,
@@ -79,7 +79,7 @@ ul.wordlist-word-grid > li .word-item,
 	width: var(--word-item-width);
 }
 
-#wordlist-table {
+.wordlist-table {
 	min-height: 280px;
 }
 
@@ -487,7 +487,7 @@ html.dark-mode #word_search_box::placeholder {
 	margin-top: 1.4rem;
 }
 
-#wordlist-table-white .primary.greylist {
+.wordlist-live-grid .primary.greylist {
 	margin-top: 1.6rem;
 }
 
@@ -502,6 +502,11 @@ html.dark-mode #word_search_box::placeholder {
 	flex-direction: column;
 	align-items: center;
 	position: relative;
+}
+
+#wordlist_all_tab[hidden],
+#wordlist_all_tab[hidden] + span {
+	display: none;
 }
 
 #wordlist_tabs > button[aria-disabled='true'] {
@@ -792,15 +797,15 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	opacity: 0.12;
 }
 
-:is(#wordlist-table, #wordlist_search_white) .primary {
+:is(.wordlist-table, #wordlist_search_white) .primary {
 	--word-fold-indent: calc(var(--word-grid-indent) + var(--word-subcategory-indent));
 }
 
-:is(#wordlist-table, #wordlist_search_white) .secondary {
+:is(.wordlist-table, #wordlist_search_white) .secondary {
 	--word-fold-indent: var(--word-grid-indent);
 }
 
-:is(#wordlist-table, #wordlist_search_white) :is(.primary, .secondary):has(> .wordlist-fold-body[hidden])::after {
+:is(.wordlist-table, #wordlist_search_white) :is(.primary, .secondary):has(> .wordlist-fold-body[hidden])::after {
 	--word-grid-step: calc(var(--word-item-width) + var(--word-grid-gap));
 	/* Count the same full columns as auto-fill, then exclude the leading emoji and trailing gutter. */
 	--word-grid-span: round(down, 100% - var(--word-fold-indent) + var(--word-grid-gap), var(--word-grid-step));

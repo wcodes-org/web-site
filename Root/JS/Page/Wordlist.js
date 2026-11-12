@@ -6,7 +6,7 @@ var wordBlacklistSet = wordBlacklistSet || {};
 var wordRanks = {};
 var wordListBlackReasons = wordListBlackReasons || {};
 var wordlistSearchMode = false;
-var wordlistSavedTabId = 'wordlist_white_tab';
+var wordlistSavedTabId = 'wordlist_all_tab';
 
 function loadWordlistMeta() {
 	var el = document.getElementById('wordlist-meta');
@@ -96,7 +96,7 @@ function updateWordlistViews(searchResults) {
 	const order = sort && sort.dataset.wordOrder;
 	const roots = searchResults
 		? '#wordlist-search-white, #wordlist_search_grey .wordlist-search-body, #wordlist_search_black .wordlist-search-body'
-		: '#wordlist-table-white, #wordlist_grey_panel, #wordlist_black_panel';
+		: '.wordlist-live-grid, #wordlist_grey_panel, #wordlist_black_panel';
 
 	function compare(a, b) {
 		if (order === 'rank' && a.rank !== b.rank) return a.rank - b.rank;
@@ -133,7 +133,7 @@ function updateWordlistViews(searchResults) {
 
 		const flat = document.createElement('ul');
 		flat.className = 'wordlist-flat indent-e';
-		if (root.id === 'wordlist-table-white' || root.id === 'wordlist-search-white')
+		if (root.classList.contains('wordlist-live-grid') || root.id === 'wordlist-search-white')
 			flat.classList.add('wordlist-word-grid');
 		entries.forEach(function(entry) {
 			const clone = cloneWordlistEntry(entry.node, 'flat-');
@@ -288,31 +288,32 @@ function bindWordlistFolds() {
 	});
 }
 
+function selectWordlistTab(selectedTab) {
+	wordlistTabButtons().forEach(function(tab) {
+		const selected = tab === selectedTab;
+		tab.setAttribute('aria-selected', String(selected));
+		tab.tabIndex = selected ? 0 : -1;
+		const panel = document.getElementById(tab.getAttribute('aria-controls'));
+		if (panel) panel.hidden = !selected;
+	});
+	wordlistSavedTabId = selectedTab.id;
+	updateWordlistTabPeak();
+}
+
 function bindWordlistTabs() {
 	const tabList = document.getElementById('wordlist_tabs');
 	if (!tabList || tabList.getAttribute('data-bound') === '1') return;
 	tabList.setAttribute('data-bound', '1');
+	wordlistSearchMode = false;
+	wordlistSavedTabId = 'wordlist_all_tab';
 
 	function tabs() {
 		return wordlistTabButtons().filter(function(tab) { return !tab.hidden; });
 	}
 
-	function selectTab(selectedTab) {
-		if (wordlistSearchMode) return;
-		wordlistTabButtons().forEach(function(tab) {
-			const selected = tab === selectedTab;
-			tab.setAttribute('aria-selected', String(selected));
-			tab.tabIndex = selected ? 0 : -1;
-			const panel = document.getElementById(tab.getAttribute('aria-controls'));
-			if (panel) panel.hidden = !selected;
-		});
-		wordlistSavedTabId = selectedTab.id;
-		updateWordlistTabPeak();
-	}
-
 	function activate(tab) {
 		if (wordlistSearchMode) jumpToSearchSection(tab);
-		else selectTab(tab);
+		else selectWordlistTab(tab);
 	}
 
 	tabList.addEventListener('click', function(event) {
@@ -340,11 +341,8 @@ function bindWordlistTabs() {
 			default: return;
 		}
 		event.preventDefault();
-		if (wordlistSearchMode) visible[nextIndex].focus();
-		else {
-			selectTab(visible[nextIndex]);
-			visible[nextIndex].focus();
-		}
+		if (!wordlistSearchMode) selectWordlistTab(visible[nextIndex]);
+		visible[nextIndex].focus();
 	});
 }
 
@@ -364,6 +362,10 @@ function enterSearchMode() {
 	document.getElementById('wordlist_search_results').hidden = false;
 	document.querySelector('.wordlist_tab_panels').hidden = true;
 	wordlistTabButtons().forEach(function(tab) {
+		if (!tab.dataset.searchSection) {
+			tab.hidden = true;
+			return;
+		}
 		tab.setAttribute('role', 'link');
 		tab.removeAttribute('aria-selected');
 		tab.removeAttribute('aria-controls');
@@ -387,21 +389,14 @@ function exitSearchMode() {
 	tabList.setAttribute('role', 'tablist');
 	tabList.setAttribute('aria-label', 'Wordlist');
 	wordlistTabButtons().forEach(function(tab) {
+		tab.hidden = false;
 		const label = tab.getAttribute('data-tab-label') || tab.id;
 		tab.textContent = label;
 		tab.removeAttribute('aria-disabled');
 		tab.setAttribute('role', 'tab');
 		tab.setAttribute('aria-controls', tab.id.replace('_tab', '_panel'));
 	});
-	const saved = document.getElementById(wordlistSavedTabId) || document.getElementById('wordlist_white_tab');
-	wordlistTabButtons().forEach(function(tab) {
-		const selected = tab === saved;
-		tab.setAttribute('aria-selected', String(selected));
-		tab.tabIndex = selected ? 0 : -1;
-		const panel = document.getElementById(tab.getAttribute('aria-controls'));
-		if (panel) panel.hidden = !selected;
-	});
-	updateWordlistTabPeak();
+	selectWordlistTab(document.getElementById(wordlistSavedTabId));
 }
 
 function setSearchTabLink(tab, count) {
@@ -626,7 +621,7 @@ function clearWordListSearch() {
 
 function loadWordlistWhite() {
 	var x = [];
-	var parents = document.getElementById('wordlist-table').getElementsByClassName('primary');
+	var parents = document.getElementById('wordlist_all_panel').getElementsByClassName('primary');
 	for(var i = 0; i < parents.length; i++) {
 		x[parents[i].firstChild.innerText] = getSecondary(parents[i]);
 	};
@@ -710,11 +705,12 @@ function getWords(child) {
 		var textEl = words[i].getElementsByClassName('word-text')[0];
 		if(!textEl)
 			continue;
-		var word = textEl.innerText;
-		x[i] = word;
+		var word = textEl.textContent;
+		if(words[i].classList.contains('word-whitelist'))
+			x.push(word);
 		var emojiEl = words[i].getElementsByClassName('word-emoji')[0];
 		if(emojiEl)
-			wordEmojiMap[word] = emojiEl.innerText;
+			wordEmojiMap[word] = emojiEl.textContent;
 	}
 	return x;
 }

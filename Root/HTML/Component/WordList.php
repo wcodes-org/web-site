@@ -1,3 +1,35 @@
+<?php
+	require_once(__DIR__ . '/../Fragment/Wordlist_rules.php');
+	$lines = file('../../File/Wordlist.tsv', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	$rankColumn = array_search('Rank', explode("\t", array_shift($lines)), true);
+	$groups = array();
+	$liveWordSet = array();
+	$ranks = array();
+	$primary = $secondary = '';
+	foreach($lines as $line) {
+		$row = explode("\t", $line);
+		if($row[1] !== '') {
+			$primary = $row[1];
+			$secondary = '';
+		}
+		if($row[2] !== '')
+			$secondary = ucfirst($row[2]);
+		foreach(array_slice($row, 3, 3) as $word) {
+			if($word === '')
+				continue;
+			$groups[$primary][$secondary][] = $word;
+			$liveWordSet[$word] = true;
+			if($rankColumn !== false && !empty($row[$rankColumn]))
+				$ranks[$word] = (int) $row[$rankColumn];
+		}
+	}
+	$emojiMap = json_decode(file_get_contents('../../File/Wordlist-emoji.json'), true);
+	$greylistFile = wordlistDocPath('GREYLIST.md');
+	$blacklistFile = wordlistDocPath('BLACKLIST.md');
+	$greylist = array_intersect_key(wordlistListedReasons($greylistFile), $liveWordSet);
+	$blacklistSet = wordlistListedReasons($blacklistFile);
+	$totalCount = count($liveWordSet);
+?>
 <div id='message'>
 	<div id='wordlist_search_wrap'>
 		<div id='wordlist_search'>
@@ -10,7 +42,9 @@
 	</div>
 	<div id='wordlist_tabs_wrap'>
 		<div id='wordlist_tabs' role='tablist' aria-label='Wordlist'>
-			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_white_panel' data-tab-label='Whitelist' data-search-section='wordlist_search_white'>Whitelist</button>
+			<button id='wordlist_all_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_all_panel' data-tab-label='All words'>All words</button>
+			<span aria-hidden='true'>|</span>
+			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_white_panel' tabindex='-1' data-tab-label='Whitelist' data-search-section='wordlist_search_white'>Whitelist</button>
 			<span aria-hidden='true'>|</span>
 			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1' data-tab-label='Greylist' data-search-section='wordlist_search_grey'>Greylist</button>
 			<span aria-hidden='true'>|</span>
@@ -30,78 +64,13 @@
 	</div>
 
 	<div class='wordlist_tab_panels'>
-		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0'>
+		<div id='wordlist_all_panel' role='tabpanel' aria-labelledby='wordlist_all_tab' tabindex='0'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
 			</div>
-			<div id='wordlist-table' class='indent-c'>
-				<div id='wordlist-table-white'>
-				<?php
-					require_once(__DIR__ . '/../Fragment/Wordlist_rules.php');
-					$lines = file('../../File/Wordlist.tsv', FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES);
-					$arWord = array_map(function($v) {
-						return (explode("\t", $v));
-					}, $lines);
-					$emojiMap = json_decode(file_get_contents('../../File/Wordlist-emoji.json'), true);
-					$greylistFile = wordlistDocPath('GREYLIST.md');
-					$blacklistFile = wordlistDocPath('BLACKLIST.md');
-					$liveWordSet = array();
-					$ranks = array();
-					$rankColumn = array_search('Rank', $arWord[0], true);
-					for($wi = 1; $wi < sizeOf($arWord); $wi++) {
-						foreach(array_slice($arWord[$wi], 3, 3) as $word) {
-							if($word === '')
-								continue;
-							$liveWordSet[$word] = true;
-							if($rankColumn !== false && !empty($arWord[$wi][$rankColumn]))
-								$ranks[$word] = (int) $arWord[$wi][$rankColumn];
-						}
-					}
-					$greylist = array_intersect_key(wordlistListedReasons($greylistFile), $liveWordSet);
-					$blacklistSet = wordlistListedReasons($blacklistFile);
-					$bPrimaryCat = false;
-					$bSecondaryCat = false;
-					$totalCount = 0;
-					$foldN = 0;
-					for($i = 1; $i < sizeOf($arWord); $i++) {
-						echo $arWord[$i][0];
-						if($arWord[$i][1] != NULL) {
-							if($bSecondaryCat) { ?>
-								</div></div>
-							<?php $bSecondaryCat = false;
-							}
-							if($bPrimaryCat) { ?>
-								</div></div>
-							<?php }
-							else
-								$bPrimaryCat = true;
-							$primaryName = $arWord[$i][1];
-							$primaryClass = (strcasecmp(trim($primaryName), 'Greylist') === 0) ? "primary greylist" : 'primary';
-							$foldN++;
-							$primaryFoldId = 'wordlist-fold-p-' . $foldN;
-							?>
-								<div class='<?php echo $primaryClass ?>'><div class='primary-word'><?php echo wordlistFoldToggle($primaryName, $primaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $primaryFoldId ?>'>
-						<?php }
-						if($arWord[$i][2] != NULL) {
-							if($bSecondaryCat) { ?>
-							</div></div>
-							<?php
-							} else
-								$bSecondaryCat = true;
-							$foldN++;
-							$secondaryFoldId = 'wordlist-fold-s-' . $foldN;
-							?>
-							<div class='secondary'><div class='secondary-word'><?php echo wordlistFoldToggle(ucfirst($arWord[$i][2]), $secondaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $secondaryFoldId ?>'>
-						<?php }
-						foreach(array_slice($arWord[$i], 3, 3) as $word) {
-							if($word === '')
-								continue;
-							$totalCount++;
-							echo renderWordlistItem($word, $emojiMap, $greylist, $blacklistSet, $ranks[$word] ?? null);
-						}
-					}
-				?>
-					</div></div></div></div>
+			<div class='wordlist-table indent-c'>
+				<div class='wordlist-live-grid'>
+					<?php echo renderWordlistGrid($groups, 'all', $emojiMap, $greylist, $blacklistSet, $ranks); ?>
 				</div>
 			</div>
 		<?php if($totalCount != 1024) { ?>
@@ -126,6 +95,14 @@
 							Wordlist on GitHub
 						</a>
 					</span>
+				</div>
+			</div>
+		</div>
+
+		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0' hidden>
+			<div class='wordlist-table indent-c'>
+				<div class='wordlist-live-grid'>
+					<?php echo renderWordlistGrid($groups, 'white', $emojiMap, $greylist, $blacklistSet, $ranks, $greylist + $blacklistSet); ?>
 				</div>
 			</div>
 		</div>
