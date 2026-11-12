@@ -786,6 +786,7 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 }
 
 .wordlist-collapse-all:not([hidden]) {
+	--wordlist-toggle-gray: #767676;
 	position: sticky;
 	inset-block-start: calc(var(--wordlist-tabs-height, 0px) + 4px);
 	z-index: 6;
@@ -794,13 +795,13 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	margin-block-start: 4px;
 	display: inline-grid;
 	place-items: center;
-	min-inline-size: 34px;
+	min-inline-size: 32px;
 	min-block-size: 32px;
 	padding: 0;
 	border: 1px solid transparent;
-	border-radius: 6px;
-	background: var(--wordlist-controls-background);
-	color: #767676;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--wordlist-toggle-gray) 8%, var(--wordlist-controls-background));
+	color: var(--wordlist-toggle-gray);
 	cursor: pointer;
 }
 
@@ -819,18 +820,17 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	display: none;
 }
 
-.wordlist-collapse-all:hover,
-.wordlist-collapse-all[aria-pressed='true'] {
-	background: color-mix(in srgb, currentColor 10%, var(--wordlist-controls-background));
+.wordlist-collapse-all:not([hidden]):hover {
+	background: color-mix(in srgb, var(--wordlist-toggle-gray) 15%, var(--wordlist-controls-background));
 }
 
 .wordlist-collapse-all[aria-pressed='true'] {
-	border-color: currentColor;
+	border-color: var(--wordlist-toggle-gray);
 	color: #28768e;
 }
 
-html.dark-mode .wordlist-collapse-all {
-	color: #a0a0a0;
+html.dark-mode .wordlist-collapse-all:not([hidden]) {
+	--wordlist-toggle-gray: #a0a0a0;
 }
 
 html.dark-mode .wordlist-collapse-all[aria-pressed='true'] {
@@ -838,7 +838,7 @@ html.dark-mode .wordlist-collapse-all[aria-pressed='true'] {
 }
 
 .wordlist-collapse-all:focus-visible {
-	outline: 2px solid currentColor;
+	outline: 2px solid var(--wordlist-toggle-gray);
 	outline-offset: 2px;
 }
 
