@@ -83,7 +83,7 @@
 							$foldN++;
 							$secondaryFoldId = 'wordlist-fold-s-' . $foldN;
 							?>
-							<div class='secondary'><div class='secondary-word'><?php echo wordlistFoldToggle($arWord[$i][2], $secondaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $secondaryFoldId ?>'>
+							<div class='secondary'><div class='secondary-word'><?php echo wordlistFoldToggle(ucfirst($arWord[$i][2]), $secondaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $secondaryFoldId ?>'>
 						<?php }
 						if($arWord[$i][3] != NULL) {
 								$totalCount++;
