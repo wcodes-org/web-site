@@ -136,7 +136,7 @@ function wordlistListedWords($path) {
 }
 
 
-function wordlistRetiredListItem($content) {
+function wordlistRetiredListItem($content, $version = '') {
 	static $n = 0;
 	if(stripos($content, 'Replaced by') === false)
 		return '<li>' . $content;
@@ -167,23 +167,41 @@ function wordlistRetiredListItem($content) {
 		return '<li>' . $content;
 	$replacement = rtrim($rm[1]);
 	$replacement = preg_replace('/\.$/', '', $replacement);
+	$reason = '';
+	$parts = preg_split('/\s*Replaced by\s*/i', ltrim($rest), 2);
+	if(isset($parts[0])) {
+		$reason = preg_replace('/^[\s\-\x{2013}\x{2014}]+/u', '', $parts[0]);
+		$reason = trim($reason, " \t\n\r.");
+	}
 	$n++;
 	$id = 'word-retired-desc-' . $n;
-	return '<li class="wordlist-retired" tabindex="0" aria-describedby="' . $id . '">'
-		. $chip
-		. '<span class="word-retired-meta" id="' . $id . '">replaced by ' . $replacement . '</span>';
+	$li = '<li class="wordlist-retired" tabindex="0" aria-describedby="' . $id . '"';
+	if($version !== '')
+		$li .= ' data-version="' . htmlspecialchars($version, ENT_QUOTES, 'UTF-8') . '"';
+	if($reason !== '')
+		$li .= ' data-reason="' . htmlspecialchars(strip_tags($reason), ENT_QUOTES, 'UTF-8') . '"';
+	$li .= '>' . $chip;
+	if($reason !== '')
+		$li .= '<span class="word-retired-reason">' . $reason . '</span>';
+	$li .= '<span class="word-retired-meta" id="' . $id . '">replaced by ' . $replacement . '</span>';
+	return $li;
 }
 
 function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array()) {
 	$inline = function($text) use ($emojiMap, $greylist, $blacklist) {
 		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist) : wordlistRulesInline($text);
 	};
-	$lines = preg_split('/\r\n|\r|\n/', file_get_contents($path));
+	$raw = file_get_contents($path);
+	$raw = preg_replace('/<!--.*?-->/s', '', $raw);
+	$lines = preg_split('/\r\n|\r|\n/', $raw);
 	$out = array();
 	$list = null;
 	$item = false;
 	$started = false;
 	$detailsOpen = false;
+	$skipNotes = false;
+	$retiredVersion = '';
+	$currentH3 = '';
 	$para = array();
 	$flushPara = function() use (&$para, &$out, $inline) {
 		if($para) {
@@ -214,12 +232,26 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	};
 	foreach($lines as $line) {
 		$line = rtrim($line);
+		if($skipNotes) {
+			if(preg_match('/^#{1,3}\s+/', $line) && !preg_match('/^#{1,3}\s+Notes for maintainers\b/i', $line))
+				$skipNotes = false;
+			else
+				continue;
+		}
+		if(preg_match('/^#{1,3}\s+Notes for maintainers\b/i', $line)) {
+			$flushPara(); $closeList(); $closeDetails();
+			$skipNotes = true;
+			continue;
+		}
 		if(preg_match('/^####\s+(.*)$/', $line, $m)) {
 			$flushPara(); $closeList();
 			if(!$started) {
 				$started = true;
 			}
-			$out[] = '<h4>' . $inline($m[1]) . '</h4>';
+			$isVersion = preg_match('/^v\d+\b/i', $m[1]);
+			$retiredVersion = $isVersion ? preg_replace('/^.*?\b(v\d+).*$/i', '$1', $m[1]) : '';
+			$class = $isVersion ? ' class="wordlist-version"' : '';
+			$out[] = '<h4' . $class . '>' . $inline($m[1]) . '</h4>';
 			continue;
 		}
 		if(preg_match('/^###\s+(.*)$/', $line, $m)) {
@@ -233,7 +265,15 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 				if($started)
 					$out[] = '<br>';
 				$started = true;
-				$out[] = '<h3>' . $inline($m[1]) . '</h3>';
+				$currentH3 = $m[1];
+				$retiredVersion = '';
+				$label = $inline($m[1]);
+				if(preg_match('/^Rejected$/i', $m[1])) {
+					$out[] = '<h3 class="wordlist-rejected-heading" data-heading="Rejected">' . $label
+						. ' <button type="button" class="wordlist-versions-toggle" aria-pressed="false">versions</button></h3>';
+				} else {
+					$out[] = '<h3>' . $label . '</h3>';
+				}
 			}
 			continue;
 		}
@@ -272,11 +312,16 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			$flushPara();
 			if($list !== 'ul') {
 				$closeList();
-				$out[] = "<ul class='indent-e'>";
+				$listClass = 'indent-e';
+				if($retiredVersion !== '' || preg_match('/^Rejected$/i', $currentH3))
+					$listClass .= ' wordlist-retired-list';
+				elseif(!$asDetails && preg_match('/^Blacklist$/i', $currentH3))
+					$listClass .= ' wordlist-word-grid';
+				$out[] = "<ul class='" . $listClass . "'>";
 				$list = 'ul';
 			}
 			$closeItem();
-			$out[] = wordlistRetiredListItem($inline($m[1]));
+			$out[] = wordlistRetiredListItem($inline($m[1]), $retiredVersion);
 			$item = true;
 			continue;
 		}
