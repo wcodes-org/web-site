@@ -47,6 +47,8 @@ function wordlist() {
 	bindWordlistTabs();
 	bindRetiredReveal();
 	bindVersionsToggle();
+	bindWordlistTabPeak();
+	updateWordlistTabPeak();
 }
 
 function setWordlistVersions(on) {
@@ -108,6 +110,46 @@ function bindRetiredReveal() {
 	});
 }
 
+function updateWordlistTabPeak() {
+	var tabs = document.getElementById('wordlist_tabs');
+	if (!tabs) return;
+	var peak = 50;
+	if (!wordlistSearchMode) {
+		var active = tabs.querySelector("button[aria-selected='true']");
+		if (active) {
+			var tabsRect = tabs.getBoundingClientRect();
+			var lineWidth = Math.min(tabsRect.width, 320);
+			var lineLeft = tabsRect.left + (tabsRect.width - lineWidth) / 2;
+			var ar = active.getBoundingClientRect();
+			var center = ar.left + ar.width / 2;
+			if (lineWidth > 0)
+				peak = ((center - lineLeft) / lineWidth) * 100;
+		}
+	}
+	if (peak < 0) peak = 0;
+	if (peak > 100) peak = 100;
+	tabs.style.setProperty('--wordlist-tab-peak', peak.toFixed(2) + '%');
+}
+
+function bindWordlistTabPeak() {
+	if (bindWordlistTabPeak.bound) return;
+	bindWordlistTabPeak.bound = true;
+	var scheduled = false;
+	function schedule() {
+		if (scheduled) return;
+		scheduled = true;
+		requestAnimationFrame(function() {
+			scheduled = false;
+			updateWordlistTabPeak();
+		});
+	}
+	window.addEventListener('resize', schedule);
+	if (typeof ResizeObserver !== 'undefined') {
+		var tabs = document.getElementById('wordlist_tabs');
+		if (tabs) new ResizeObserver(schedule).observe(tabs);
+	}
+}
+
 function bindWordlistTabs() {
 	const tabList = document.getElementById('wordlist_tabs');
 	if (!tabList || tabList.getAttribute('data-bound') === '1') return;
@@ -127,6 +169,7 @@ function bindWordlistTabs() {
 			if (panel) panel.hidden = !selected;
 		});
 		wordlistSavedTabId = selectedTab.id;
+		updateWordlistTabPeak();
 	}
 
 	function activate(tab) {
@@ -188,6 +231,7 @@ function enterSearchMode() {
 		tab.removeAttribute('aria-controls');
 		tab.tabIndex = 0;
 	});
+	updateWordlistTabPeak();
 }
 
 function exitSearchMode() {
@@ -219,6 +263,7 @@ function exitSearchMode() {
 		const panel = document.getElementById(tab.getAttribute('aria-controls'));
 		if (panel) panel.hidden = !selected;
 	});
+	updateWordlistTabPeak();
 }
 
 function setSearchTabLink(tab, count) {
