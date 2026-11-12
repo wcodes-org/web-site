@@ -389,7 +389,13 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 				$list = 'ul';
 			}
 			$closeItem();
-			$out[] = wordlistRetiredListItem($inline($m[1]), $retiredVersion);
+			if($liveWords !== null && preg_match('/^(`fire` .+); shares \S+ with ((?:`[a-z]+`, )*`[a-z]+`)$/u', $m[1], $shared)) {
+				$related = wordlistCandidateInline(str_replace(', ', ' ', $shared[2]), null, $greylist, $blacklist);
+				$out[] = '<li class="wordlist-shared-emoji">' . $inline($shared[1]) . ' · shares emoji with'
+					. '<div class="wordlist-shared-emoji-words">' . $related . '</div>';
+			} else {
+				$out[] = wordlistRetiredListItem($inline($m[1]), $retiredVersion);
+			}
 			$item = true;
 			continue;
 		}
