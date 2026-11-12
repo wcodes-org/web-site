@@ -13,18 +13,36 @@
 }
 
 @media (max-width: 540px) {
+	#message {
+		--word-block-width: 110px;
+		--word-grid-gap: 10px;
+		--word-grid-indent: 0px;
+		--word-subcategory-indent: 0px;
+		padding-left: max(10px, env(safe-area-inset-left));
+		padding-right: max(10px, env(safe-area-inset-right));
+	}
+
+	#message > #wordlist_search_wrap {
+		width: auto;
+		margin-inline: 0;
+	}
+
+	.wordlist-table {
+		width: auto;
+	}
+
+	.wordlist-table,
+	#wordlist_search_white .wordlist-search-body {
+		padding-inline: 0;
+	}
 
 	.primary {
 		margin-left: 0;
 		margin-top: 6px;
 	}
 
-	.secondary {
-		margin-left: 10px;
-	}
-
-	.primary .secondary > div > .word-item {
-		margin-left: 10px;
+	.secondary-word {
+		padding-inline-start: 10px;
 	}
 
 	#wordlist_tabs {
@@ -46,12 +64,6 @@
 		scroll-margin-top: 4.5rem;
 	}
 
-
-
-	#message {
-		--word-block-width: 110px;
-	}
-
 	.word-item,
 	.wordlist-table .word-item,
 	#wordlist_grey_panel .word-item,
@@ -71,23 +83,20 @@
 		padding-right: 0.3em;
 	}
 
-	.wordlist-table .secondary > div:last-child,
-	#wordlist_search_white .secondary > div:last-child,
+	.wordlist-table .secondary > .wordlist-fold-body:not([hidden]),
+	#wordlist_search_white .secondary > .wordlist-fold-body:not([hidden]),
 	ul.wordlist-word-grid,
 	#wordlist_black_panel #wordlist_blacklist_words,
 	#wordlist_search_black .wordlist-blacklist-words {
-		grid-template-columns: repeat(auto-fill, var(--word-item-width));
-		column-gap: 10px;
 		row-gap: 8px;
-		padding-left: 10px;
+		justify-content: center;
 	}
 
-	.wordlist-table .secondary > div:last-child > .word-item,
-	#wordlist_search_white .secondary > div:last-child > .word-item,
-	ul.wordlist-word-grid > li .word-item,
-	#wordlist_black_panel #wordlist_blacklist_words > .word-item,
-	#wordlist_search_black .wordlist-blacklist-words > .word-item {
-		width: var(--word-item-width);
+	:is(.wordlist-table, #wordlist_search_white) :is(.primary, .secondary):has(> .wordlist-fold-body[hidden])::after {
+		position: relative;
+		inset-inline-start: calc((var(--word-emoji-col) * var(--word-emoji-scale) + var(--word-item-gap)) / 2);
+		width: 100%;
+		margin-inline: auto;
 	}
 }
 
