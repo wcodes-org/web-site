@@ -147,6 +147,7 @@
 	</div>
 	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet))); ?></script>
 
+	<hr class='wordlist-docs-rule' aria-hidden='true'>
 	<div id='wordlist_docs'>
 		<?php
 			$wordlistRulesFile = wordlistRulesPath();
