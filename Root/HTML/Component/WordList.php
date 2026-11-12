@@ -90,7 +90,7 @@
 							<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>.tsv</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>.json</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>.txt</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>.js</a>
 						</span>
 						<span id='wordlist-release'>
-							<span id='wordlist-version'>v 5</span>
+							<span id='wordlist-version'>v 6</span>
 							-
 							<span id='wordlist-date'>Nov 12, 2026</span>
 							<span aria-hidden='true'>|</span>
