@@ -10,10 +10,20 @@
 	border-spacing: 10px 10px;
 }
 
-#wordlist-table .secondary > div:last-child {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+#wordlist-table .word-item {
+	width: 140px;
+}
+
+#wordlist-table .secondary > div:last-child,
+#wordlist_search_white .secondary > div:last-child,
+ul.wordlist-word-grid,
+#wordlist_black_panel #wordlist_blacklist_words,
+#wordlist_search_black .wordlist-blacklist-words {
+	display: grid;
+	grid-template-columns: repeat(3, 140px);
+	column-gap: 4px;
+	row-gap: 4px;
+	justify-content: start;
 }
 
 #wordlist-table {
@@ -109,7 +119,7 @@ html.dark-mode #wordlist-message {
 }
 
 .primary .secondary > div > .word-item {
-	margin-left: 40px;
+	margin-left: 0;
 }
 
 #words-remaining {
@@ -133,9 +143,13 @@ html.dark-mode #wordlist-message {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.22em;
-	padding: 0.08em 0.45em 0.1em;
-	margin: 0.08em 0.12em 0.08em 0;
-	border-radius: 7px;
+	box-sizing: border-box;
+	width: 140px;
+	padding: 0.14em 0.7em 0.16em;
+	margin: 0 2px 4px 0;
+	border-radius: 0;
+	/* Wider at the top, slanted in at the bottom: \____/ */
+	clip-path: polygon(0 0, 100% 0, calc(100% - 0.5em) 100%, 0.5em 100%);
 	font-weight: 500;
 	line-height: 1.45;
 	vertical-align: middle;
@@ -298,7 +312,7 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist_grey_panel .word-item,
 #wordlist_black_panel .word-item {
-	width: auto;
+	width: 140px;
 }
 
 #wordlist_grey_panel h3,
@@ -349,7 +363,7 @@ html.dark-mode #word_search_box::placeholder {
 
 #wordlist_search_grey .word-item,
 #wordlist_search_black .word-item {
-	width: auto;
+	width: 140px;
 }
 
 #wordlist_search_grey h3,
@@ -367,33 +381,102 @@ html.dark-mode #word_search_box::placeholder {
 	margin-bottom: 1.2rem;
 }
 
-#wordlist_black_panel #wordlist_blacklist_words,
-#wordlist_search_black .wordlist-blacklist-words {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-}
 
 #wordlist_black_panel #wordlist_blacklist_words .word-item,
 #wordlist_search_black .wordlist-blacklist-words .word-item {
-	width: auto;
+	width: 140px;
 }
 
-/* Retired words: chip only; replacement appears on hover / focus / open */
+/* NATO / TSV-style word grids: 3-across, 140px cells, like the whitelist */
+ul.wordlist-word-grid {
+	list-style: none;
+	padding-left: 0;
+	margin: 0.4rem 0 1rem;
+}
+ul.wordlist-word-grid > li {
+	display: block;
+	width: 140px;
+	margin: 0;
+}
+
+/* Rejected: one word per line, reason beside the chip; replacement on hover */
 .wordlist-retired {
 	position: relative;
 	outline: none;
+	display: flex;
+	align-items: center;
+	gap: 0.65em;
+	margin: 0.2em 0;
+	list-style: none;
 }
 
-#wordlist_black_panel ul:has(> .wordlist-retired),
-#wordlist_search_black ul:has(> .wordlist-retired) {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	gap: 0.3em 0.45em;
+ul.wordlist-retired-list {
 	list-style: none;
 	padding-left: 0;
-	margin-left: 0;
+	margin: 0.4rem 0 1rem;
+}
+
+.wordlist-retired .word-item {
+	flex: 0 0 140px;
+	width: 140px;
+}
+
+.word-retired-reason {
+	color: #667078;
+	font-size: 0.95em;
+	line-height: 1.35;
+}
+
+html.dark-mode .word-retired-reason {
+	color: #9aa3aa;
+}
+
+.wordlist-rejected-heading {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.4rem 1rem;
+}
+
+.wordlist-versions-toggle {
+	border: 0;
+	background: transparent;
+	padding: 2px 8px 4px;
+	margin: 0;
+	font: inherit;
+	font-weight: bold;
+	font-size: 0.85em;
+	color: #767676;
+	cursor: pointer;
+	position: relative;
+}
+
+.wordlist-versions-toggle[aria-pressed='true'] {
+	color: #28768e;
+}
+
+.wordlist-versions-toggle[aria-pressed='true']::after {
+	content: '';
+	position: absolute;
+	left: 8px;
+	right: 8px;
+	bottom: 0;
+	height: 1px;
+	background: #69b7cf;
+}
+
+html.dark-mode .wordlist-versions-toggle {
+	color: #a0a0a0;
+}
+
+html.dark-mode .wordlist-versions-toggle[aria-pressed='true'] {
+	color: #69b7cf;
+}
+
+/* Version subheadings only when the versions control is selected */
+#wordlist_black_panel:not(.show-versions) h4.wordlist-version,
+#wordlist_search_black:not(.show-versions) h4.wordlist-version {
+	display: none;
 }
 
 .word-retired-meta {

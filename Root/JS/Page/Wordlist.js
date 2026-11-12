@@ -46,6 +46,29 @@ function wordlist() {
 	}
 	bindWordlistTabs();
 	bindRetiredReveal();
+	bindVersionsToggle();
+}
+
+function setWordlistVersions(on) {
+	document.querySelectorAll('.wordlist-versions-toggle').forEach(function(btn) {
+		btn.setAttribute('aria-pressed', String(!!on));
+	});
+	['wordlist_black_panel', 'wordlist_search_black'].forEach(function(id) {
+		var el = document.getElementById(id);
+		if (el) el.classList.toggle('show-versions', !!on);
+	});
+}
+
+function bindVersionsToggle() {
+	var root = document.getElementById('message');
+	if (!root || root.getAttribute('data-versions-bound') === '1') return;
+	root.setAttribute('data-versions-bound', '1');
+	root.addEventListener('click', function(event) {
+		var btn = event.target.closest('.wordlist-versions-toggle');
+		if (!btn || !root.contains(btn)) return;
+		event.preventDefault();
+		setWordlistVersions(btn.getAttribute('aria-pressed') !== 'true');
+	});
 }
 
 function bindRetiredReveal() {
@@ -307,17 +330,39 @@ function renderDocSearch(panelId, sectionId, input) {
 	body.innerHTML = '';
 	let count = 0;
 	let heading = '';
+	let headingDone = false;
+	let subheading = null;
 	let currentItems = [];
+	const versionsOn = !!(document.getElementById('wordlist_black_panel') &&
+		document.getElementById('wordlist_black_panel').classList.contains('show-versions'));
+
+	function emitHeading() {
+		if (headingDone || !heading) return;
+		const h = document.createElement('h3');
+		if (heading === 'Rejected') {
+			h.className = 'wordlist-rejected-heading';
+			h.setAttribute('data-heading', 'Rejected');
+			h.appendChild(document.createTextNode('Rejected '));
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'wordlist-versions-toggle';
+			btn.setAttribute('aria-pressed', versionsOn ? 'true' : 'false');
+			btn.textContent = 'versions';
+			h.appendChild(btn);
+		} else {
+			h.textContent = heading;
+		}
+		body.appendChild(h);
+		headingDone = true;
+	}
 
 	function flush() {
 		if (!currentItems.length) return;
-		if (heading) {
-			const h = document.createElement('h3');
-			h.textContent = heading;
-			body.appendChild(h);
-		}
+		emitHeading();
+		if (subheading) body.appendChild(subheading.cloneNode(true));
 		const ul = document.createElement('ul');
-		ul.className = 'indent-e';
+		const retired = currentItems.some(function(li) { return li.classList.contains('wordlist-retired'); });
+		ul.className = retired ? 'indent-e wordlist-retired-list' : 'indent-e wordlist-word-grid';
 		currentItems.forEach(function(li) { ul.appendChild(li.cloneNode(true)); });
 		body.appendChild(ul);
 		count += currentItems.length;
@@ -327,7 +372,12 @@ function renderDocSearch(panelId, sectionId, input) {
 	Array.prototype.forEach.call(panel.children, function(node) {
 		if (node.tagName === 'H3') {
 			flush();
-			heading = node.textContent;
+			heading = node.getAttribute('data-heading') || node.textContent.trim();
+			headingDone = false;
+			subheading = null;
+		} else if (node.tagName === 'H4') {
+			flush();
+			subheading = node;
 		} else if (node.tagName === 'UL') {
 			Array.prototype.forEach.call(node.children, function(li) {
 				if (li.tagName === 'LI' && docEntryMatches(li, input))

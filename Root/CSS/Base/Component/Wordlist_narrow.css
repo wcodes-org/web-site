@@ -26,5 +26,29 @@
 	}
 
 
+
+	.word-item,
+	#wordlist-table .word-item,
+	#wordlist_grey_panel .word-item,
+	#wordlist_black_panel .word-item,
+	#wordlist_search_grey .word-item,
+	#wordlist_search_black .word-item,
+	#wordlist_black_panel #wordlist_blacklist_words .word-item,
+	#wordlist_search_black .wordlist-blacklist-words .word-item,
+	ul.wordlist-word-grid > li,
+	.wordlist-retired .word-item {
+		width: 110px;
+		flex-basis: 110px;
+		padding-left: 0.55em;
+		padding-right: 0.55em;
+	}
+
+	#wordlist-table .secondary > div:last-child,
+	#wordlist_search_white .secondary > div:last-child,
+	ul.wordlist-word-grid,
+	#wordlist_black_panel #wordlist_blacklist_words,
+	#wordlist_search_black .wordlist-blacklist-words {
+		grid-template-columns: repeat(3, 110px);
+	}
 }
 
