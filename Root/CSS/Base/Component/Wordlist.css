@@ -8,22 +8,40 @@
 
 #wordlist-table {
 	border-spacing: 10px 10px;
+	/* Match the live page: indent-c padding sits outside the 80% content
+	   width so the word table can fit the same number of 140px columns. */
+	box-sizing: content-box;
+	width: 100%;
 }
 
 #wordlist-table .word-item {
 	width: 140px;
 }
 
+/* Tabular word lists, matching the live wcodes.org/wordlist layout:
+   fixed 140px cells and 40px gutters that wrap to as many columns as fit
+   (typically 3–5 on desktop) and fill the content width. */
 #wordlist-table .secondary > div:last-child,
 #wordlist_search_white .secondary > div:last-child,
 ul.wordlist-word-grid,
 #wordlist_black_panel #wordlist_blacklist_words,
 #wordlist_search_black .wordlist-blacklist-words {
 	display: grid;
-	grid-template-columns: repeat(3, 140px);
-	column-gap: 4px;
-	row-gap: 4px;
+	grid-template-columns: repeat(auto-fill, 140px);
+	column-gap: 40px;
+	row-gap: 10px;
 	justify-content: start;
+	padding-left: 40px;
+	box-sizing: border-box;
+}
+
+#wordlist-table .secondary > div:last-child > .word-item,
+#wordlist_search_white .secondary > div:last-child > .word-item,
+ul.wordlist-word-grid > li .word-item,
+#wordlist_black_panel #wordlist_blacklist_words > .word-item,
+#wordlist_search_black .wordlist-blacklist-words > .word-item {
+	margin: 0;
+	width: 140px;
 }
 
 #wordlist-table {
@@ -218,6 +236,12 @@ html.dark-mode #wordlist-table-black span {
 	position: relative;
 }
 
+@property --wordlist-tab-peak {
+	syntax: '<percentage>';
+	inherits: true;
+	initial-value: 50%;
+}
+
 #wordlist_tabs {
 	position: relative;
 	display: flex;
@@ -227,6 +251,7 @@ html.dark-mode #wordlist-table-black span {
 	gap: 4px 8px;
 	padding: 0 12px 5px;
 	margin: 0 0 16px;
+	--wordlist-tab-peak: 50%;
 }
 
 #wordlist_tabs::before {
@@ -238,7 +263,8 @@ html.dark-mode #wordlist-table-black span {
 	width: 100%;
 	max-width: 320px;
 	height: 1px;
-	background: linear-gradient(to right, transparent, #69b7cf, transparent);
+	background: linear-gradient(to right, transparent 0%, #69b7cf var(--wordlist-tab-peak), transparent 100%);
+	transition: --wordlist-tab-peak 0.28s ease;
 }
 
 #wordlist_tabs > span {
@@ -390,7 +416,6 @@ html.dark-mode #word_search_box::placeholder {
 /* NATO / TSV-style word grids: 3-across, 140px cells, like the whitelist */
 ul.wordlist-word-grid {
 	list-style: none;
-	padding-left: 0;
 	margin: 0.4rem 0 1rem;
 }
 ul.wordlist-word-grid > li {
@@ -436,6 +461,12 @@ html.dark-mode .word-retired-reason {
 	align-items: baseline;
 	flex-wrap: wrap;
 	gap: 0.4rem 1rem;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.wordlist-rejected-heading .wordlist-versions-toggle {
+	margin-left: auto;
 }
 
 .wordlist-versions-toggle {
@@ -512,7 +543,8 @@ html.dark-mode .word-retired-meta {
 @media (prefers-reduced-motion: reduce) {
 	#wordlist_search_hint,
 	.word-item,
-	.word-retired-meta {
+	.word-retired-meta,
+	#wordlist_tabs::before {
 		transition: none;
 	}
 	.word-item:hover,
