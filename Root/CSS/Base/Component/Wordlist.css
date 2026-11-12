@@ -372,15 +372,11 @@ html.dark-mode #word_search_box::placeholder {
 	color: #666;
 }
 
-/* Beat #message > * (and the wide-layout variant), which set width and margin-left on every direct child. */
 #message > hr.wordlist-docs-rule {
 	border: 0;
-	display: block;
-	height: 1px;
-	width: 72%;
-	max-width: 480px;
-	margin: 2.2rem auto 0;
-	background: linear-gradient(to right, transparent, #69b7cf, transparent);
+	border-top: 1px solid currentColor;
+	margin-block: 2.2rem 0;
+	opacity: 0.25;
 }
 
 #wordlist_docs {
@@ -679,6 +675,15 @@ html.dark-mode .word-retired-meta {
 
 .wordlist-fold-body[hidden] {
 	display: none;
+}
+
+#message :is(.primary, .secondary, .wordlist-fold):has(> .wordlist-fold-body[hidden])::after {
+	content: '';
+	display: block;
+	height: 5px;
+	margin-top: 0.25em;
+	background: currentColor;
+	opacity: 0.12;
 }
 
 .primary-word .wordlist-fold-toggle,
