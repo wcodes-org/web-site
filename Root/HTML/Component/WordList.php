@@ -22,6 +22,7 @@
 		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
+				<p>Hover over a word to see its rank. Rank 1 is best.</p>
 			</div>
 			<div id='wordlist-table' class='indent-c'>
 				<div id='wordlist-table-white'>
@@ -35,22 +36,20 @@
 					$greylistFile = wordlistDocPath('GREYLIST.md');
 					$blacklistFile = wordlistDocPath('BLACKLIST.md');
 					$liveWordSet = array();
+					$ranks = array();
+					$rankColumn = array_search('Rank', $arWord[0], true);
 					for($wi = 1; $wi < sizeOf($arWord); $wi++) {
-						foreach(array(3, 4, 5) as $wc)
-							if(isset($arWord[$wi][$wc]) && $arWord[$wi][$wc] !== '')
-								$liveWordSet[$arWord[$wi][$wc]] = true;
+						foreach(array_slice($arWord[$wi], 3, 3) as $word) {
+							if($word === '')
+								continue;
+							$liveWordSet[$word] = true;
+							if($rankColumn !== false && !empty($arWord[$wi][$rankColumn]))
+								$ranks[$word] = (int) $arWord[$wi][$rankColumn];
+						}
 					}
 					$greylistSet = array_fill_keys(wordlistListedWords($greylistFile), true);
 					$greylistSet = array_intersect_key($greylistSet, $liveWordSet);
 					$blacklistSet = array_fill_keys(wordlistListedWords($blacklistFile), true);
-					function renderWordItem($word, $emojiMap, $greylistSet, $blacklistSet) {
-						$class = wordlistWordClass($word, $greylistSet, $blacklistSet);
-						$html = '<span class="' . $class . '">';
-						if(isset($emojiMap[$word]))
-							$html .= '<span class="word-emoji">' . $emojiMap[$word] . '</span>';
-						$html .= '<span class="word-text">' . $word . '</span></span>';
-						echo $html;
-					}
 					$bPrimaryCat = false;
 					$bSecondaryCat = false;
 					$totalCount = 0;
@@ -85,17 +84,11 @@
 							?>
 							<div class='secondary'><div class='secondary-word'><?php echo wordlistFoldToggle(ucfirst($arWord[$i][2]), $secondaryFoldId); ?></div><div class='wordlist-fold-body' id='<?php echo $secondaryFoldId ?>'>
 						<?php }
-						if($arWord[$i][3] != NULL) {
-								$totalCount++;
-								renderWordItem($arWord[$i][3], $emojiMap, $greylistSet, $blacklistSet);
-						}
-						if($arWord[$i][4] != NULL) {
-								$totalCount++;
-								renderWordItem($arWord[$i][4], $emojiMap, $greylistSet, $blacklistSet);
-						}
-						if($arWord[$i][5] != NULL) {
-								$totalCount++;
-								renderWordItem($arWord[$i][5], $emojiMap, $greylistSet, $blacklistSet);
+						foreach(array_slice($arWord[$i], 3, 3) as $word) {
+							if($word === '')
+								continue;
+							$totalCount++;
+							echo renderWordlistItem($word, $emojiMap, $greylistSet, $blacklistSet, $ranks[$word] ?? null);
 						}
 					}
 				?>
@@ -131,7 +124,7 @@
 		<div id='wordlist_grey_panel' role='tabpanel' aria-labelledby='wordlist_grey_tab' tabindex='0' hidden>
 			<?php
 				if($greylistFile)
-					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet, $liveWordSet);
+					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet, $liveWordSet, $ranks);
 				else
 					echo "<p class='indent-c'>Greylist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/GREYLIST.md' target='_blank'>GREYLIST.md</a></p>";
 			?>
@@ -165,7 +158,7 @@
 			<div class='wordlist-search-body'></div>
 		</section>
 	</div>
-	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet))); ?></script>
+	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet), 'ranks' => $ranks)); ?></script>
 
 	<section class='indent-c' aria-labelledby='wordlist-uses'>
 		<h2 id='wordlist-uses'>Wordlist uses and references</h2>

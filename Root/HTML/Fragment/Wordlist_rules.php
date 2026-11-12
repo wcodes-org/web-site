@@ -121,16 +121,22 @@ function wordlistWordClass($word, $greylist = array(), $blacklist = array()) {
 	return 'word-item word-whitelist';
 }
 
-function wordlistCandidateInline($text, $emojiMap, $greylist = array(), $blacklist = array()) {
+function renderWordlistItem($word, $emojiMap, $greylist, $blacklist, $rank = null) {
+	$class = wordlistWordClass($word, $greylist, $blacklist);
+	$label = htmlspecialchars($word, ENT_QUOTES, 'UTF-8');
+	$rank = (int) $rank;
+	$focus = $rank ? ' tabindex="0" aria-label="' . $label . ', rank ' . $rank . '"' : '';
+	$rankAttr = $rank ? ' data-rank="' . $rank . '"' : '';
+	$html = '<span class="' . $class . '"' . $focus . '>';
+	if(isset($emojiMap[$word]))
+		$html .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$word], ENT_QUOTES, 'UTF-8') . '</span>';
+	return $html . '<span class="word-text"' . $rankAttr . '>' . $label . '</span></span>';
+}
+
+function wordlistCandidateInline($text, $emojiMap, $greylist = array(), $blacklist = array(), $ranks = array()) {
 	$text = wordlistRulesInline($text);
-	return preg_replace_callback('/<code>([a-z]+)<\/code>/', function($m) use ($emojiMap, $greylist, $blacklist) {
-		$w = $m[1];
-		$class = wordlistWordClass($w, $greylist, $blacklist);
-		$chip = '<span class="' . $class . '">';
-		if($emojiMap && isset($emojiMap[$w]))
-			$chip .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$w], ENT_QUOTES, 'UTF-8') . '</span>';
-		$chip .= '<span class="word-text">' . $w . '</span></span>';
-		return $chip;
+	return preg_replace_callback('/<code>([a-z]+)<\/code>/', function($m) use ($emojiMap, $greylist, $blacklist, $ranks) {
+		return renderWordlistItem($m[1], $emojiMap, $greylist, $blacklist, $ranks[$m[1]] ?? null);
 	}, $text);
 }
 
@@ -220,9 +226,9 @@ function wordlistFoldOpen($tag, $label, $id, $class = '', $extra = '', $dataHead
 		. '</' . $tag . '><div class="wordlist-fold-body" id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '">';
 }
 
-function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array(), $liveWords = null) {
-	$inline = function($text) use ($emojiMap, $greylist, $blacklist) {
-		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist) : wordlistRulesInline($text);
+function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $greylist = array(), $blacklist = array(), $liveWords = null, $ranks = array()) {
+	$inline = function($text) use ($emojiMap, $greylist, $blacklist, $ranks) {
+		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist, $ranks) : wordlistRulesInline($text);
 	};
 	$raw = file_get_contents($path);
 	$raw = preg_replace('/<!--.*?-->/s', '', $raw);
@@ -405,7 +411,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			}
 			$closeItem();
 			if($liveWords !== null && preg_match('/^(`fire` .+); shares \S+ with ((?:`[a-z]+`, )*`[a-z]+`)$/u', $m[1], $shared)) {
-				$related = wordlistCandidateInline(str_replace(', ', ' ', $shared[2]), null, $greylist, $blacklist);
+				$related = wordlistCandidateInline(str_replace(', ', ' ', $shared[2]), null, $greylist, $blacklist, $ranks);
 				$out[] = '<li class="wordlist-shared-emoji">' . $inline($shared[1]) . ' · shares emoji with'
 					. '<div class="wordlist-shared-emoji-words">' . $related . '</div>';
 			} else {

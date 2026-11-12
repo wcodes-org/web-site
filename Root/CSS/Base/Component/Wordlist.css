@@ -250,6 +250,20 @@ html.dark-mode #wordlist-message {
 	transform-origin: center center;
 	transition: transform 0.18s ease;
 }
+.word-item .word-text[data-rank] {
+	min-inline-size: min-content;
+	gap: 0.4em;
+}
+.word-item .word-text[data-rank]::after {
+	content: "#" attr(data-rank);
+	display: none;
+	margin-inline-start: auto;
+	font-size: 0.75em;
+	font-variant-numeric: tabular-nums;
+}
+.word-item:is(:hover, :focus) .word-text[data-rank]::after {
+	display: block;
+}
 .word-item.word-whitelist .word-text {
 	color: #4e8fa3;
 	background: #e7f3f6;

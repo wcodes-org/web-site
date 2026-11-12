@@ -3,6 +3,7 @@ var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
 var wordGreylistSet = wordGreylistSet || {};
 var wordBlacklistSet = wordBlacklistSet || {};
+var wordRanks = {};
 var wordListBlackReasons = wordListBlackReasons || {};
 var wordlistSearchMode = false;
 var wordlistSavedTabId = 'wordlist_white_tab';
@@ -12,6 +13,7 @@ function loadWordlistMeta() {
 	if (!el || !el.textContent) return;
 	try {
 		var meta = JSON.parse(el.textContent);
+		wordRanks = meta.ranks || {};
 		wordGreylistSet = {};
 		wordBlacklistSet = {};
 		(meta.greylist || []).forEach(function(w) { wordGreylistSet[w] = true; });
@@ -644,6 +646,12 @@ function createWordItem(word, inDiscarded, reason) {
 	var text = document.createElement('span');
 	text.setAttribute('class', 'word-text');
 	text.innerText = word;
+	if (!inDiscarded && Object.prototype.hasOwnProperty.call(wordRanks, word)) {
+		var rank = wordRanks[word];
+		text.setAttribute('data-rank', rank);
+		span.tabIndex = 0;
+		span.setAttribute('aria-label', word + ', rank ' + rank);
+	}
 	span.appendChild(emoji);
 	span.appendChild(text);
 	return span;
