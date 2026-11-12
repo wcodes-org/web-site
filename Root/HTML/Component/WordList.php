@@ -17,9 +17,15 @@
 			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1' data-tab-label='Blacklist' data-search-section='wordlist_search_black'>Blacklist</button>
 		</div>
 		<div id='wordlist_view_controls' role='group' aria-label='Wordlist display options' hidden>
-			<button type='button' aria-pressed='true' data-group-words>Group</button>
-			<button type='button' aria-pressed='false' aria-label='Sort A–Z' data-word-order='alphabet'>A–Z</button>
-			<button type='button' aria-pressed='false' aria-label='Sort by rank' data-word-order='rank'>Rank</button>
+			<button type='button' aria-pressed='true' aria-label='Group by category' title='Group by category' data-group-words>
+				<svg viewBox='0 0 20 20' aria-hidden='true' focusable='false'><rect x='2.5' y='3' width='15' height='5' rx='1'/><rect x='2.5' y='12' width='15' height='5' rx='1'/></svg>
+			</button>
+			<button type='button' aria-pressed='false' aria-label='Sort A–Z' title='Sort A–Z' data-word-order='alphabet'>
+				<svg viewBox='0 0 20 20' aria-hidden='true' focusable='false'><path d='m2.5 14 3.5-8 3.5 8m-6-2.5h5M15 4v12m-3-3 3 3 3-3'/></svg>
+			</button>
+			<button type='button' aria-pressed='false' aria-label='Sort by rank' title='Sort by rank' data-word-order='rank'>
+				<svg viewBox='0 0 20 20' aria-hidden='true' focusable='false'><path d='M2.5 16.5h15M4 16.5V10h4v6.5M8 16.5V4h4v12.5M12 16.5V12h4v4.5'/></svg>
+			</button>
 		</div>
 	</div>
 
@@ -27,7 +33,7 @@
 		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
-				<p>Hover over a word to see its rank. Rank 1 is best.</p>
+				<p>Hover over a word to see its rank and any Greylist reasons. Rank 1 is best.</p>
 			</div>
 			<div id='wordlist-table' class='indent-c'>
 				<div id='wordlist-table-white'>
@@ -52,9 +58,8 @@
 								$ranks[$word] = (int) $arWord[$wi][$rankColumn];
 						}
 					}
-					$greylistSet = array_fill_keys(wordlistListedWords($greylistFile), true);
-					$greylistSet = array_intersect_key($greylistSet, $liveWordSet);
-					$blacklistSet = array_fill_keys(wordlistListedWords($blacklistFile), true);
+					$greylist = array_intersect_key(wordlistListedReasons($greylistFile), $liveWordSet);
+					$blacklistSet = wordlistListedReasons($blacklistFile);
 					$bPrimaryCat = false;
 					$bSecondaryCat = false;
 					$totalCount = 0;
@@ -93,7 +98,7 @@
 							if($word === '')
 								continue;
 							$totalCount++;
-							echo renderWordlistItem($word, $emojiMap, $greylistSet, $blacklistSet, $ranks[$word] ?? null);
+							echo renderWordlistItem($word, $emojiMap, $greylist, $blacklistSet, $ranks[$word] ?? null);
 						}
 					}
 				?>
@@ -109,9 +114,9 @@
 						<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>.tsv</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>.json</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>.txt</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>.js</a>
 					</span>
 					<span id='wordlist-release'>
-						<span id='wordlist-version'>v 4</span>
+						<span id='wordlist-version'>v 5</span>
 						-
-						<span id='wordlist-date'>Nov 9, 2026</span>
+						<span id='wordlist-date'>Nov 12, 2026</span>
 						<span aria-hidden='true'>|</span>
 						<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>versions</a>
 					</span>
@@ -129,7 +134,7 @@
 		<div id='wordlist_grey_panel' role='tabpanel' aria-labelledby='wordlist_grey_tab' tabindex='0' hidden>
 			<?php
 				if($greylistFile)
-					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylistSet, $blacklistSet, $liveWordSet, $ranks);
+					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylist, $blacklistSet, $liveWordSet, $ranks);
 				else
 					echo "<p class='indent-c'>Greylist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/GREYLIST.md' target='_blank'>GREYLIST.md</a></p>";
 			?>
@@ -138,7 +143,7 @@
 		<div id='wordlist_black_panel' role='tabpanel' aria-labelledby='wordlist_black_tab' tabindex='0' hidden>
 			<?php
 				if($blacklistFile)
-					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylistSet, $blacklistSet);
+					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylist, $blacklistSet);
 				else
 					echo "<p class='indent-c'>Blacklist: <a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/BLACKLIST.md' target='_blank'>BLACKLIST.md</a></p>";
 				$blackTsvFile = wordlistBlackTsvPath();
@@ -163,14 +168,20 @@
 			<div class='wordlist-search-body'></div>
 		</section>
 	</div>
-	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => array_keys($greylistSet), 'blacklist' => array_keys($blacklistSet), 'ranks' => $ranks)); ?></script>
+	<script type='application/json' id='wordlist-meta'><?php echo json_encode(array('greylist' => (object) $greylist, 'blacklist' => array_keys($blacklistSet), 'ranks' => $ranks), JSON_HEX_TAG); ?></script>
 
 	<section class='indent-c' aria-labelledby='wordlist-uses'>
-		<h2 id='wordlist-uses'>Wordlist uses and references</h2>
+		<h2 id='wordlist-uses'>Wordlist uses</h2>
 		<ul>
 			<li><a class='content-link' href='https://wolo.codes/faq'>Wolo Code</a> uses the wordlist to encode locations as a city name and three words.</li>
 			<li><a class='content-link' href='https://pkg.go.dev/github.com/wttw/words#readme'>words</a> is a Go package that uses the wordlist to encode integers as short sequences of words.</li>
 			<li><a class='content-link' href='https://github.com/bandrews/verbal-id#whats-the-methodology-you-used-to-create-the-word-list'>verbal-id</a> adapts the WCode wordlist for spoken identifiers, filtering out similar-sounding words and adding replacements.</li>
+		</ul>
+	</section>
+
+	<section class='indent-c' aria-labelledby='wordlist-references'>
+		<h2 id='wordlist-references'>Wordlist references</h2>
+		<ul>
 			<li>UX <a class='content-link' href='https://ux.stackexchange.com/questions/21076/are-there-numbers-and-letters-to-avoid-for-activation-codes-via-sms#21084'>Stack Exchange</a> discussion mentions WCode as an option for generating memorable activation codes from words.</li>
 		</ul>
 	</section>

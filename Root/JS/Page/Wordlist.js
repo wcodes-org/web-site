@@ -1,7 +1,7 @@
 var wordListWhite;
 var wordListBlack;
 var wordEmojiMap = (typeof wordEmojiMap !== 'undefined' && wordEmojiMap) ? wordEmojiMap : {};
-var wordGreylistSet = wordGreylistSet || {};
+var wordGreylistReasons = {};
 var wordBlacklistSet = wordBlacklistSet || {};
 var wordRanks = {};
 var wordListBlackReasons = wordListBlackReasons || {};
@@ -14,9 +14,8 @@ function loadWordlistMeta() {
 	try {
 		var meta = JSON.parse(el.textContent);
 		wordRanks = meta.ranks || {};
-		wordGreylistSet = {};
+		wordGreylistReasons = meta.greylist || {};
 		wordBlacklistSet = {};
-		(meta.greylist || []).forEach(function(w) { wordGreylistSet[w] = true; });
 		(meta.blacklist || []).forEach(function(w) { wordBlacklistSet[w] = true; });
 	} catch (e) {}
 }
@@ -24,7 +23,7 @@ function loadWordlistMeta() {
 function wordItemClass(word, inDiscarded) {
 	if (inDiscarded) return 'word-item word-blacklist';
 	if (wordBlacklistSet[word]) return 'word-item word-blacklist';
-	if (wordGreylistSet[word]) return 'word-item word-greylist';
+	if (Object.prototype.hasOwnProperty.call(wordGreylistReasons, word)) return 'word-item word-greylist';
 	return 'word-item word-whitelist';
 }
 
@@ -61,12 +60,17 @@ function bindWordlistViewControls() {
 	const controls = document.getElementById('wordlist_view_controls');
 	if (!controls || !controls.hidden) return;
 	controls.hidden = false;
+	const group = controls.querySelector('[data-group-words]');
+	const rank = controls.querySelector('[data-word-order="rank"]');
 	controls.addEventListener('click', function(event) {
 		const button = event.target.closest('button');
 		if (!button) return;
-		if (button.hasAttribute('data-group-words')) {
-			button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
+		if (button === group) {
+			const grouped = group.getAttribute('aria-pressed') !== 'true';
+			group.setAttribute('aria-pressed', String(grouped));
+			if (grouped) rank.setAttribute('aria-pressed', 'false');
 		} else {
+			if (button === rank) group.setAttribute('aria-pressed', 'false');
 			controls.querySelectorAll('[data-word-order]').forEach(function(sort) {
 				sort.setAttribute('aria-pressed', String(sort === button));
 			});
@@ -734,11 +738,16 @@ function createWordItem(word, inDiscarded, reason) {
 	var text = document.createElement('span');
 	text.setAttribute('class', 'word-text');
 	text.innerText = word;
-	if (!inDiscarded && Object.prototype.hasOwnProperty.call(wordRanks, word)) {
-		var rank = wordRanks[word];
-		text.setAttribute('data-rank', rank);
-		span.tabIndex = 0;
-		span.setAttribute('aria-label', word + ', rank ' + rank);
+	if (!inDiscarded) {
+		var rank = Object.prototype.hasOwnProperty.call(wordRanks, word) ? wordRanks[word] : null;
+		var greylistReason = Object.prototype.hasOwnProperty.call(wordGreylistReasons, word) ? wordGreylistReasons[word] : '';
+		var tooltip = [rank ? 'Rank ' + rank : '', greylistReason].filter(Boolean).join(' · ');
+		if (rank) text.setAttribute('data-rank', rank);
+		if (greylistReason) span.setAttribute('data-greylist-tooltip', tooltip);
+		if (tooltip) {
+			span.tabIndex = 0;
+			span.setAttribute('aria-label', word + ', ' + tooltip);
+		}
 	}
 	span.appendChild(emoji);
 	span.appendChild(text);

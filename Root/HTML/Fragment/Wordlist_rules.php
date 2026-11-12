@@ -125,9 +125,13 @@ function renderWordlistItem($word, $emojiMap, $greylist, $blacklist, $rank = nul
 	$class = wordlistWordClass($word, $greylist, $blacklist);
 	$label = htmlspecialchars($word, ENT_QUOTES, 'UTF-8');
 	$rank = (int) $rank;
-	$focus = $rank ? ' tabindex="0" aria-label="' . $label . ', rank ' . $rank . '"' : '';
+	$rankLabel = $rank ? 'Rank ' . $rank : '';
+	$reason = $greylist[$word] ?? '';
+	$tooltip = htmlspecialchars(implode(' · ', array_filter(array($rankLabel, $reason))), ENT_QUOTES, 'UTF-8');
+	$focus = $tooltip !== '' ? ' tabindex="0" aria-label="' . $label . ', ' . $tooltip . '"' : '';
+	$tooltipAttr = $reason !== '' ? ' data-greylist-tooltip="' . $tooltip . '"' : '';
 	$rankAttr = $rank ? ' data-rank="' . $rank . '"' : '';
-	$html = '<span class="' . $class . '"' . $focus . '>';
+	$html = '<span class="' . $class . '"' . $focus . $tooltipAttr . '>';
 	if(isset($emojiMap[$word]))
 		$html .= '<span class="word-emoji">' . htmlspecialchars($emojiMap[$word], ENT_QUOTES, 'UTF-8') . '</span>';
 	return $html . '<span class="word-text"' . $rankAttr . '>' . $label . '</span></span>';
@@ -141,18 +145,29 @@ function wordlistCandidateInline($text, $emojiMap, $greylist = array(), $blackli
 }
 
 
-function wordlistListedWords($path) {
-	$words = array();
+function wordlistPublicMarkdown($path) {
 	if(!$path || !is_file($path))
-		return $words;
-	foreach(preg_split('/\r\n|\r|\n/', file_get_contents($path)) as $line) {
-		if(preg_match('/^-\s+((?:`[a-z]+`(?:,\s*)?)+)/', $line, $m)) {
-			if(preg_match_all('/`([a-z]+)`/', $m[1], $wm))
-				foreach($wm[1] as $w)
-					$words[$w] = true;
+		return '';
+	$raw = preg_replace('/<!--.*?-->/s', '', file_get_contents($path));
+	return preg_replace('/^#{1,3}\h+Notes for maintainers\b[^\r\n]*(?:\R|$).*?(?=^#{1,3}\h|\z)/ims', '', $raw);
+}
+
+function wordlistListedReasons($path) {
+	$words = array();
+	$heading = '';
+	foreach(preg_split('/\R/u', wordlistPublicMarkdown($path)) as $line) {
+		if(preg_match('/^#{3,4}\s+(.+)$/', $line, $m)) {
+			$heading = $m[1];
+			continue;
 		}
+		if(!preg_match('/^-\s+((?:`[a-z]+`(?:,\s*)?)+)(?:\s+—\s+(.+))?/u', $line, $m))
+			continue;
+		$reason = str_replace('`', '', $m[2] ?? $heading);
+		preg_match_all('/`([a-z]+)`/', $m[1], $matches);
+		foreach($matches[1] as $word)
+			$words[$word][] = $reason;
 	}
-	return array_keys($words);
+	return array_map(function($reasons) { return implode(' · ', array_unique($reasons)); }, $words);
 }
 
 
@@ -230,15 +245,12 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	$inline = function($text) use ($emojiMap, $greylist, $blacklist, $ranks) {
 		return ($emojiMap || $greylist || $blacklist) ? wordlistCandidateInline($text, $emojiMap, $greylist, $blacklist, $ranks) : wordlistRulesInline($text);
 	};
-	$raw = file_get_contents($path);
-	$raw = preg_replace('/<!--.*?-->/s', '', $raw);
-	$lines = preg_split('/\r\n|\r|\n/', $raw);
+	$lines = preg_split('/\R/u', wordlistPublicMarkdown($path));
 	$out = array();
 	$list = null;
 	$item = false;
 	$started = false;
 	$detailsOpen = false;
-	$skipNotes = false;
 	$retiredVersion = '';
 	$currentH3 = '';
 	$foldOpen = false;
@@ -297,17 +309,6 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	};
 	foreach($lines as $line) {
 		$line = rtrim($line);
-		if($skipNotes) {
-			if(preg_match('/^#{1,3}\s+/', $line) && !preg_match('/^#{1,3}\s+Notes for maintainers\b/i', $line))
-				$skipNotes = false;
-			else
-				continue;
-		}
-		if(preg_match('/^#{1,3}\s+Notes for maintainers\b/i', $line)) {
-			$flushPara(); $closeList(); $closeDetails(); $closeFold();
-			$skipNotes = true;
-			continue;
-		}
 		if(preg_match('/^####\s+(.*)$/', $line, $m)) {
 			$flushPara(); $closeList();
 			if(!$started) {

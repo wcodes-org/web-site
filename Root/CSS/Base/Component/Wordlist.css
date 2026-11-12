@@ -261,7 +261,7 @@ html.dark-mode #wordlist-message {
 	font-size: 0.75em;
 	font-variant-numeric: tabular-nums;
 }
-.word-item:is(:hover, :focus) .word-text[data-rank]::after {
+.word-item:not([data-greylist-tooltip]):is(:hover, :focus) .word-text[data-rank]::after {
 	display: block;
 }
 .word-item.word-whitelist .word-text {
@@ -401,16 +401,26 @@ html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
 }
 
 #wordlist_view_controls > button {
+	display: grid;
+	place-items: center;
+	min-inline-size: 32px;
+	min-block-size: 30px;
 	padding: 4px 7px;
 	border: 0;
 	border-bottom: 1px solid transparent;
 	background: transparent;
 	color: #767676;
-	font: inherit;
-	font-size: 0.85em;
-	font-weight: bold;
-	white-space: nowrap;
 	cursor: pointer;
+}
+
+#wordlist_view_controls svg {
+	width: 19px;
+	height: 19px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 #wordlist_view_controls > button[aria-pressed='true'] {
@@ -661,7 +671,8 @@ html.dark-mode .wordlist-versions-toggle[aria-pressed='true'] {
 	display: none;
 }
 
-.word-retired-meta {
+.word-retired-meta,
+.word-item[data-greylist-tooltip]::after {
 	position: absolute;
 	left: 0;
 	bottom: calc(100% + 6px);
@@ -679,7 +690,28 @@ html.dark-mode .wordlist-versions-toggle[aria-pressed='true'] {
 	transition: opacity 0.16s ease;
 }
 
-html.dark-mode .word-retired-meta {
+.word-item[data-greylist-tooltip]::after {
+	content: attr(data-greylist-tooltip);
+	left: 50%;
+	transform: translateX(-50%);
+	width: max-content;
+	max-width: min(16rem, calc(100vw - 2rem));
+	white-space: normal;
+}
+
+@media (max-width: 700px) {
+	.word-item[data-greylist-tooltip]::after {
+		position: fixed;
+		inset-inline: 1rem;
+		bottom: 1rem;
+		margin-inline: auto;
+		transform: none;
+		box-sizing: border-box;
+	}
+}
+
+html.dark-mode .word-retired-meta,
+html.dark-mode .word-item[data-greylist-tooltip]::after {
 	background: #252540;
 	color: #c8c8d0;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
@@ -687,7 +719,8 @@ html.dark-mode .word-retired-meta {
 
 .wordlist-retired:hover .word-retired-meta,
 .wordlist-retired:focus-within .word-retired-meta,
-.wordlist-retired.is-open .word-retired-meta {
+.wordlist-retired.is-open .word-retired-meta,
+.word-item[data-greylist-tooltip]:is(:hover, :focus)::after {
 	opacity: 1;
 }
 
@@ -696,6 +729,7 @@ html.dark-mode .word-retired-meta {
 	.word-item .word-emoji,
 	.word-item .word-text,
 	.word-retired-meta,
+	.word-item[data-greylist-tooltip]::after,
 	#wordlist_tabs::before,
 	.wordlist-fold-caret {
 		transition: none;
