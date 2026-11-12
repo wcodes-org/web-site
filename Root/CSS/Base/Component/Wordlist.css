@@ -3,6 +3,7 @@
 }
 
 #wordlist-links {
+	padding-top: 20px;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: baseline;
@@ -765,7 +766,7 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	}
 }
 
-/* Collapse carets beside category / Rejected / NATO headings */
+/* Collapse all control beside the wordlist heading */
 .wordlist-live-grid .primary-word:has(.wordlist-collapse-all) {
 	display: flex;
 	align-items: baseline;
@@ -779,9 +780,11 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	background: transparent;
 	color: inherit;
 	font: inherit;
-	font-size: 0.7em;
-	padding: 4px 8px;
-	white-space: nowrap;
+	display: inline-grid;
+	place-items: center;
+	min-width: 28px;
+	min-height: 28px;
+	padding: 0;
 	cursor: pointer;
 }
 
@@ -824,6 +827,7 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	top: -0.12em;
 }
 
+.wordlist-collapse-all .wordlist-fold-caret,
 .wordlist-fold-toggle[aria-expanded='false'] .wordlist-fold-caret {
 	transform: rotate(-45deg);
 	top: -0.05em;

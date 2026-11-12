@@ -280,7 +280,12 @@ function bindWordlistFolds() {
 		var collapseAll = document.createElement('button');
 		collapseAll.type = 'button';
 		collapseAll.className = 'wordlist-collapse-all';
-		collapseAll.textContent = 'Collapse all';
+		collapseAll.setAttribute('aria-label', 'Collapse all');
+		collapseAll.title = 'Collapse all';
+		var caret = document.createElement('span');
+		caret.className = 'wordlist-fold-caret';
+		caret.setAttribute('aria-hidden', 'true');
+		collapseAll.appendChild(caret);
 		heading.appendChild(collapseAll);
 		collapseAll.addEventListener('click', function() {
 			grid.querySelectorAll('.wordlist-fold-toggle').forEach(function(toggle) {

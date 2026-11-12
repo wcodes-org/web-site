@@ -65,7 +65,10 @@
 		<div class='wordlist_tab_panels'>
 			<div id='wordlist_white_panel'>
 				<div class='indent-c'>
-					<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
+					<p>
+						The 1,024 words currently used in WCode. Suggestions are welcome.<br>
+						The list is dedicated to the public domain : CC0 v1.0
+					</p>
 				</div>
 				<div class='wordlist-table indent-c'>
 					<div class='wordlist-live-grid'>
