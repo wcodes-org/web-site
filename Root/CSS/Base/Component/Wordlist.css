@@ -21,6 +21,10 @@
 	gap: 0.35em;
 }
 
+#wordlist-github-row {
+	flex-basis: 100%;
+}
+
 #wordlist-downloads a + a::before {
 	content: ' | ';
 	color: #9aa0a6;
@@ -284,6 +288,16 @@ html.dark-mode .word-item.word-blacklist .word-text {
 .word-item:focus .word-text,
 .word-item:focus-visible .word-text {
 	transform: scale(1.08);
+}
+
+.word-item.wordlist-example-word,
+.word-item.wordlist-example-word .word-text {
+	width: auto;
+}
+
+.word-item.wordlist-example-word .word-text {
+	flex-basis: auto;
+	background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
 #wordlist-table-black .word-item,

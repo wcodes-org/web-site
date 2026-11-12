@@ -110,17 +110,19 @@
 					<span id='wordlist-downloads'>
 						<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>.tsv</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>.json</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>.txt</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>.js</a>
 					</span>
-					<a id='wordlist-github' class='content-link' href='https://github.com/wcodes-org/wordlist'>
-						<?php // GitHub mark from Primer Octicons, MIT: https://github.com/primer/octicons/blob/main/LICENSE ?>
-						<svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg>
-						Wordlist on GitHub
-					</a>
 					<span id='wordlist-release'>
 						<span id='wordlist-version'>v 4</span>
 						-
 						<span id='wordlist-date'>Nov 9, 2026</span>
 						<span aria-hidden='true'>|</span>
 						<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>versions</a>
+					</span>
+					<span id='wordlist-github-row'>
+						<a id='wordlist-github' class='content-link' href='https://github.com/wcodes-org/wordlist'>
+							<?php // GitHub mark from Primer Octicons, MIT: https://github.com/primer/octicons/blob/main/LICENSE ?>
+							<svg aria-hidden="true" focusable="false" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg>
+							Wordlist on GitHub
+						</a>
 					</span>
 				</div>
 			</div>
@@ -171,7 +173,7 @@
 			<li><a class='content-link' href='https://wolo.codes/faq'>Wolo Code</a> uses the wordlist to encode locations as a city name and three words.</li>
 			<li><a class='content-link' href='https://pkg.go.dev/github.com/wttw/words#readme'>words</a> is a Go package that uses the wordlist to encode integers as short sequences of words.</li>
 			<li><a class='content-link' href='https://github.com/bandrews/verbal-id#whats-the-methodology-you-used-to-create-the-word-list'>verbal-id</a> adapts the WCode wordlist for spoken identifiers, filtering out similar-sounding words and adding replacements.</li>
-			<li><a class='content-link' href='https://ux.stackexchange.com/questions/21076/are-there-numbers-and-letters-to-avoid-for-activation-codes-via-sms#21084'>User Experience Stack Exchange</a> mentions WCode as an option for generating memorable activation codes from words.</li>
+			<li>UX <a class='content-link' href='https://ux.stackexchange.com/questions/21076/are-there-numbers-and-letters-to-avoid-for-activation-codes-via-sms#21084'>Stack Exchange</a> discussion mentions WCode as an option for generating memorable activation codes from words.</li>
 		</ul>
 	</section>
 

@@ -99,6 +99,20 @@ function wordlistRulesInline($text) {
 	}, $text);
 }
 
+function wordlistRuleExample($text) {
+	$wordBlock = function($word) {
+		return '<span class="word-item wordlist-example-word"><span class="word-text">'
+			. htmlspecialchars($word, ENT_QUOTES, 'UTF-8') . '</span></span>';
+	};
+	// The NATO example is an unquoted list, with slash-separated spelling variants.
+	if(preg_match('~^(e\.g\.\s+)([A-Z][a-z]+(?:[-/][A-Za-z]+)*(?:,\s+[A-Z][a-z]+(?:[-/][A-Za-z]+)*)+)$~', $text, $m))
+		return $m[1] . implode(', ', array_map($wordBlock, preg_split('/,\s+/', $m[2])));
+
+	return preg_replace_callback("/&#039;([a-z]+(?:-[a-z]+)*)&#039;/i", function($m) use ($wordBlock) {
+		return $wordBlock($m[1]);
+	}, wordlistRulesInline($text));
+}
+
 function wordlistWordClass($word, $greylist = array(), $blacklist = array()) {
 	if(isset($blacklist[$word]))
 		return 'word-item word-blacklist';
@@ -311,6 +325,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			if($asDetails) {
 				$closeDetails();
 				$started = true;
+				$currentH3 = rtrim($m[1], ':');
 				$out[] = "<details><summary>" . $inline($m[1]) . "</summary><div class='indent-c'>";
 				$detailsOpen = true;
 			} else {
@@ -400,7 +415,11 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 			continue;
 		}
 		if($item) {
-			$out[] = "<div class='content-li-example'>" . $inline(trim($line)) . '</div>';
+			$example = trim($line);
+			$exampleHtml = $asDetails && strcasecmp($currentH3, 'Word selection criteria') === 0
+				? wordlistRuleExample($example)
+				: $inline($example);
+			$out[] = "<div class='content-li-example'>" . $exampleHtml . '</div>';
 			continue;
 		}
 		if($list)
