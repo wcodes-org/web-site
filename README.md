@@ -1,4 +1,6 @@
 WCode - Website
 ==============
 
-On `/wordlist`, use **Group** to switch between categories and one list per tab. **A–Z** sorts by spelling and **Rank** sorts from rank 1, with unranked entries at the end. With grouping on, each group is sorted independently. The same controls apply to search results.
+On `/wordlist`, **Group** switches between categories and one list per tab. **A–Z** and **Rank** select the sort order independently of grouping. With grouping on, each group is sorted independently. Rank order starts at 1, with unranked entries at the end. The same controls apply to search results.
+
+Hover over or focus a ranked word to see its rank inline. Greylist tooltips show the reasons the word is on the Greylist.

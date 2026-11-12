@@ -61,17 +61,15 @@ function bindWordlistViewControls() {
 	if (!controls || !controls.hidden) return;
 	controls.hidden = false;
 	const group = controls.querySelector('[data-group-words]');
-	const rank = controls.querySelector('[data-word-order="rank"]');
+	const sorts = controls.querySelectorAll('[data-word-order]');
 	controls.addEventListener('click', function(event) {
 		const button = event.target.closest('button');
 		if (!button) return;
 		if (button === group) {
 			const grouped = group.getAttribute('aria-pressed') !== 'true';
 			group.setAttribute('aria-pressed', String(grouped));
-			if (grouped) rank.setAttribute('aria-pressed', 'false');
 		} else {
-			if (button === rank) group.setAttribute('aria-pressed', 'false');
-			controls.querySelectorAll('[data-word-order]').forEach(function(sort) {
+			sorts.forEach(function(sort) {
 				sort.setAttribute('aria-pressed', String(sort === button));
 			});
 		}
@@ -604,7 +602,7 @@ function renderDocSearch(panelId, sectionId, input) {
 			} else if (node.tagName === 'H4') {
 				flush();
 				subheading = node;
-			} else if (node.tagName === 'UL') {
+			} else if (node.tagName === 'UL' && !node.classList.contains('wordlist-flat')) {
 				Array.prototype.forEach.call(node.children, function(li) {
 					if (li.tagName === 'LI' && docEntryMatches(li, input))
 						currentItems.push(li);
@@ -741,12 +739,12 @@ function createWordItem(word, inDiscarded, reason) {
 	if (!inDiscarded) {
 		var rank = Object.prototype.hasOwnProperty.call(wordRanks, word) ? wordRanks[word] : null;
 		var greylistReason = Object.prototype.hasOwnProperty.call(wordGreylistReasons, word) ? wordGreylistReasons[word] : '';
-		var tooltip = [rank ? 'Rank ' + rank : '', greylistReason].filter(Boolean).join(' · ');
+		var details = [rank ? 'Rank ' + rank : '', greylistReason].filter(Boolean).join(', ');
 		if (rank) text.setAttribute('data-rank', rank);
-		if (greylistReason) span.setAttribute('data-greylist-tooltip', tooltip);
-		if (tooltip) {
+		if (greylistReason) span.setAttribute('data-greylist-tooltip', greylistReason);
+		if (details) {
 			span.tabIndex = 0;
-			span.setAttribute('aria-label', word + ', ' + tooltip);
+			span.setAttribute('aria-label', word + ', ' + details);
 		}
 	}
 	span.appendChild(emoji);

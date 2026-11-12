@@ -261,7 +261,7 @@ html.dark-mode #wordlist-message {
 	font-size: 0.75em;
 	font-variant-numeric: tabular-nums;
 }
-.word-item:not([data-greylist-tooltip]):is(:hover, :focus) .word-text[data-rank]::after {
+.word-item:is(:hover, :focus) .word-text[data-rank]::after {
 	display: block;
 }
 .word-item.word-whitelist .word-text {
@@ -407,7 +407,6 @@ html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
 	min-block-size: 30px;
 	padding: 4px 7px;
 	border: 0;
-	border-bottom: 1px solid transparent;
 	background: transparent;
 	color: #767676;
 	cursor: pointer;
@@ -424,7 +423,6 @@ html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
 }
 
 #wordlist_view_controls > button[aria-pressed='true'] {
-	border-bottom-color: #69b7cf;
 	color: #28768e;
 }
 

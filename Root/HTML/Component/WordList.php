@@ -33,7 +33,6 @@
 		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
-				<p>Hover over a word to see its rank and any Greylist reasons. Rank 1 is best.</p>
 			</div>
 			<div id='wordlist-table' class='indent-c'>
 				<div id='wordlist-table-white'>

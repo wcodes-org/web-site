@@ -126,10 +126,10 @@ function renderWordlistItem($word, $emojiMap, $greylist, $blacklist, $rank = nul
 	$label = htmlspecialchars($word, ENT_QUOTES, 'UTF-8');
 	$rank = (int) $rank;
 	$rankLabel = $rank ? 'Rank ' . $rank : '';
-	$reason = $greylist[$word] ?? '';
-	$tooltip = htmlspecialchars(implode(' · ', array_filter(array($rankLabel, $reason))), ENT_QUOTES, 'UTF-8');
-	$focus = $tooltip !== '' ? ' tabindex="0" aria-label="' . $label . ', ' . $tooltip . '"' : '';
-	$tooltipAttr = $reason !== '' ? ' data-greylist-tooltip="' . $tooltip . '"' : '';
+	$reason = htmlspecialchars($greylist[$word] ?? '', ENT_QUOTES, 'UTF-8');
+	$details = implode(', ', array_filter(array($rankLabel, $reason)));
+	$focus = $details !== '' ? ' tabindex="0" aria-label="' . $label . ', ' . $details . '"' : '';
+	$tooltipAttr = $reason !== '' ? ' data-greylist-tooltip="' . $reason . '"' : '';
 	$rankAttr = $rank ? ' data-rank="' . $rank . '"' : '';
 	$html = '<span class="' . $class . '"' . $focus . $tooltipAttr . '>';
 	if(isset($emojiMap[$word]))
