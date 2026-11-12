@@ -41,15 +41,23 @@ function wordlist() {
 	if(wordListWhite.length == 0) {
 		wordListWhite = loadWordlistWhite();
 		initloadWordlistBlack();
-		word_search_box.addEventListener('input', execSearch);
-		search_input_clear.addEventListener('click', clearWordListSearch);
 	}
+	word_search_box.addEventListener('input', execSearch);
+	word_search_box.addEventListener('focus', updateWordlistSearchPlaceholder);
+	word_search_box.addEventListener('blur', updateWordlistSearchPlaceholder);
+	search_input_clear.addEventListener('click', clearWordListSearch);
 	bindWordlistTabs();
 	bindRetiredReveal();
 	bindVersionsToggle();
 	bindWordlistFolds();
 	bindWordlistTabPeak();
 	updateWordlistTabPeak();
+}
+
+function updateWordlistSearchPlaceholder(event) {
+	event.currentTarget.placeholder = event.type === 'focus'
+		? document.getElementById('wordlist_search_hint').textContent
+		: 'search';
 }
 
 function setWordlistVersions(on) {

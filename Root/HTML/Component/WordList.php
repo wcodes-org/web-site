@@ -1,10 +1,10 @@
 <div id='message'>
 	<div id='wordlist_search_wrap'>
 		<div id='wordlist_search'>
-			<span class='wordlist-search-side' id='search-button_icon_wordlist'><span class='image'><?php includeSVG('', 'Search_wordList'); ?></span></span>
-			<input id='word_search_box' type='text' placeholder='search' autocomplete='off' spellcheck='false' aria-describedby='wordlist_search_hint'>
+			<label for='word_search_box' id='search-button_icon_wordlist' aria-hidden='true'><?php includeSVG('', 'Search_wordList'); ?></label>
+			<input id='word_search_box' type='text' placeholder='search' autocomplete='off' spellcheck='false' aria-label='Search the wordlist' aria-describedby='wordlist_search_hint'>
 			<span class='wordlist-search-side hide' id='search_input_clear'><span class='image'><?php includeSVG('', 'Cross'); ?></span></span>
-			<span id='wordlist_search_hint'>'space' clears</span>
+			<span id='wordlist_search_hint' hidden>space clears</span>
 		</div>
 		<div id='wordlist-message'></div>
 	</div>
