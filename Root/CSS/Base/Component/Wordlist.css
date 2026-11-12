@@ -3,7 +3,16 @@
 }
 
 #wordlist-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.35em 1em;
 	text-align: left;
+}
+
+#wordlist-release {
+	margin-inline-start: auto;
+	text-align: right;
 }
 
 #wordlist-downloads a + a::before {

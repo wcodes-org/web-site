@@ -107,11 +107,15 @@
 		<?php } ?>
 			<div class='top-bottom-gap'>
 				<div id='wordlist-links'>
-					<span id='wordlist-version'>v 4</span>
-					-
-					<span id='wordlist-date'>Nov 9, 2026</span>
 					<span id='wordlist-downloads'>
 						<a class='content-link' href='https://wordlist.wcodes.org/Wordlist.tsv' target='_blank'>.tsv</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.json' target='_blank'>.json</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.txt' target='_blank'>.txt</a><a class='content-link' href='https://wordlist.wcodes.org/wordlist.js' target='_blank'>.js</a>
+					</span>
+					<span id='wordlist-release'>
+						<span id='wordlist-version'>v 4</span>
+						-
+						<span id='wordlist-date'>Nov 9, 2026</span>
+						<span aria-hidden='true'>|</span>
+						<a class='content-link' href='https://github.com/wcodes-org/wordlist/blob/main/VERSIONS.md' target='_blank'>versions</a>
 					</span>
 				</div>
 			</div>
