@@ -6,7 +6,7 @@ var wordBlacklistSet = wordBlacklistSet || {};
 var wordRanks = {};
 var wordListBlackReasons = wordListBlackReasons || {};
 var wordlistSearchMode = false;
-var wordlistSavedTabId = 'wordlist_all_tab';
+var wordlistSavedTabId = '';
 
 function loadWordlistMeta() {
 	var el = document.getElementById('wordlist-meta');
@@ -218,7 +218,7 @@ function updateWordlistTabPeak() {
 	if (!tabs) return;
 	var peak = 50;
 	if (!wordlistSearchMode) {
-		var active = tabs.querySelector("button[aria-selected='true']");
+		var active = tabs.querySelector("button[aria-pressed='true']");
 		if (active) {
 			var tabsRect = tabs.getBoundingClientRect();
 			var lineWidth = parseFloat(getComputedStyle(tabs, '::before').width) || Math.min(tabsRect.width, 384);
@@ -289,14 +289,15 @@ function bindWordlistFolds() {
 }
 
 function selectWordlistTab(selectedTab) {
+	const whiteTab = document.getElementById('wordlist_white_tab');
+	const visibleTab = selectedTab || whiteTab;
 	wordlistTabButtons().forEach(function(tab) {
-		const selected = tab === selectedTab;
-		tab.setAttribute('aria-selected', String(selected));
-		tab.tabIndex = selected ? 0 : -1;
+		tab.setAttribute('aria-pressed', String(tab === selectedTab));
 		const panel = document.getElementById(tab.getAttribute('aria-controls'));
-		if (panel) panel.hidden = !selected;
+		panel.hidden = tab !== visibleTab;
 	});
-	wordlistSavedTabId = selectedTab.id;
+	document.getElementById('wordlist_white_panel').classList.toggle('wordlist-whitelist-only', selectedTab === whiteTab);
+	wordlistSavedTabId = selectedTab ? selectedTab.id : '';
 	updateWordlistTabPeak();
 }
 
@@ -305,25 +306,19 @@ function bindWordlistTabs() {
 	if (!tabList || tabList.getAttribute('data-bound') === '1') return;
 	tabList.setAttribute('data-bound', '1');
 	wordlistSearchMode = false;
-	wordlistSavedTabId = 'wordlist_all_tab';
-
-	function tabs() {
-		return wordlistTabButtons().filter(function(tab) { return !tab.hidden; });
-	}
-
-	function activate(tab) {
-		if (wordlistSearchMode) jumpToSearchSection(tab);
-		else selectWordlistTab(tab);
-	}
+	wordlistSavedTabId = '';
 
 	tabList.addEventListener('click', function(event) {
 		const tab = event.target.closest('button');
-		if (!tab || !tabList.contains(tab) || tab.hidden) return;
-		activate(tab);
+		if (!tab || !tabList.contains(tab)) return;
+		if (wordlistSearchMode) jumpToSearchSection(tab);
+		else if (tab.id === 'wordlist_white_tab' && tab.getAttribute('aria-pressed') === 'true')
+			selectWordlistTab(null);
+		else selectWordlistTab(tab);
 	});
 
 	tabList.addEventListener('keydown', function(event) {
-		const visible = tabs();
+		const visible = wordlistTabButtons();
 		const current = event.target.closest('button');
 		const index = visible.indexOf(current);
 		if (index < 0) return;
@@ -362,14 +357,9 @@ function enterSearchMode() {
 	document.getElementById('wordlist_search_results').hidden = false;
 	document.querySelector('.wordlist_tab_panels').hidden = true;
 	wordlistTabButtons().forEach(function(tab) {
-		if (!tab.dataset.searchSection) {
-			tab.hidden = true;
-			return;
-		}
 		tab.setAttribute('role', 'link');
-		tab.removeAttribute('aria-selected');
-		tab.removeAttribute('aria-controls');
-		tab.tabIndex = 0;
+		tab.removeAttribute('aria-pressed');
+		tab.setAttribute('aria-controls', tab.dataset.searchSection);
 	});
 	updateWordlistTabPeak();
 }
@@ -386,30 +376,21 @@ function exitSearchMode() {
 		const section = document.getElementById('wordlist_search_' + name);
 		if (section) section.hidden = true;
 	});
-	tabList.setAttribute('role', 'tablist');
+	tabList.setAttribute('role', 'group');
 	tabList.setAttribute('aria-label', 'Wordlist');
 	wordlistTabButtons().forEach(function(tab) {
-		tab.hidden = false;
-		const label = tab.getAttribute('data-tab-label') || tab.id;
-		tab.textContent = label;
 		tab.removeAttribute('aria-disabled');
-		tab.setAttribute('role', 'tab');
+		tab.removeAttribute('role');
 		tab.setAttribute('aria-controls', tab.id.replace('_tab', '_panel'));
 	});
 	selectWordlistTab(document.getElementById(wordlistSavedTabId));
 }
 
 function setSearchTabLink(tab, count) {
-	const label = tab.getAttribute('data-tab-label') || tab.id;
-	tab.textContent = label;
-	tab.hidden = false;
-	if (count > 0) {
+	if (count > 0)
 		tab.removeAttribute('aria-disabled');
-		tab.tabIndex = 0;
-	} else {
+	else
 		tab.setAttribute('aria-disabled', 'true');
-		tab.tabIndex = 0;
-	}
 }
 
 function applyWordlistSearch(input) {
@@ -621,7 +602,7 @@ function clearWordListSearch() {
 
 function loadWordlistWhite() {
 	var x = [];
-	var parents = document.getElementById('wordlist_all_panel').getElementsByClassName('primary');
+	var parents = document.getElementById('wordlist_white_panel').getElementsByClassName('primary');
 	for(var i = 0; i < parents.length; i++) {
 		x[parents[i].firstChild.innerText] = getSecondary(parents[i]);
 	};

@@ -83,6 +83,12 @@ ul.wordlist-word-grid > li .word-item,
 	min-height: 280px;
 }
 
+.wordlist-whitelist-only :is(.primary, .secondary):not(:has(.word-whitelist)),
+.wordlist-whitelist-only .word-item:not(.word-whitelist),
+.wordlist-whitelist-only .wordlist-flat > li:not(:has(> .word-whitelist)) {
+	display: none;
+}
+
 #wordlist_search {
 	position: relative;
 	display: grid;
@@ -362,6 +368,10 @@ html.dark-mode #wordlist-table-black span {
 	transition: --wordlist-tab-peak 0.28s ease;
 }
 
+#wordlist_tabs[role='group']:not(:has(> button[aria-pressed='true']))::before {
+	background: linear-gradient(to right, transparent, #767676, transparent);
+}
+
 #wordlist_tabs > span {
 	flex: 0 0 auto;
 	color: #767676;
@@ -380,7 +390,7 @@ html.dark-mode #wordlist-table-black span {
 	text-align: center;
 }
 
-#wordlist_tabs > button[aria-selected='true'] {
+#wordlist_tabs > button[aria-pressed='true'] {
 	color: #28768e;
 }
 
@@ -389,7 +399,7 @@ html.dark-mode #wordlist_tabs > span {
 	color: #a0a0a0;
 }
 
-html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
+html.dark-mode #wordlist_tabs > button[aria-pressed='true'] {
 	color: #69b7cf;
 }
 
@@ -502,11 +512,6 @@ html.dark-mode #word_search_box::placeholder {
 	flex-direction: column;
 	align-items: center;
 	position: relative;
-}
-
-#wordlist_all_tab[hidden],
-#wordlist_all_tab[hidden] + span {
-	display: none;
 }
 
 #wordlist_tabs > button[aria-disabled='true'] {

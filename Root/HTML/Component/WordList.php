@@ -41,14 +41,12 @@
 		<div id='wordlist-message'></div>
 	</div>
 	<div id='wordlist_tabs_wrap'>
-		<div id='wordlist_tabs' role='tablist' aria-label='Wordlist'>
-			<button id='wordlist_all_tab' type='button' role='tab' aria-selected='true' aria-controls='wordlist_all_panel' data-tab-label='All words'>All words</button>
+		<div id='wordlist_tabs' role='group' aria-label='Wordlist'>
+			<button id='wordlist_white_tab' type='button' aria-pressed='false' aria-controls='wordlist_white_panel' data-search-section='wordlist_search_white'>Whitelist</button>
 			<span aria-hidden='true'>|</span>
-			<button id='wordlist_white_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_white_panel' tabindex='-1' data-tab-label='Whitelist' data-search-section='wordlist_search_white'>Whitelist</button>
+			<button id='wordlist_grey_tab' type='button' aria-pressed='false' aria-controls='wordlist_grey_panel' data-search-section='wordlist_search_grey'>Greylist</button>
 			<span aria-hidden='true'>|</span>
-			<button id='wordlist_grey_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_grey_panel' tabindex='-1' data-tab-label='Greylist' data-search-section='wordlist_search_grey'>Greylist</button>
-			<span aria-hidden='true'>|</span>
-			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1' data-tab-label='Blacklist' data-search-section='wordlist_search_black'>Blacklist</button>
+			<button id='wordlist_black_tab' type='button' aria-pressed='false' aria-controls='wordlist_black_panel' data-search-section='wordlist_search_black'>Blacklist</button>
 		</div>
 		<div id='wordlist_view_controls' role='group' aria-label='Wordlist display options' hidden>
 			<button type='button' aria-pressed='true' aria-label='Group by category' title='Group by category' data-group-words>
@@ -64,13 +62,13 @@
 	</div>
 
 	<div class='wordlist_tab_panels'>
-		<div id='wordlist_all_panel' role='tabpanel' aria-labelledby='wordlist_all_tab' tabindex='0'>
+		<div id='wordlist_white_panel'>
 			<div class='indent-c'>
 				<p>The 1,024 words currently used in WCode. Suggestions are welcome — the list is dedicated to the public domain.</p>
 			</div>
 			<div class='wordlist-table indent-c'>
 				<div class='wordlist-live-grid'>
-					<?php echo renderWordlistGrid($groups, 'all', $emojiMap, $greylist, $blacklistSet, $ranks); ?>
+					<?php echo renderWordlistGrid($groups, $emojiMap, $greylist, $blacklistSet, $ranks); ?>
 				</div>
 			</div>
 		<?php if($totalCount != 1024) { ?>
@@ -99,15 +97,7 @@
 			</div>
 		</div>
 
-		<div id='wordlist_white_panel' role='tabpanel' aria-labelledby='wordlist_white_tab' tabindex='0' hidden>
-			<div class='wordlist-table indent-c'>
-				<div class='wordlist-live-grid'>
-					<?php echo renderWordlistGrid($groups, 'white', $emojiMap, $greylist, $blacklistSet, $ranks, $greylist + $blacklistSet); ?>
-				</div>
-			</div>
-		</div>
-
-		<div id='wordlist_grey_panel' role='tabpanel' aria-labelledby='wordlist_grey_tab' tabindex='0' hidden>
+		<div id='wordlist_grey_panel' hidden>
 			<?php
 				if($greylistFile)
 					echo renderWordlistMarkdown($greylistFile, false, $emojiMap, $greylist, $blacklistSet, $liveWordSet, $ranks);
@@ -116,7 +106,7 @@
 			?>
 		</div>
 
-		<div id='wordlist_black_panel' role='tabpanel' aria-labelledby='wordlist_black_tab' tabindex='0' hidden>
+		<div id='wordlist_black_panel' hidden>
 			<?php
 				if($blacklistFile)
 					echo renderWordlistMarkdown($blacklistFile, false, $emojiMap, $greylist, $blacklistSet);

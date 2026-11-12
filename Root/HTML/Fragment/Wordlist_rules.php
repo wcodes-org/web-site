@@ -229,27 +229,21 @@ function wordlistFoldToggle($label, $id) {
 		. '<span class="wordlist-fold-label">' . $label . '</span></button>';
 }
 
-function renderWordlistGrid($groups, $view, $emojiMap, $greylist, $blacklist, $ranks, $excluded = array()) {
+function renderWordlistGrid($groups, $emojiMap, $greylist, $blacklist, $ranks) {
 	$html = '';
 	$foldN = 0;
 	foreach($groups as $primary => $categories) {
 		$subgroups = '';
 		foreach($categories as $secondary => $words) {
 			$items = '';
-			foreach($words as $word) {
-				if(!isset($excluded[$word]))
-					$items .= renderWordlistItem($word, $emojiMap, $greylist, $blacklist, $ranks[$word] ?? null);
-			}
-			if($items === '')
-				continue;
-			$id = 'wordlist-fold-' . $view . '-' . ++$foldN;
+			foreach($words as $word)
+				$items .= renderWordlistItem($word, $emojiMap, $greylist, $blacklist, $ranks[$word] ?? null);
+			$id = 'wordlist-fold-live-' . ++$foldN;
 			$subgroups .= '<div class="secondary"><div class="secondary-word">'
 				. wordlistFoldToggle(htmlspecialchars($secondary, ENT_QUOTES, 'UTF-8'), $id)
 				. '</div><div class="wordlist-fold-body" id="' . $id . '">' . $items . '</div></div>';
 		}
-		if($subgroups === '')
-			continue;
-		$id = 'wordlist-fold-' . $view . '-' . ++$foldN;
+		$id = 'wordlist-fold-live-' . ++$foldN;
 		$class = strcasecmp(trim($primary), 'Greylist') === 0 ? 'primary greylist' : 'primary';
 		$html .= '<div class="' . $class . '"><div class="primary-word">'
 			. wordlistFoldToggle(htmlspecialchars($primary, ENT_QUOTES, 'UTF-8'), $id)
