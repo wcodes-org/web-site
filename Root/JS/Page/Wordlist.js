@@ -282,10 +282,6 @@ function bindWordlistFolds() {
 		collapseAll.className = 'wordlist-collapse-all';
 		collapseAll.setAttribute('aria-label', 'Collapse all');
 		collapseAll.title = 'Collapse all';
-		var caret = document.createElement('span');
-		caret.className = 'wordlist-fold-caret';
-		caret.setAttribute('aria-hidden', 'true');
-		collapseAll.appendChild(caret);
 		heading.appendChild(collapseAll);
 		collapseAll.addEventListener('click', function() {
 			grid.querySelectorAll('.wordlist-fold-toggle').forEach(function(toggle) {

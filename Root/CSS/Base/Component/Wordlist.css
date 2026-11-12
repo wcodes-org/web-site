@@ -792,6 +792,26 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	background: color-mix(in srgb, currentColor 10%, transparent);
 }
 
+.wordlist-collapse-all::before,
+.wordlist-collapse-all::after {
+	content: '';
+	grid-area: 1 / 1;
+	width: 11px;
+	height: 7px;
+	border: 1.5px solid currentColor;
+	border-radius: 2px;
+}
+
+.wordlist-collapse-all::before {
+	transform: translate(2px, -2px);
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 100%, 75% 40%, 0 40%);
+}
+
+.wordlist-collapse-all::after {
+	transform: translate(-2px, 2px);
+	background: linear-gradient(currentColor, currentColor) center / 5px 1px no-repeat;
+}
+
 .wordlist-collapse-all:focus-visible {
 	outline: 2px solid currentColor;
 	outline-offset: 2px;
@@ -827,7 +847,6 @@ html.dark-mode .word-item[data-greylist-tooltip]::after {
 	top: -0.12em;
 }
 
-.wordlist-collapse-all .wordlist-fold-caret,
 .wordlist-fold-toggle[aria-expanded='false'] .wordlist-fold-caret {
 	transform: rotate(-45deg);
 	top: -0.05em;
