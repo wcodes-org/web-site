@@ -49,11 +49,99 @@ function wordlist() {
 	word_search_box.addEventListener('blur', updateWordlistSearchPlaceholder);
 	search_input_clear.addEventListener('click', clearWordListSearch);
 	bindWordlistTabs();
+	bindWordlistViewControls();
 	bindRetiredReveal();
 	bindVersionsToggle();
 	bindWordlistFolds();
 	bindWordlistTabPeak();
 	updateWordlistTabPeak();
+}
+
+function bindWordlistViewControls() {
+	const controls = document.getElementById('wordlist_view_controls');
+	if (!controls || !controls.hidden) return;
+	controls.hidden = false;
+	controls.addEventListener('click', function(event) {
+		const button = event.target.closest('button');
+		if (!button) return;
+		if (button.hasAttribute('data-group-words')) {
+			button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
+		} else {
+			controls.querySelectorAll('[data-word-order]').forEach(function(sort) {
+				sort.setAttribute('aria-pressed', String(sort === button));
+			});
+		}
+		updateWordlistViews(false);
+		if (wordlistSearchMode) updateWordlistViews(true);
+	});
+}
+
+function cloneWordlistEntry(node, prefix) {
+	const clone = node.cloneNode(true);
+	const description = clone.querySelector('.word-retired-meta[id]');
+	if (description) {
+		description.id = prefix + description.id;
+		clone.setAttribute('aria-describedby', description.id);
+	}
+	return clone;
+}
+
+function updateWordlistViews(searchResults) {
+	const controls = document.getElementById('wordlist_view_controls');
+	if (!controls) return;
+	const grouped = controls.querySelector('[data-group-words]').getAttribute('aria-pressed') === 'true';
+	const sort = controls.querySelector('[data-word-order][aria-pressed="true"]');
+	const order = sort && sort.dataset.wordOrder;
+	const roots = searchResults
+		? '#wordlist-search-white, #wordlist_search_grey .wordlist-search-body, #wordlist_search_black .wordlist-search-body'
+		: '#wordlist-table-white, #wordlist_grey_panel, #wordlist_black_panel';
+
+	function compare(a, b) {
+		if (order === 'rank' && a.rank !== b.rank) return a.rank - b.rank;
+		return a.word.localeCompare(b.word, 'en');
+	}
+
+	document.querySelectorAll(roots).forEach(function(root) {
+		const previousFlat = root.querySelector(':scope > .wordlist-flat');
+		if (previousFlat) previousFlat.remove();
+		root.classList.toggle('wordlist-is-flat', !grouped);
+		if (grouped && !order) return;
+
+		const entries = [];
+		root.querySelectorAll('.secondary > .wordlist-fold-body, ul.indent-e, .wordlist-blacklist-words').forEach(function(group) {
+			const groupEntries = [];
+			Array.from(group.children).forEach(function(node) {
+				const text = node.querySelector('.word-text');
+				if (!text) return;
+				const next = node.nextElementSibling;
+				const reason = next && next.classList.contains('word-blacklist-reason') ? next : null;
+				groupEntries.push({ node: node, reason: reason, word: text.textContent, rank: Number(text.dataset.rank) || Infinity });
+			});
+			if (grouped) {
+				groupEntries.sort(compare).forEach(function(entry) {
+					group.appendChild(entry.node);
+					if (entry.reason) group.appendChild(entry.reason);
+				});
+			} else {
+				entries.push(...groupEntries);
+			}
+		});
+		if (grouped || !entries.length) return;
+		if (order) entries.sort(compare);
+
+		const flat = document.createElement('ul');
+		flat.className = 'wordlist-flat indent-e';
+		if (root.id === 'wordlist-table-white' || root.id === 'wordlist-search-white')
+			flat.classList.add('wordlist-word-grid');
+		entries.forEach(function(entry) {
+			const clone = cloneWordlistEntry(entry.node, 'flat-');
+			const item = clone.tagName === 'LI' ? clone : document.createElement('li');
+			if (item !== clone) item.appendChild(clone);
+			if (entry.reason) item.appendChild(entry.reason.cloneNode(true));
+			flat.appendChild(item);
+		});
+		root.appendChild(flat);
+	});
 }
 
 function updateWordlistSearchPlaceholder(event) {
@@ -335,6 +423,7 @@ function applyWordlistSearch(input) {
 	const blackDocCount = renderDocSearch('wordlist_black_panel', 'wordlist_search_black', input);
 	const tsvCount = renderBlackTsvSearch(input);
 	const blackCount = blackDocCount + tsvCount;
+	updateWordlistViews(true);
 
 	setSearchTabLink(document.getElementById('wordlist_white_tab'), whiteCount);
 	setSearchTabLink(document.getElementById('wordlist_grey_tab'), greyCount);
@@ -356,7 +445,7 @@ function applyWordlistSearch(input) {
 function renderWhiteSearch(input) {
 	const section = document.getElementById('wordlist_search_white');
 	const body = section.querySelector('.wordlist-search-body');
-	const count = fillWordList(body, wordListWhite, input, false, 'wordlist-search-white');
+	const count = fillWordList(body, wordListWhite, input, 'wordlist-search-white');
 	section.hidden = count === 0;
 	return count;
 }
@@ -487,7 +576,7 @@ function renderDocSearch(panelId, sectionId, input) {
 		const ul = document.createElement('ul');
 		const retired = currentItems.some(function(li) { return li.classList.contains('wordlist-retired'); });
 		ul.className = retired ? 'indent-e wordlist-retired-list' : 'indent-e wordlist-word-grid';
-		currentItems.forEach(function(li) { ul.appendChild(li.cloneNode(true)); });
+		currentItems.forEach(function(li) { ul.appendChild(cloneWordlistEntry(li, sectionId + '-')); });
 		target.appendChild(ul);
 		count += currentItems.length;
 		currentItems = [];
@@ -531,7 +620,6 @@ function clearWordListSearch() {
 	document.getElementById('wordlist-message').innerText = '';
 	document.getElementById('search_input_clear').classList.add('hide');
 	if (wordlistSearchMode) exitSearchMode();
-	setWordList(null, true);
 }
 
 function loadWordlistWhite() {
@@ -657,19 +745,17 @@ function createWordItem(word, inDiscarded, reason) {
 	return span;
 }
 
-function fillWordList(target, wordList, matchString, inDiscarded, id) {
+function fillWordList(target, wordList, matchString, id) {
 	var x = document.createElement('div');
-	if (id) x.setAttribute('id', id);
+	x.id = id;
 	var count = 0;
 	for(var p in wordList) {
 		var primary = document.createElement('div');
 		primary.setAttribute('class', p === 'Greylist' ? 'primary greylist' : 'primary');
 		var primary_word = document.createElement('div');
 		primary_word.setAttribute('class', 'primary-word');
-		var primaryFoldId = (id || 'wordlist-search') + '-p-' + Object.keys(wordList).indexOf(p);
+		var primaryFoldId = id + '-p-' + Object.keys(wordList).indexOf(p);
 		primary_word.appendChild(wordlistFoldButton(p, primaryFoldId));
-		if (inDiscarded && p === 'Discarded')
-			primary_word.classList.add('hide');
 		primary.appendChild(primary_word);
 		var primaryBody = document.createElement('div');
 		primaryBody.className = 'wordlist-fold-body';
@@ -683,19 +769,13 @@ function fillWordList(target, wordList, matchString, inDiscarded, id) {
 			secondary_word.setAttribute('class', 'secondary-word');
 			var secondaryFoldId = primaryFoldId + '-s-' + (sIndex++);
 			secondary_word.appendChild(wordlistFoldButton(s, secondaryFoldId));
-			if (inDiscarded && s === '*')
-				secondary_word.classList.add('hide');
 			secondary.appendChild(secondary_word);
 			var div = document.createElement('div');
 			div.className = 'wordlist-fold-body';
 			div.id = secondaryFoldId;
-			var subList = [];
-			if(matchString != null)
-				subList = matchWord(wordList[p][s], matchString);
-			else
-				subList = wordList[p][s];
+			var subList = matchWord(wordList[p][s], matchString);
 			for(var i in subList) {
-				div.appendChild(createWordItem(subList[i], inDiscarded));
+				div.appendChild(createWordItem(subList[i], false));
 				count++;
 			}
 			secondary.appendChild(div);
@@ -714,19 +794,6 @@ function fillWordList(target, wordList, matchString, inDiscarded, id) {
 			primary.classList.add('hide_display');
 		x.appendChild(primary);
 	}
-	if (target.id && target.id === id) {
-		target.replaceWith(x);
-	} else {
-		target.innerHTML = '';
-		target.appendChild(x);
-	}
+	target.replaceChildren(x);
 	return count;
-}
-
-function setWordList(matchString, white__black) {
-	var id = white__black ? 'wordlist-table-white' : 'wordlist-table-black';
-	var wordList = white__black ? wordListWhite : wordListBlack;
-	var el = document.getElementById(id);
-	if (!el) return 0;
-	return fillWordList(el, wordList, matchString, !white__black, id);
 }

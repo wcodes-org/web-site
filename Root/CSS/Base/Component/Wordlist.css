@@ -323,16 +323,12 @@ html.dark-mode #wordlist-table-black span {
 	color: #e09a9a !important;
 }
 
-/* Full-page-centered tab bar (not just the content column) */
 #message > #wordlist_tabs_wrap {
-	width: 100vw;
-	max-width: 100vw;
-	margin-left: calc(50% - 50vw);
-	margin-right: 0;
 	box-sizing: border-box;
-	display: flex;
-	justify-content: center;
-	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+	align-items: center;
+	margin-block-end: 16px;
 }
 
 @property --wordlist-tab-peak {
@@ -342,6 +338,7 @@ html.dark-mode #wordlist-table-black span {
 }
 
 #wordlist_tabs {
+	grid-column: 2;
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -349,7 +346,6 @@ html.dark-mode #wordlist-table-black span {
 	flex-wrap: wrap;
 	gap: 4px 8px;
 	padding: 0 12px 5px;
-	margin: 0 0 16px;
 	--wordlist-tab-peak: 50%;
 }
 
@@ -395,6 +391,48 @@ html.dark-mode #wordlist_tabs > span {
 
 html.dark-mode #wordlist_tabs > button[aria-selected='true'] {
 	color: #69b7cf;
+}
+
+#wordlist_view_controls:not([hidden]) {
+	justify-self: end;
+	display: flex;
+	gap: 4px;
+	padding-block-end: 5px;
+}
+
+#wordlist_view_controls > button {
+	padding: 4px 7px;
+	border: 0;
+	border-bottom: 1px solid transparent;
+	background: transparent;
+	color: #767676;
+	font: inherit;
+	font-size: 0.85em;
+	font-weight: bold;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+#wordlist_view_controls > button[aria-pressed='true'] {
+	border-bottom-color: #69b7cf;
+	color: #28768e;
+}
+
+html.dark-mode #wordlist_view_controls > button {
+	color: #a0a0a0;
+}
+
+html.dark-mode #wordlist_view_controls > button[aria-pressed='true'] {
+	color: #69b7cf;
+}
+
+.wordlist-is-flat > :is(.primary, .wordlist-fold, h3, h4, br, ul:not(.wordlist-flat), .wordlist-blacklist-words) {
+	display: none;
+}
+
+.wordlist-flat {
+	list-style: none;
+	margin-block: 0.4rem 1rem;
 }
 
 html.dark-mode #word_search_box {

@@ -16,6 +16,11 @@
 			<span aria-hidden='true'>|</span>
 			<button id='wordlist_black_tab' type='button' role='tab' aria-selected='false' aria-controls='wordlist_black_panel' tabindex='-1' data-tab-label='Blacklist' data-search-section='wordlist_search_black'>Blacklist</button>
 		</div>
+		<div id='wordlist_view_controls' role='group' aria-label='Wordlist display options' hidden>
+			<button type='button' aria-pressed='true' data-group-words>Group</button>
+			<button type='button' aria-pressed='false' aria-label='Sort A–Z' data-word-order='alphabet'>A–Z</button>
+			<button type='button' aria-pressed='false' aria-label='Sort by rank' data-word-order='rank'>Rank</button>
+		</div>
 	</div>
 
 	<div class='wordlist_tab_panels'>

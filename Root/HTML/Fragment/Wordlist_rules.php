@@ -245,7 +245,7 @@ function renderWordlistMarkdown($path, $asDetails = false, $emojiMap = null, $gr
 	$foldStart = 0;
 	$foldHasItems = false;
 	$foldDropIfEmpty = false;
-	$foldN = 0;
+	static $foldN = 0;
 	$closeFold = function($forceKeep = false) use (&$foldOpen, &$foldStart, &$foldHasItems, &$foldDropIfEmpty, &$out) {
 		if(!$foldOpen)
 			return;

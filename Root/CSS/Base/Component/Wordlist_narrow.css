@@ -1,3 +1,17 @@
+@media (max-width: 700px) {
+	#message > #wordlist_tabs_wrap {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		width: calc(100% - 16px);
+		margin-inline: 8px;
+	}
+
+	#wordlist_view_controls {
+		margin-inline-start: auto;
+	}
+}
+
 @media (max-width: 540px) {
 
 	.primary {
@@ -14,11 +28,18 @@
 	}
 
 	#wordlist_tabs {
-		gap: 2px 6px;
+		gap: 2px 3px;
+		padding-inline: 0;
 	}
 
-	#wordlist_tabs > button {
-		padding: 4px 6px;
+	#wordlist_tabs > button,
+	#wordlist_view_controls > button {
+		padding-inline: 4px;
+		font-size: 0.82em;
+	}
+
+	#wordlist_view_controls:not([hidden]) {
+		gap: 0;
 	}
 
 	.wordlist-search-section {
